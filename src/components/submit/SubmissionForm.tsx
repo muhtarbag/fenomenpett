@@ -42,10 +42,7 @@ export const SubmissionForm = () => {
       console.log('Uploading image to storage...', { fileName, filePath });
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('submissions')
-        .upload(filePath, image, {
-          cacheControl: '3600',
-          upsert: false
-        });
+        .upload(filePath, image);
 
       if (uploadError) {
         console.error('Storage upload error:', uploadError);
