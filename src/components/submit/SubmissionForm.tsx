@@ -15,8 +15,19 @@ export const SubmissionForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!username || !image || !comment) {
-      toast.error("Lütfen tüm alanları doldurun");
+    // Validate required fields
+    if (!username.trim()) {
+      toast.error("Lütfen kullanıcı adınızı girin");
+      return;
+    }
+
+    if (!image) {
+      toast.error("Lütfen bir fotoğraf yükleyin");
+      return;
+    }
+
+    if (!comment.trim()) {
+      toast.error("Lütfen bir yorum yazın");
       return;
     }
 
@@ -78,7 +89,7 @@ export const SubmissionForm = () => {
     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md animate-fade-up">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Kullanıcı Adı
+          Kullanıcı Adı *
         </label>
         <input
           type="text"
@@ -94,7 +105,7 @@ export const SubmissionForm = () => {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Yorum
+          Yorum *
         </label>
         <div className="space-y-2">
           <textarea
