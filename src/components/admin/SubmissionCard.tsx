@@ -21,25 +21,30 @@ export const SubmissionCard = memo(({
   onSelect
 }: SubmissionCardProps) => {
   if (!submission) {
-    console.error('No submission data provided');
     return null;
   }
 
   const { id, username, status, image_url, created_at, updated_at, comment } = submission;
 
+  const handleSelect = () => {
+    if (onSelect) {
+      onSelect(id);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden animate-fade-up">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="relative">
         {showSelect && (
-          <div className="absolute top-2 left-2 z-20">
+          <div className="absolute top-3 left-3 z-50">
             <Checkbox
               checked={isSelected}
-              onCheckedChange={() => onSelect?.(id)}
-              className="h-6 w-6 border-2 border-white bg-white/90 rounded-sm shadow-md data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+              onCheckedChange={handleSelect}
+              className="h-5 w-5 border-2 border-white bg-white/90 rounded-sm shadow-lg"
             />
           </div>
         )}
-        <div className="absolute top-2 right-2 z-10 bg-black/50 text-white px-2 py-1 rounded-md flex items-center gap-1">
+        <div className="absolute top-3 right-3 z-40 bg-black/50 text-white px-2 py-1 rounded-md flex items-center gap-1">
           <Hash className="h-4 w-4" />
           <span className="text-sm font-medium">{id}</span>
         </div>

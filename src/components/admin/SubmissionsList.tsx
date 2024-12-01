@@ -5,8 +5,6 @@ import { RejectedSubmissions } from "./submissions/RejectedSubmissions";
 import { toast } from "sonner";
 
 export const SubmissionsList = () => {
-  console.log('🔄 SubmissionsList component rendering');
-  
   const { 
     pendingSubmissions, 
     approvedSubmissions, 
@@ -16,7 +14,6 @@ export const SubmissionsList = () => {
   } = useSubmissions();
 
   if (error) {
-    console.error('❌ Error loading submissions:', error);
     toast.error("Gönderiler yüklenirken bir hata oluştu");
     return (
       <div className="text-center text-red-600 p-4 bg-red-50 rounded-lg">
@@ -26,9 +23,9 @@ export const SubmissionsList = () => {
   }
 
   const hasNoSubmissions = 
-    (!pendingSubmissions?.length || pendingSubmissions.length === 0) && 
-    (!approvedSubmissions?.length || approvedSubmissions.length === 0) && 
-    (!rejectedSubmissions?.length || rejectedSubmissions.length === 0);
+    (!pendingSubmissions?.length) && 
+    (!approvedSubmissions?.length) && 
+    (!rejectedSubmissions?.length);
 
   if (hasNoSubmissions && !isLoading) {
     return (
