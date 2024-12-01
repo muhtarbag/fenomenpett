@@ -17,6 +17,7 @@ import Index from "./pages/Index";
 import Submit from "./pages/Submit";
 import Admin from "./pages/Admin";
 import Blog from "./pages/Blog";
+import Login from "./pages/Login";
 import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
@@ -25,7 +26,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
   
   if (!isAuthenticated) {
-    return <Navigate to="/admin" replace />;
+    return <Navigate to="/login" replace />;
   }
   
   return <>{children}</>;
@@ -57,7 +58,7 @@ const Navigation = () => {
           Blog
         </Link>
       </Button>
-      {isAuthenticated && (
+      {isAuthenticated ? (
         <>
           <Button variant="ghost" asChild>
             <Link
@@ -76,6 +77,15 @@ const Navigation = () => {
             Çıkış Yap
           </Button>
         </>
+      ) : (
+        <Button variant="ghost" asChild>
+          <Link
+            to="/login"
+            className="text-gray-600 hover:text-primary transition-colors"
+          >
+            Giriş Yap
+          </Link>
+        </Button>
       )}
     </div>
   );
@@ -120,7 +130,7 @@ const AppContent = () => {
           <Route path="/" element={<Index />} />
           <Route path="/submit" element={<Submit />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/login" element={<Navigate to="/admin" replace />} />
+          <Route path="/login" element={<Login />} />
           <Route 
             path="/admin" 
             element={
