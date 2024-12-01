@@ -16,7 +16,7 @@ export const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <nav className="bg-white shadow-sm">
+      <nav className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
         <div className="container mx-auto px-4">
           <div className="flex justify-between h-16 items-center">
             <Link to="/" className="flex items-center gap-2">
@@ -30,7 +30,7 @@ export const Layout = ({ children }: LayoutProps) => {
           </div>
         </div>
       </nav>
-      <main className="flex-grow">
+      <main className="flex-grow pt-16">
         {children}
       </main>
       <Footer />
