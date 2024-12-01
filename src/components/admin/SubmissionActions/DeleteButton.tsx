@@ -1,6 +1,5 @@
 import { Trash2 } from "lucide-react";
 import { UseMutationResult } from "@tanstack/react-query";
-import { Submission } from "../hooks/useSubmissions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,7 +14,7 @@ import {
 
 interface DeleteButtonProps {
   submissionId: number;
-  mutation: UseMutationResult<Submission, Error, number, unknown>;
+  mutation: UseMutationResult<number, Error, number, unknown>;
   className?: string;
 }
 
