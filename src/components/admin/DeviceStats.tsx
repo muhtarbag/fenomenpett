@@ -47,7 +47,7 @@ const deviceData = [
 
 export const DeviceStats = () => {
   return (
-    <Card className="col-span-4">
+    <Card className="col-span-1">
       <CardHeader>
         <CardTitle>Device & Browser Analytics</CardTitle>
       </CardHeader>

@@ -34,7 +34,7 @@ const performanceData = [
 
 export const PerformanceMetrics = () => {
   return (
-    <Card className="col-span-4">
+    <Card className="col-span-1">
       <CardHeader>
         <CardTitle>Page Performance Metrics</CardTitle>
       </CardHeader>

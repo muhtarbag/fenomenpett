@@ -229,13 +229,9 @@ const Admin = () => {
           <LocationMap />
         </div>
 
-        {/* Device Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-8 gap-4 mb-8">
+        {/* Device Stats and Performance Metrics side by side */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           <DeviceStats />
-        </div>
-
-        {/* Performance Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-8 gap-4 mb-8">
           <PerformanceMetrics />
         </div>
 
@@ -304,4 +300,3 @@ const Admin = () => {
 };
 
 export default Admin;
-
