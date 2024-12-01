@@ -1,6 +1,17 @@
 import { Check, X } from "lucide-react";
 import { Submission } from "./hooks/useSubmissions";
 import { useSubmissionMutation } from "./hooks/useSubmissionMutation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface SubmissionCardProps {
   submission: Submission;
@@ -75,13 +86,33 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
               <Check size={20} />
               Onayla
             </button>
-            <button
-              onClick={() => handleReject(submission.id)}
-              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors"
-            >
-              <X size={20} />
-              Reddet
-            </button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors"
+                >
+                  <X size={20} />
+                  Reddet
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Gönderiyi Reddet</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Bu gönderiyi reddetmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>İptal</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => handleReject(submission.id)}
+                    className="bg-danger hover:bg-danger/90"
+                  >
+                    Reddet
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         )}
       </div>

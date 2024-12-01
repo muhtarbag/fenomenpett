@@ -18,6 +18,9 @@ export const SubmissionsList = () => {
     pendingSubmissions,
     approvedSubmissions,
     rejectedSubmissions,
+    isLoading,
     SubmissionCard
   };
 };
+
+export { SubmissionCard };
