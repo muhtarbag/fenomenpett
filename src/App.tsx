@@ -115,7 +115,7 @@ const AppContent = () => {
                   className="h-8 w-auto"
                   style={{
                     imageRendering: 'pixelated',
-                    WebkitImageRendering: 'pixelated'
+                    WebkitImageRendering: 'pixelated' as 'pixelated'
                   }}
                 />
               </Link>
