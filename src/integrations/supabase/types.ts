@@ -48,6 +48,44 @@ export type Database = {
         }
         Relationships: []
       }
+      rejected_submissions: {
+        Row: {
+          comment: string
+          created_at: string
+          id: number
+          image_url: string
+          original_submission_id: number | null
+          reason: string
+          username: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          id?: number
+          image_url: string
+          original_submission_id?: number | null
+          reason: string
+          username: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: number
+          image_url?: string
+          original_submission_id?: number | null
+          reason?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rejected_submissions_original_submission_id_fkey"
+            columns: ["original_submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       submission_likes: {
         Row: {
           created_at: string
