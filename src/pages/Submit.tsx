@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { convertToWebP } from "@/utils/imageProcessing";
 
 const Submit = () => {
   const navigate = useNavigate();
@@ -10,15 +11,26 @@ const Submit = () => {
   const [preview, setPreview] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      try {
+        // Convert the image to WebP format
+        const webpFile = await convertToWebP(file);
+        setImage(webpFile);
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreview(reader.result as string);
+        };
+        reader.readAsDataURL(webpFile);
+
+        toast.success("Fotoğraf başarıyla optimize edildi!");
+      } catch (error) {
+        toast.error("Fotoğraf optimizasyonu sırasında bir hata oluştu.");
+        console.error('Error processing image:', error);
+      }
     }
   };
 
