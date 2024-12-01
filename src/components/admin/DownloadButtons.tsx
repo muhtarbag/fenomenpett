@@ -10,9 +10,9 @@ interface DownloadButtonsProps {
 }
 
 export const DownloadButtons = ({ approvedSubmissions }: DownloadButtonsProps) => {
-  const downloadAsExcel = () => {
+  const downloadAsExcel = async () => {
     try {
-      if (!approvedSubmissions || approvedSubmissions.length === 0) {
+      if (!approvedSubmissions?.length) {
         toast.error("İndirilecek onaylanmış gönderi bulunmuyor");
         return;
       }
@@ -23,7 +23,7 @@ export const DownloadButtons = ({ approvedSubmissions }: DownloadButtonsProps) =
       const ws = XLSX.utils.json_to_sheet(submissionData);
       
       XLSX.utils.book_append_sheet(wb, ws, "Onaylanan Kullanıcılar");
-      XLSX.writeFile(wb, "onaylanan-kullanicilar.xlsx");
+      XLSX.writeFile(wb, `onaylanan-kullanicilar-${new Date().toISOString().split('T')[0]}.xlsx`);
       
       toast.success("Excel dosyası başarıyla indirildi");
     } catch (error) {
@@ -32,9 +32,9 @@ export const DownloadButtons = ({ approvedSubmissions }: DownloadButtonsProps) =
     }
   };
 
-  const downloadAsCSV = () => {
+  const downloadAsCSV = async () => {
     try {
-      if (!approvedSubmissions || approvedSubmissions.length === 0) {
+      if (!approvedSubmissions?.length) {
         toast.error("İndirilecek onaylanmış gönderi bulunmuyor");
         return;
       }
@@ -51,8 +51,9 @@ export const DownloadButtons = ({ approvedSubmissions }: DownloadButtonsProps) =
       const url = window.URL.createObjectURL(blob);
       
       const link = document.createElement("a");
+      const fileName = `onaylanan-kullanicilar-${new Date().toISOString().split('T')[0]}.csv`;
       link.setAttribute("href", url);
-      link.setAttribute("download", "onaylanan-kullanicilar.csv");
+      link.setAttribute("download", fileName);
       
       document.body.appendChild(link);
       link.click();
@@ -70,7 +71,8 @@ export const DownloadButtons = ({ approvedSubmissions }: DownloadButtonsProps) =
     return submissions.map(sub => ({
       'Kullanıcı Adı': sub.username || '',
       'Gönderim Tarihi': formatDownloadDate(sub.created_at),
-      'Onay Tarihi': formatDownloadDate(sub.updated_at)
+      'Onay Tarihi': formatDownloadDate(sub.updated_at),
+      'Yorum': sub.comment || ''
     }));
   };
 

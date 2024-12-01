@@ -1,7 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Globe, Clock, Activity, MousePointerClick, ArrowUpRight, Timer, Brain } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
-const stats = [
+interface StatItem {
+  title: string;
+  value: string;
+  icon: LucideIcon;
+  change: string;
+}
+
+const stats: StatItem[] = [
   {
     title: "Toplam Ziyaretçi",
     value: "24,589",
@@ -55,8 +63,8 @@ const stats = [
 export const Stats = () => {
   return (
     <>
-      {stats.map((stat, index) => (
-        <Card key={index}>
+      {stats.map((stat) => (
+        <Card key={stat.title} className="animate-fade-up">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {stat.title}
