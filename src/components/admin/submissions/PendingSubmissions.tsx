@@ -76,7 +76,7 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
   return (
     <div className="space-y-4">
       {submissions.length > 0 && (
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow">
           <div className="flex items-center gap-2">
             {showSelect && selectedIds.length > 0 && (
               <>
@@ -100,12 +100,12 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
             )}
           </div>
           <Button
-            variant="outline"
+            variant={showSelect ? "secondary" : "outline"}
             onClick={handleToggleSelect}
             className="flex items-center gap-2"
           >
             <CheckSquare className="h-4 w-4" />
-            {showSelect ? 'Seçimi İptal Et' : 'Seç'}
+            {showSelect ? 'Seçimi İptal Et' : 'Toplu İşlem'}
           </Button>
         </div>
       )}
