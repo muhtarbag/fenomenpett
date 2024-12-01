@@ -1,26 +1,42 @@
-import sharp from 'sharp';
-
 export const convertToWebP = async (file: File): Promise<File> => {
-  try {
-    // Convert the File to a Buffer
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
 
-    // Process the image with sharp
-    const processedBuffer = await sharp(buffer)
-      .webp({ quality: 80 }) // 80% quality for good balance between size and quality
-      .toBuffer();
+    img.onload = () => {
+      // Set canvas dimensions to match image
+      canvas.width = img.width;
+      canvas.height = img.height;
 
-    // Create a new File object with the processed image
-    const processedFile = new File(
-      [processedBuffer], 
-      file.name.replace(/\.[^/.]+$/, "") + ".webp", 
-      { type: "image/webp" }
-    );
+      // Draw image onto canvas
+      ctx?.drawImage(img, 0, 0);
 
-    return processedFile;
-  } catch (error) {
-    console.error('Error converting image to WebP:', error);
-    throw error;
-  }
+      // Convert to WebP
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            // Create new file from blob
+            const webpFile = new File(
+              [blob],
+              file.name.replace(/\.[^/.]+$/, "") + ".webp",
+              { type: "image/webp" }
+            );
+            resolve(webpFile);
+          } else {
+            reject(new Error("Failed to convert image to WebP"));
+          }
+        },
+        "image/webp",
+        0.8  // 80% quality
+      );
+    };
+
+    img.onerror = () => {
+      reject(new Error("Failed to load image"));
+    };
+
+    // Create object URL from file
+    img.src = URL.createObjectURL(file);
+  });
 };
