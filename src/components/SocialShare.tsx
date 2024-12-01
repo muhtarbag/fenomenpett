@@ -1,4 +1,4 @@
-import { Facebook, Twitter, Link as LinkIcon } from "lucide-react";
+import { Facebook, Twitter, Link as LinkIcon, Instagram, WhatsApp } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -44,6 +44,24 @@ const SocialShare = ({ url }: SocialShareProps) => {
           >
             <Twitter size={20} className="text-[#1DA1F2]" />
             <span>Twitter</span>
+          </a>
+          <a
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(url)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md transition-colors"
+          >
+            <WhatsApp size={20} className="text-[#25D366]" />
+            <span>WhatsApp</span>
+          </a>
+          <a
+            href={`https://www.instagram.com/`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md transition-colors"
+          >
+            <Instagram size={20} className="text-[#E4405F]" />
+            <span>Instagram</span>
           </a>
           <button
             onClick={handleCopyLink}
