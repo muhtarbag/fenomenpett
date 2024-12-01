@@ -23,10 +23,15 @@ export const useDeleteSubmissionMutation = () => {
           throw new Error('Gönderi kontrol edilirken bir hata oluştu');
         }
 
+        if (!submissionData) {
+          console.error('❌ No submission found with id:', id);
+          throw new Error('Gönderi bulunamadı');
+        }
+
         // Type assertion to ensure the submission data matches our Submission type
         const submission = submissionData as Submission;
 
-        // Delete from rejected_submissions first
+        // Delete from rejected_submissions first if it exists
         const { error: rejectedError } = await supabase
           .from('rejected_submissions')
           .delete()
@@ -58,8 +63,8 @@ export const useDeleteSubmissionMutation = () => {
         throw error;
       }
     },
-    onSuccess: () => {
-      console.log('✨ Delete mutation success');
+    onSuccess: (deletedSubmission) => {
+      console.log('✨ Delete mutation success:', deletedSubmission);
       toast.success('Gönderi başarıyla silindi');
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
     },
