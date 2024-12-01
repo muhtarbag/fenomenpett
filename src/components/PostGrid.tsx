@@ -17,21 +17,21 @@ const PostGrid = ({ posts }: PostGridProps) => {
     {
       id: -1,
       username: "fenomenpet",
-      image_url: "/lovable-uploads/476b664f-c46e-465b-8610-bf7caeabfd8e.png",
+      image_url: "https://images.unsplash.com/photo-1611611158876-41699b77a059",
       comment: "Sokak kedilerimize mama verirken #Fenomenpet Fenomenbet Pati Dostu",
       likes: 15
     },
     {
       id: -2,
       username: "patidostu",
-      image_url: "/lovable-uploads/7138849c-6a14-4a65-8f76-220e6fc26382.png",
+      image_url: "https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd",
       comment: "#Fenomenbet - Fenomenbet Patiler de kazanır! Sokak hayvanlarımızı besliyoruz",
       likes: 12
     },
     {
       id: -3,
       username: "hayvansever",
-      image_url: "/lovable-uploads/e4fe31df-b619-4ae9-9d59-d6057f321c83.png",
+      image_url: "https://images.unsplash.com/photo-1548767797-d8c844163c4c",
       comment: "Minik dostlarımızı besledik #Fenomenpet Fenomenbet",
       likes: 8
     }
