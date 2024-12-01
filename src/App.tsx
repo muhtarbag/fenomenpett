@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import {
   Drawer,
@@ -11,15 +11,28 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Submit from "./pages/Submit";
 import Admin from "./pages/Admin";
+import Login from "./pages/Login";
 import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
 
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
 const Navigation = () => {
   const isMobile = useIsMobile();
+  const { isAuthenticated } = useAuth();
 
   const NavItems = () => (
     <div className={`${isMobile ? 'flex flex-col space-y-4 p-4' : 'flex items-center gap-4'}`}>
@@ -31,14 +44,16 @@ const Navigation = () => {
           Fotoğraf Gönder
         </Link>
       </Button>
-      <Button variant="ghost" asChild>
-        <Link
-          to="/admin"
-          className="text-gray-600 hover:text-primary transition-colors"
-        >
-          Yönetici
-        </Link>
-      </Button>
+      {isAuthenticated && (
+        <Button variant="ghost" asChild>
+          <Link
+            to="/admin"
+            className="text-gray-600 hover:text-primary transition-colors"
+          >
+            Yönetici
+          </Link>
+        </Button>
+      )}
     </div>
   );
 
@@ -81,7 +96,15 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/submit" element={<Submit />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/login" element={<Login />} />
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
       </main>
       <Footer />
