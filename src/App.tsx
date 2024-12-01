@@ -9,7 +9,6 @@ import {
   Drawer,
   DrawerContent,
   DrawerTrigger,
-  DrawerClose,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -36,7 +35,7 @@ const Navigation = () => {
   const isMobile = useIsMobile();
 
   const NavItems = () => (
-    <div className={`${isMobile ? 'flex flex-col space-y-4 p-4' : 'flex gap-4'}`}>
+    <div className={`${isMobile ? 'flex flex-col space-y-4 p-4' : 'flex items-center gap-4'}`}>
       <Link
         to="/submit"
         className="text-gray-600 hover:text-primary transition-colors"
