@@ -1,5 +1,7 @@
 import { useSubmissions } from "./hooks/useSubmissions";
-import { SubmissionCard } from "./SubmissionCard";
+import { PendingSubmissions } from "./submissions/PendingSubmissions";
+import { ApprovedSubmissions } from "./submissions/ApprovedSubmissions";
+import { RejectedSubmissions } from "./submissions/RejectedSubmissions";
 
 export const SubmissionsList = () => {
   console.log('🔄 SubmissionsList component rendering');
@@ -18,11 +20,6 @@ export const SubmissionsList = () => {
         Gönderiler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
       </div>
     );
-  }
-
-  if (isLoading) {
-    console.log('⏳ Loading submissions...');
-    return <div className="text-center">Yükleniyor...</div>;
   }
 
   if (!pendingSubmissions || !approvedSubmissions || !rejectedSubmissions) {
@@ -49,17 +46,20 @@ export const SubmissionsList = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {pendingSubmissions?.map((submission) => (
-        <SubmissionCard key={submission.id} submission={submission} />
-      ))}
-      {approvedSubmissions?.map((submission) => (
-        <SubmissionCard key={submission.id} submission={submission} />
-      ))}
-      {rejectedSubmissions?.map((submission) => (
-        <SubmissionCard key={submission.id} submission={submission} />
-      ))}
+      <PendingSubmissions 
+        submissions={pendingSubmissions} 
+        isLoading={isLoading} 
+      />
+      <ApprovedSubmissions 
+        submissions={approvedSubmissions} 
+        isLoading={isLoading} 
+      />
+      <RejectedSubmissions 
+        submissions={rejectedSubmissions} 
+        isLoading={isLoading} 
+      />
     </div>
   );
 };
 
-export { SubmissionCard };
+export { SubmissionCard } from "./SubmissionCard";

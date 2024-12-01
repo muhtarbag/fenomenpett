@@ -4,6 +4,7 @@ import { useDeleteSubmissionMutation } from "./hooks/useDeleteSubmissionMutation
 import { ApproveButton } from "./SubmissionActions/ApproveButton";
 import { RejectButton } from "./SubmissionActions/RejectButton";
 import { DeleteButton } from "./SubmissionActions/DeleteButton";
+import { SubmissionStatusBadge } from "./submissions/SubmissionStatusBadge";
 
 interface SubmissionCardProps {
   submission: Submission;
@@ -73,13 +74,7 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
             )}
           </div>
           {submission.status && submission.status !== 'pending' && (
-            <span className={`px-3 py-1 rounded-full text-sm ${
-              submission.status === 'approved' 
-                ? 'bg-green-100 text-green-800' 
-                : 'bg-red-100 text-red-800'
-            }`}>
-              {submission.status === 'approved' ? 'Onaylandı' : 'Reddedildi'}
-            </span>
+            <SubmissionStatusBadge status={submission.status} />
           )}
         </div>
         <p className="text-gray-600 mb-4">{submission.comment || 'Yorum yok'}</p>
