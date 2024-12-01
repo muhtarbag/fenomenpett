@@ -67,11 +67,21 @@ const Admin = () => {
 
   const downloadApprovedUsernames = () => {
     try {
-      // Extract usernames from approved submissions
-      const usernames = approvedSubmissions.map(sub => sub.username);
+      // Format date and extract data from approved submissions
+      const submissionData = approvedSubmissions.map(sub => ({
+        username: sub.username,
+        date: new Date(sub.created_at).toLocaleString('tr-TR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      }));
       
-      // Create CSV content
-      const csvContent = "Username\n" + usernames.join("\n");
+      // Create CSV content with headers
+      const csvContent = "Kullanıcı Adı,Gönderim Tarihi\n" + 
+        submissionData.map(data => `${data.username},${data.date}`).join("\n");
       
       // Create blob and download link
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -80,7 +90,7 @@ const Admin = () => {
       // Create download URL
       const url = window.URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", "approved-usernames.csv");
+      link.setAttribute("download", "onaylanan-kullanicilar.csv");
       
       // Trigger download
       document.body.appendChild(link);
