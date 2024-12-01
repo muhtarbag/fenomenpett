@@ -3,7 +3,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import { PawPrint } from "lucide-react";
 import Index from "./pages/Index";
 import Submit from "./pages/Submit";
 import Admin from "./pages/Admin";
@@ -19,9 +18,13 @@ const App = () => (
         <nav className="bg-white shadow-sm">
           <div className="container mx-auto px-4">
             <div className="flex justify-between h-16 items-center">
-              <Link to="/" className="flex items-center gap-2 text-xl font-bold text-primary">
-                <PawPrint className="h-6 w-6" />
-                FenomenPet
+              <Link to="/" className="flex items-center gap-2">
+                <img 
+                  src="/lovable-uploads/476b664f-c46e-465b-8610-bf7caeabfd8e.png" 
+                  alt="FenomenPet Logo" 
+                  className="h-8"
+                />
+                <span className="text-xl font-bold text-primary">Pet</span>
               </Link>
               <div className="flex gap-4">
                 <Link
