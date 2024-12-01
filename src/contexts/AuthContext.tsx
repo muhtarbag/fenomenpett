@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface User {
   id: string;
@@ -10,7 +11,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
   login: (username: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -51,7 +52,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Login error:', error);
+        toast.error(error.message);
+        return false;
+      }
 
       if (data.user) {
         setIsAuthenticated(true);
@@ -67,11 +72,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error('Logout error:', error);
+        toast.error("Çıkış yaparken bir hata oluştu");
+        return;
+      }
+
+      // Clear the auth state regardless of the session state
       setIsAuthenticated(false);
       setUser(null);
+      toast.success("Başarıyla çıkış yapıldı");
     } catch (error) {
       console.error('Error logging out:', error);
+      toast.error("Çıkış yaparken bir hata oluştu");
     }
   };
 
