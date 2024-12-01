@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
 import { Menu, LogOut } from "lucide-react";
 import {
   Drawer,
@@ -35,6 +35,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const Navigation = () => {
   const isMobile = useIsMobile();
   const { isAuthenticated, logout } = useAuth();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -78,14 +79,16 @@ const Navigation = () => {
           </Button>
         </>
       ) : (
-        <Button variant="ghost" asChild>
-          <Link
-            to="/login"
-            className="text-gray-600 hover:text-primary transition-colors"
-          >
-            Giriş Yap
-          </Link>
-        </Button>
+        location.pathname !== '/admin' && (
+          <Button variant="ghost" asChild>
+            <Link
+              to="/login"
+              className="text-gray-600 hover:text-primary transition-colors"
+            >
+              Giriş Yap
+            </Link>
+          </Button>
+        )
       )}
     </div>
   );
