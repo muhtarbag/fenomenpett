@@ -13,6 +13,7 @@ import { PerformanceMetrics } from "@/components/admin/PerformanceMetrics";
 import { useSubmissions } from "@/components/admin/hooks/useSubmissions";
 import { SubmissionCard } from "@/components/admin/SubmissionCard";
 import { BlogPostForm } from "@/components/admin/BlogPostForm";
+import { BlogPostList } from "@/components/admin/BlogPostList";
 
 const TransactionSummary = ({ 
   pendingCount, 
