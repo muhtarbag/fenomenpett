@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 
 const POSTS_PER_PAGE = 55;
-const MAX_POSTS = 110; // Setting this higher than initial load to allow for more content
+const MAX_POSTS = 110;
 
 const Index = () => {
   const [page, setPage] = useState(1);
@@ -73,9 +73,11 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <a href="https://linkany.pro/fenomenbet" target="_blank" rel="noopener noreferrer">
-              <Button className="bg-primary hover:bg-primary/90 text-white px-8 py-3 text-lg rounded-lg">
-                Fenomenbet Giriş
-              </Button>
+              <img 
+                src="/lovable-uploads/317ada8f-0e1c-4d55-b53d-91630923accf.png" 
+                alt="Fenomenbet Giriş" 
+                className="h-12 mx-auto hover:opacity-90 transition-opacity"
+              />
             </a>
           </div>
           
