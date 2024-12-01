@@ -16,16 +16,24 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const mutation = useSubmissionMutation();
 
+  console.log('🔄 PendingSubmissions rendering:', {
+    showSelect,
+    selectedIds,
+    submissionsCount: submissions.length
+  });
+
   const handleToggleSelect = () => {
     setShowSelect(!showSelect);
     setSelectedIds([]);
   };
 
   const handleSelect = (id: number) => {
+    console.log('🔄 Handling selection:', { id });
     setSelectedIds(prev => {
       const newIds = prev.includes(id) 
         ? prev.filter(selectedId => selectedId !== id)
         : [...prev, id];
+      console.log('Updated selectedIds:', newIds);
       return newIds;
     });
   };
@@ -97,7 +105,7 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
         </div>
       )}
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-4">
         {submissions.map((submission) => (
           <SubmissionCard 
             key={submission.id} 

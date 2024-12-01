@@ -20,6 +20,12 @@ export const SubmissionCard = memo(({
   isSelected = false,
   onSelect
 }: SubmissionCardProps) => {
+  console.log('🎴 Rendering SubmissionCard:', {
+    id: submission.id,
+    showSelect,
+    isSelected
+  });
+
   if (!submission) {
     console.error('No submission data provided');
     return null;
@@ -27,22 +33,15 @@ export const SubmissionCard = memo(({
 
   const { id, username, status, image_url, created_at, updated_at, comment } = submission;
 
-  console.log('🎴 Rendering SubmissionCard:', {
-    id,
-    username,
-    currentStatus: status,
-    timestamp: new Date().toISOString()
-  });
-
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden animate-fade-up">
       <div className="relative">
         {showSelect && (
-          <div className="absolute top-2 left-2 z-10">
+          <div className="absolute top-2 left-2 z-20">
             <Checkbox
               checked={isSelected}
               onCheckedChange={() => onSelect?.(id)}
-              className="bg-white/90 border-2 w-6 h-6 rounded-sm shadow-md hover:bg-white/100 transition-colors"
+              className="h-6 w-6 border-2 border-white bg-white/90 rounded-sm shadow-md data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
             />
           </div>
         )}
