@@ -32,6 +32,12 @@ export const useSubmissions = () => {
         (payload) => {
           console.log('📡 Realtime update received:', payload);
           queryClient.invalidateQueries({ queryKey: ['submissions'] });
+          
+          // Show toast notification for status changes
+          if (payload.eventType === 'UPDATE' && payload.new.status !== payload.old.status) {
+            const status = payload.new.status === 'approved' ? 'onaylandı' : 'reddedildi';
+            toast.success(`Gönderi ${status}`);
+          }
         }
       )
       .subscribe((status) => {
