@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import Footer from "@/components/Footer";
 
