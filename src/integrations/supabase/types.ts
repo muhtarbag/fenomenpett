@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      Fenomenpet: {
+        Row: {
+          created_at: string
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+        }
+        Relationships: []
+      }
+      submission_likes: {
+        Row: {
+          created_at: string
+          submission_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          submission_id: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          submission_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_likes_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       submissions: {
         Row: {
           comment: string
