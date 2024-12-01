@@ -4,7 +4,8 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { Check, X, Clock, FileText } from "lucide-react";
+import { Check, X, Clock, FileText, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { VisitorChart } from "@/components/admin/VisitorChart";
 import { LocationMap } from "@/components/admin/LocationMap";
 import { Stats } from "@/components/admin/Stats";
@@ -14,6 +15,7 @@ import { useSubmissions } from "@/components/admin/hooks/useSubmissions";
 import { SubmissionCard } from "@/components/admin/SubmissionCard";
 import { BlogPostForm } from "@/components/admin/BlogPostForm";
 import { BlogPostList } from "@/components/admin/BlogPostList";
+import { toast } from "sonner";
 
 const TransactionSummary = ({ 
   pendingCount, 
@@ -63,6 +65,35 @@ const Admin = () => {
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
+  const downloadApprovedUsernames = () => {
+    try {
+      // Extract usernames from approved submissions
+      const usernames = approvedSubmissions.map(sub => sub.username);
+      
+      // Create CSV content
+      const csvContent = "Username\n" + usernames.join("\n");
+      
+      // Create blob and download link
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      
+      // Create download URL
+      const url = window.URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "approved-usernames.csv");
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success("CSV dosyası başarıyla indirildi");
+    } catch (error) {
+      console.error('CSV indirme hatası:', error);
+      toast.error("CSV dosyası indirilirken bir hata oluştu");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
@@ -80,7 +111,18 @@ const Admin = () => {
           <PerformanceMetrics />
         </div>
 
-        <h2 className="text-2xl font-bold mb-8">Yönetim Paneli</h2>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl font-bold">Yönetim Paneli</h2>
+          <Button
+            onClick={downloadApprovedUsernames}
+            className="flex items-center gap-2"
+            variant="outline"
+          >
+            <Download className="h-4 w-4" />
+            Onaylanan Kullanıcıları İndir
+          </Button>
+        </div>
+
         <Tabs defaultValue="submissions" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-8">
             <TabsTrigger value="submissions" className="flex items-center gap-2">
