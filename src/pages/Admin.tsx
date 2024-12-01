@@ -49,6 +49,19 @@ const Admin = () => {
     isLoading
   } = useSubmissions();
 
+  // Sort submissions by creation date (newest first)
+  const sortedPendingSubmissions = [...pendingSubmissions].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+  
+  const sortedApprovedSubmissions = [...approvedSubmissions].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+  
+  const sortedRejectedSubmissions = [...rejectedSubmissions].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
@@ -75,15 +88,15 @@ const Admin = () => {
           <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="pending" className="flex items-center gap-2">
               <Clock size={16} />
-              Bekleyen ({pendingSubmissions.length})
+              Bekleyen ({sortedPendingSubmissions.length})
             </TabsTrigger>
             <TabsTrigger value="approved" className="flex items-center gap-2">
               <Check size={16} />
-              Onaylanan ({approvedSubmissions.length})
+              Onaylanan ({sortedApprovedSubmissions.length})
             </TabsTrigger>
             <TabsTrigger value="rejected" className="flex items-center gap-2">
               <X size={16} />
-              Reddedilen ({rejectedSubmissions.length})
+              Reddedilen ({sortedRejectedSubmissions.length})
             </TabsTrigger>
           </TabsList>
 
@@ -92,10 +105,10 @@ const Admin = () => {
               <div className="text-center">Yükleniyor...</div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {pendingSubmissions.map((submission) => (
+                {sortedPendingSubmissions.map((submission) => (
                   <SubmissionCard key={submission.id} submission={submission} />
                 ))}
-                {pendingSubmissions.length === 0 && (
+                {sortedPendingSubmissions.length === 0 && (
                   <div className="col-span-full text-center text-gray-500">
                     Bekleyen gönderi bulunmuyor
                   </div>
@@ -109,10 +122,10 @@ const Admin = () => {
               <div className="text-center">Yükleniyor...</div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {approvedSubmissions.map((submission) => (
+                {sortedApprovedSubmissions.map((submission) => (
                   <SubmissionCard key={submission.id} submission={submission} />
                 ))}
-                {approvedSubmissions.length === 0 && (
+                {sortedApprovedSubmissions.length === 0 && (
                   <div className="col-span-full text-center text-gray-500">
                     Onaylanmış gönderi bulunmuyor
                   </div>
@@ -126,10 +139,10 @@ const Admin = () => {
               <div className="text-center">Yükleniyor...</div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {rejectedSubmissions.map((submission) => (
+                {sortedRejectedSubmissions.map((submission) => (
                   <SubmissionCard key={submission.id} submission={submission} />
                 ))}
-                {rejectedSubmissions.length === 0 && (
+                {sortedRejectedSubmissions.length === 0 && (
                   <div className="col-span-full text-center text-gray-500">
                     Reddedilmiş gönderi bulunmuyor
                   </div>
@@ -140,9 +153,9 @@ const Admin = () => {
         </Tabs>
 
         <TransactionSummary 
-          pendingCount={pendingSubmissions.length}
-          approvedCount={approvedSubmissions.length}
-          rejectedCount={rejectedSubmissions.length}
+          pendingCount={sortedPendingSubmissions.length}
+          approvedCount={sortedApprovedSubmissions.length}
+          rejectedCount={sortedRejectedSubmissions.length}
         />
       </div>
     </div>

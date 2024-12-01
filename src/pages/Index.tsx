@@ -24,8 +24,8 @@ const Index = () => {
           .from('submissions')
           .select('id, username, image_url, comment, likes')
           .eq('status', 'approved')
-          .range(from, to)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false }) // Sort by creation date, newest first
+          .range(from, to);
         
         if (error) {
           console.error("Supabase error:", error);
