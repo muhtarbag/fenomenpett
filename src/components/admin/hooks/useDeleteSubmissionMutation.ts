@@ -10,61 +10,33 @@ export const useDeleteSubmissionMutation = () => {
     mutationFn: async (id: number) => {
       console.log('🗑️ Starting deletion process for submission:', id);
       
-      try {
-        // First check if the submission exists
-        const { data: submissionData, error: checkError } = await supabase
-          .from('submissions')
-          .select('*')
-          .eq('id', id)
-          .single();
+      // First delete from rejected_submissions if it exists
+      const { error: rejectedError } = await supabase
+        .from('rejected_submissions')
+        .delete()
+        .eq('original_submission_id', id);
 
-        if (checkError) {
-          console.error('❌ Error checking submission:', checkError);
-          throw new Error('Gönderi kontrol edilirken bir hata oluştu');
-        }
-
-        if (!submissionData) {
-          console.error('❌ No submission found with id:', id);
-          throw new Error('Gönderi bulunamadı');
-        }
-
-        // Type assertion to ensure the submission data matches our Submission type
-        const submission = submissionData as Submission;
-
-        // Delete from rejected_submissions first if it exists
-        const { error: rejectedError } = await supabase
-          .from('rejected_submissions')
-          .delete()
-          .eq('original_submission_id', id);
-
-        if (rejectedError) {
-          console.error('❌ Error deleting from rejected_submissions:', rejectedError);
-          throw new Error('Reddedilen gönderi silinirken bir hata oluştu');
-        }
-
-        console.log('✅ Successfully deleted from rejected_submissions');
-
-        // Then delete from main submissions table
-        const { error: submissionError } = await supabase
-          .from('submissions')
-          .delete()
-          .eq('id', id);
-
-        if (submissionError) {
-          console.error('❌ Error deleting from submissions:', submissionError);
-          throw new Error('Gönderi silinirken bir hata oluştu');
-        }
-
-        console.log('✅ Successfully deleted submission:', id);
-        return submission;
-
-      } catch (error) {
-        console.error('❌ Delete operation failed:', error);
-        throw error;
+      if (rejectedError) {
+        console.error('❌ Error deleting from rejected_submissions:', rejectedError);
+        throw new Error('Reddedilen gönderi silinirken bir hata oluştu');
       }
+
+      // Then delete from main submissions table
+      const { error: submissionError } = await supabase
+        .from('submissions')
+        .delete()
+        .eq('id', id);
+
+      if (submissionError) {
+        console.error('❌ Error deleting from submissions:', submissionError);
+        throw new Error('Gönderi silinirken bir hata oluştu');
+      }
+
+      console.log('✅ Successfully deleted submission:', id);
+      return id;
     },
-    onSuccess: (deletedSubmission) => {
-      console.log('✨ Delete mutation success:', deletedSubmission);
+    onSuccess: (deletedId) => {
+      console.log('✨ Delete mutation success:', deletedId);
       toast.success('Gönderi başarıyla silindi');
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
     },
