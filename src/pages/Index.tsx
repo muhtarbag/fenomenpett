@@ -15,45 +15,56 @@ const Index = () => {
   const { data: posts = [], isLoading, error, isFetching } = useQuery({
     queryKey: ["approved-posts", page],
     queryFn: async () => {
+      console.log("Fetching posts...");
       const from = (page - 1) * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
       
-      const { data, error } = await supabase
-        .from('submissions')
-        .select('*')
-        .eq('status', 'approved')
-        .order('created_at', { ascending: false })
-        .range(from, to);
-      
-      if (error) throw error;
-      return data || [];
+      try {
+        const { data, error } = await supabase
+          .from('submissions')
+          .select('*')
+          .eq('status', 'approved')
+          .order('created_at', { ascending: false })
+          .range(from, to);
+        
+        if (error) {
+          console.error("Supabase error:", error);
+          throw error;
+        }
+        
+        console.log("Posts fetched successfully:", data?.length || 0);
+        return data || [];
+      } catch (err) {
+        console.error("Failed to fetch posts:", err);
+        throw err;
+      }
     },
+    retry: 2,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
-
-  const loadMore = () => {
-    if (page * POSTS_PER_PAGE < MAX_POSTS) {
-      setPage(prev => prev + 1);
-    }
-  };
-
-  const showLoadMore = posts.length === POSTS_PER_PAGE;
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Yükleniyor...</p>
+          <p className="text-gray-600">Gönderiler yükleniyor...</p>
         </div>
       </div>
     );
   }
 
   if (error) {
-    console.error('Error fetching posts:', error);
+    console.error('Error in Index component:', error);
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600">Bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>
+          <p className="text-red-600">Gönderiler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.</p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="mt-4"
+          >
+            Sayfayı Yenile
+          </Button>
         </div>
       </div>
     );
@@ -83,13 +94,13 @@ const Index = () => {
           
           <PostGrid posts={posts} />
 
-          {showLoadMore && (
+          {posts.length === POSTS_PER_PAGE && (
             <div className="space-y-8 mt-8">
               <div className="text-center">
                 <Button 
-                  onClick={loadMore} 
+                  onClick={() => setPage(prev => prev + 1)} 
                   variant="outline"
-                  disabled={isFetching}
+                  disabled={isFetching || page * POSTS_PER_PAGE >= MAX_POSTS}
                   className="animate-fade-in"
                 >
                   {isFetching ? "Yükleniyor..." : "Daha Fazla Göster"}
