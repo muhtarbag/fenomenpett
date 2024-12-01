@@ -21,16 +21,30 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
   const deleteMutation = useDeleteSubmissionMutation();
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString('tr-TR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        console.error('Invalid date:', dateString);
+        return 'Geçersiz tarih';
+      }
+      return date.toLocaleString('tr-TR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    } catch (error) {
+      console.error('Date formatting error:', error);
+      return 'Tarih hatası';
+    }
   };
+
+  if (!submission) {
+    console.error('No submission data provided');
+    return null;
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden animate-fade-up">
@@ -47,18 +61,18 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
         <div className="flex justify-between items-start mb-4">
           <div>
             <p className="font-semibold text-gray-900">
-              @{submission.username}
+              @{submission.username || 'İsimsiz Kullanıcı'}
             </p>
             <p className="text-sm text-gray-500">
               Gönderim: {formatDate(submission.created_at)}
             </p>
-            {submission.updated_at !== submission.created_at && (
+            {submission.updated_at && submission.updated_at !== submission.created_at && (
               <p className="text-sm text-gray-500">
                 İşlem: {formatDate(submission.updated_at)}
               </p>
             )}
           </div>
-          {submission.status !== 'pending' && (
+          {submission.status && submission.status !== 'pending' && (
             <span className={`px-3 py-1 rounded-full text-sm ${
               submission.status === 'approved' 
                 ? 'bg-green-100 text-green-800' 
@@ -68,7 +82,7 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
             </span>
           )}
         </div>
-        <p className="text-gray-600 mb-4">{submission.comment}</p>
+        <p className="text-gray-600 mb-4">{submission.comment || 'Yorum yok'}</p>
         
         {submission.status === 'pending' && (
           <div className="flex gap-4">
