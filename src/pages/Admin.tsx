@@ -4,8 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { Check, X, Clock, FileText, Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Check, X, Clock, FileText } from "lucide-react";
 import { VisitorChart } from "@/components/admin/VisitorChart";
 import { LocationMap } from "@/components/admin/LocationMap";
 import { Stats } from "@/components/admin/Stats";
@@ -15,8 +14,7 @@ import { useSubmissions } from "@/components/admin/hooks/useSubmissions";
 import { SubmissionCard } from "@/components/admin/SubmissionCard";
 import { BlogPostForm } from "@/components/admin/BlogPostForm";
 import { BlogPostList } from "@/components/admin/BlogPostList";
-import { toast } from "sonner";
-import * as XLSX from 'xlsx';
+import { DownloadButtons } from "@/components/admin/DownloadButtons";
 
 const TransactionSummary = ({ 
   pendingCount, 
@@ -66,44 +64,6 @@ const Admin = () => {
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
-  const downloadApprovedUsernamesAsExcel = () => {
-    try {
-      // Format data for Excel
-      const submissionData = approvedSubmissions.map(sub => ({
-        'Kullanıcı Adı': sub.username,
-        'Gönderim Tarihi': new Date(sub.created_at).toLocaleString('tr-TR', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
-        'Onay Tarihi': new Date(sub.updated_at).toLocaleString('tr-TR', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        })
-      }));
-      
-      // Create workbook and worksheet
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.json_to_sheet(submissionData);
-      
-      // Add worksheet to workbook
-      XLSX.utils.book_append_sheet(wb, ws, "Onaylanan Kullanıcılar");
-      
-      // Generate Excel file
-      XLSX.writeFile(wb, "onaylanan-kullanicilar.xlsx");
-      
-      toast.success("Excel dosyası başarıyla indirildi");
-    } catch (error) {
-      console.error('Excel indirme hatası:', error);
-      toast.error("Excel dosyası indirilirken bir hata oluştu");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
@@ -123,16 +83,7 @@ const Admin = () => {
 
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold">Yönetim Paneli</h2>
-          <div className="flex gap-2">
-            <Button
-              onClick={downloadApprovedUsernamesAsExcel}
-              className="flex items-center gap-2"
-              variant="outline"
-            >
-              <Download className="h-4 w-4" />
-              Excel Olarak İndir
-            </Button>
-          </div>
+          <DownloadButtons approvedSubmissions={sortedApprovedSubmissions} />
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
