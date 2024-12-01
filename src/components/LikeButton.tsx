@@ -17,14 +17,14 @@ const LikeButton = ({ postId, initialLikes, className = "" }: LikeButtonProps) =
     const checkLikeStatus = async () => {
       const { data: session } = await supabase.auth.getSession();
       if (session?.session?.user?.id) {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('submission_likes')
           .select('*')
           .eq('submission_id', postId)
-          .eq('user_id', session.session.user.id)
-          .single();
+          .eq('user_id', session.session.user.id);
         
-        setIsLiked(!!data);
+        // Check if any likes exist for this user and post
+        setIsLiked(data && data.length > 0);
       }
     };
 
