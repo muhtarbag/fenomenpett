@@ -13,7 +13,6 @@ const Footer = () => {
                 alt="FenomenPet Logo" 
                 className="h-8"
               />
-              <span className="text-xl font-bold">Pet</span>
             </div>
             <p className="text-gray-300">
               Helping stray animals one photo at a time. Share your care stories and inspire others.

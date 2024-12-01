@@ -26,7 +26,6 @@ const App = () => (
                     alt="FenomenPet Logo" 
                     className="h-8"
                   />
-                  <span className="text-xl font-bold text-primary">Pet</span>
                 </Link>
                 <div className="flex gap-4">
                   <Link
