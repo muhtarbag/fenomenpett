@@ -233,6 +233,11 @@ const Admin = () => {
           <DeviceStats />
         </div>
 
+        {/* Performance Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-8 gap-4 mb-8">
+          <PerformanceMetrics />
+        </div>
+
         {/* Submissions Management */}
         <h2 className="text-2xl font-bold mb-8">Submissions Management</h2>
         <Tabs defaultValue="pending" className="w-full">
