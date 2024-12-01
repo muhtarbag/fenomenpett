@@ -2,8 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { Menu } from "lucide-react";
 import {
   Drawer,
@@ -15,23 +14,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Index from "./pages/Index";
 import Submit from "./pages/Submit";
 import Admin from "./pages/Admin";
-import Login from "./pages/Login";
 import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth();
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <>{children}</>;
-};
-
 const Navigation = () => {
-  const { isAuthenticated, logout } = useAuth();
   const isMobile = useIsMobile();
 
   const NavItems = () => (
@@ -44,34 +31,14 @@ const Navigation = () => {
           Fotoğraf Gönder
         </Link>
       </Button>
-      {isAuthenticated ? (
-        <>
-          <Button variant="ghost" asChild>
-            <Link
-              to="/admin"
-              className="text-gray-600 hover:text-primary transition-colors"
-            >
-              Yönetici
-            </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={logout}
-            className="text-gray-600 hover:text-primary transition-colors text-left"
-          >
-            Çıkış Yap
-          </Button>
-        </>
-      ) : (
-        <Button variant="ghost" asChild>
-          <Link
-            to="/login"
-            className="text-gray-600 hover:text-primary transition-colors"
-          >
-            Giriş Yap
-          </Link>
-        </Button>
-      )}
+      <Button variant="ghost" asChild>
+        <Link
+          to="/admin"
+          className="text-gray-600 hover:text-primary transition-colors"
+        >
+          Yönetici
+        </Link>
+      </Button>
     </div>
   );
 
@@ -114,15 +81,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/submit" element={<Submit />} />
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <Admin />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>
       <Footer />
@@ -133,13 +92,11 @@ const AppContent = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
-      </AuthProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
