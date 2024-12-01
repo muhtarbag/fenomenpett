@@ -32,7 +32,7 @@ const Admin = () => {
         {
           id: 1,
           username: "animal_lover_2024",
-          imageUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba",
+          imageUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?fm=webp",
           comment: "Sokakta bulduğum kediye mama verdim",
           timestamp: "2024-02-20T10:00:00Z",
           status: 'pending'
@@ -40,7 +40,7 @@ const Admin = () => {
         {
           id: 2,
           username: "pet_rescuer",
-          imageUrl: "https://images.unsplash.com/photo-1573865526739-10659fec78a5",
+          imageUrl: "https://images.unsplash.com/photo-1573865526739-10659fec78a5?fm=webp",
           comment: "Yaralı köpeği veterinere götürdüm",
           timestamp: "2024-02-19T15:30:00Z",
           status: 'approved',
@@ -49,7 +49,7 @@ const Admin = () => {
         {
           id: 3,
           username: "cat_whisperer",
-          imageUrl: "https://images.unsplash.com/photo-1415369629372-26f2fe60c467",
+          imageUrl: "https://images.unsplash.com/photo-1415369629372-26f2fe60c467?fm=webp",
           comment: "Kedi maması dağıttım",
           timestamp: "2024-02-18T09:15:00Z",
           status: 'rejected',
@@ -58,7 +58,7 @@ const Admin = () => {
         {
           id: 4,
           username: "dog_friend",
-          imageUrl: "https://images.unsplash.com/photo-1543466835-00a7907e9de1",
+          imageUrl: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?fm=webp",
           comment: "Köpeklere su kabı bıraktım",
           timestamp: "2024-02-17T14:20:00Z",
           status: 'approved',
@@ -67,7 +67,7 @@ const Admin = () => {
         {
           id: 5,
           username: "helping_paws",
-          imageUrl: "https://images.unsplash.com/photo-1548767797-d8c844163c4c",
+          imageUrl: "https://images.unsplash.com/photo-1548767797-d8c844163c4c?fm=webp",
           comment: "Sokak hayvanlarına yemek verdim",
           timestamp: "2024-02-16T11:45:00Z",
           status: 'pending'
@@ -75,7 +75,7 @@ const Admin = () => {
         {
           id: 6,
           username: "animal_aid",
-          imageUrl: "https://images.unsplash.com/photo-1574158622682-e40e69881006",
+          imageUrl: "https://images.unsplash.com/photo-1574158622682-e40e69881006?fm=webp",
           comment: "Hasta kediyi tedavi ettirdim",
           timestamp: "2024-02-15T16:30:00Z",
           status: 'approved',
@@ -84,7 +84,7 @@ const Admin = () => {
         {
           id: 7,
           username: "street_feeder",
-          imageUrl: "https://images.unsplash.com/photo-1533743983669-94fa5c4338ec",
+          imageUrl: "https://images.unsplash.com/photo-1533743983669-94fa5c4338ec?fm=webp",
           comment: "Kuşlara yem verdim",
           timestamp: "2024-02-14T13:10:00Z",
           status: 'rejected',
@@ -93,7 +93,7 @@ const Admin = () => {
         {
           id: 8,
           username: "pet_guardian",
-          imageUrl: "https://images.unsplash.com/photo-1511044568932-338cba0ad803",
+          imageUrl: "https://images.unsplash.com/photo-1511044568932-338cba0ad803?fm=webp",
           comment: "Sokak köpeğine kulübe yaptım",
           timestamp: "2024-02-13T09:00:00Z",
           status: 'pending'
@@ -101,7 +101,7 @@ const Admin = () => {
         {
           id: 9,
           username: "animal_protector",
-          imageUrl: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7",
+          imageUrl: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?fm=webp",
           comment: "Yaralı kuşu veterinere götürdüm",
           timestamp: "2024-02-12T15:45:00Z",
           status: 'approved',
@@ -110,7 +110,7 @@ const Admin = () => {
         {
           id: 10,
           username: "kind_heart",
-          imageUrl: "https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13",
+          imageUrl: "https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?fm=webp",
           comment: "Sokak kedilerine süt verdim",
           timestamp: "2024-02-11T10:20:00Z",
           status: 'pending'
