@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Heart } from "lucide-react";
 import SocialShare from "./SocialShare";
 import {
@@ -7,7 +7,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 interface Post {
   id: number;
@@ -22,64 +21,37 @@ interface PostCardProps {
 }
 
 const PostCard = ({ post }: PostCardProps) => {
-  const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes || 0);
-
-  useEffect(() => {
-    const checkIfLiked = async () => {
-      const { data: session } = await supabase.auth.getSession();
-      if (session?.session?.user) {
-        const { data } = await supabase
-          .from('submission_likes')
-          .select('*')
-          .eq('submission_id', post.id)
-          .eq('user_id', session.session.user.id)
-          .single();
-        
-        setIsLiked(!!data);
-      }
-    };
-
-    checkIfLiked();
-  }, [post.id]);
+  const [isLiked, setIsLiked] = useState(false);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    const { data: session } = await supabase.auth.getSession();
-    if (!session?.session?.user) {
-      toast.error("Beğenmek için giriş yapmalısınız");
-      return;
-    }
-
     try {
       if (isLiked) {
-        // Unlike
-        const { error } = await supabase
-          .from('submission_likes')
-          .delete()
-          .eq('submission_id', post.id)
-          .eq('user_id', session.session.user.id);
-
-        if (error) throw error;
-        setIsLiked(false);
         setLikeCount(prev => Math.max(0, prev - 1));
       } else {
-        // Like
-        const { error } = await supabase
-          .from('submission_likes')
-          .insert({
-            submission_id: post.id,
-            user_id: session.session.user.id
-          });
-
-        if (error) throw error;
-        setIsLiked(true);
         setLikeCount(prev => prev + 1);
+      }
+      setIsLiked(!isLiked);
+
+      // Update likes in the database
+      const { error } = await supabase
+        .from('submissions')
+        .update({ likes: isLiked ? likeCount - 1 : likeCount + 1 })
+        .eq('id', post.id);
+
+      if (error) {
+        console.error('Like error:', error);
+        // Revert the optimistic update if there's an error
+        setLikeCount(prev => isLiked ? prev + 1 : Math.max(0, prev - 1));
+        setIsLiked(!isLiked);
       }
     } catch (error: any) {
       console.error('Like error:', error);
-      toast.error("Bir hata oluştu");
+      // Revert the optimistic update if there's an error
+      setLikeCount(prev => isLiked ? prev + 1 : Math.max(0, prev - 1));
+      setIsLiked(!isLiked);
     }
   };
 
