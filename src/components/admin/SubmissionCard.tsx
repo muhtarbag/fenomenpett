@@ -20,12 +20,6 @@ export const SubmissionCard = memo(({
   isSelected = false,
   onSelect
 }: SubmissionCardProps) => {
-  console.log('🎴 Rendering SubmissionCard:', {
-    id: submission.id,
-    showSelect,
-    isSelected
-  });
-
   if (!submission) {
     console.error('No submission data provided');
     return null;

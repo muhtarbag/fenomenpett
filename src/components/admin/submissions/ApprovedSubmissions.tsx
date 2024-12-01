@@ -59,20 +59,19 @@ export const ApprovedSubmissions = ({ submissions, isLoading }: ApprovedSubmissi
 
   return (
     <div className="space-y-4">
-      {submissions.length > 0 && (
-        <div className="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow">
-          <div className="flex items-center gap-2">
-            {showSelect && selectedIds.length > 0 && (
-              <Button
-                variant="destructive"
-                onClick={handleBulkDelete}
-                className="flex items-center gap-2"
-              >
-                <Trash2 className="h-4 w-4" />
-                Seçilenleri Sil ({selectedIds.length})
-              </Button>
-            )}
-          </div>
+      <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow">
+        <h2 className="text-lg font-semibold text-gray-900">Onaylanan Gönderiler</h2>
+        <div className="flex items-center gap-2">
+          {showSelect && selectedIds.length > 0 && (
+            <Button
+              variant="destructive"
+              onClick={handleBulkDelete}
+              className="flex items-center gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              Seçilenleri Sil ({selectedIds.length})
+            </Button>
+          )}
           <Button
             variant={showSelect ? "secondary" : "outline"}
             onClick={handleToggleSelect}
@@ -82,9 +81,9 @@ export const ApprovedSubmissions = ({ submissions, isLoading }: ApprovedSubmissi
             {showSelect ? 'Seçimi İptal Et' : 'Toplu İşlem'}
           </Button>
         </div>
-      )}
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-4">
         {submissions.map((submission) => (
           <SubmissionCard 
             key={submission.id} 
@@ -95,7 +94,7 @@ export const ApprovedSubmissions = ({ submissions, isLoading }: ApprovedSubmissi
           />
         ))}
         {submissions.length === 0 && (
-          <div className="col-span-full text-center text-gray-500">
+          <div className="text-center text-gray-500 p-4 bg-white rounded-lg">
             Onaylanmış gönderi bulunmuyor
           </div>
         )}

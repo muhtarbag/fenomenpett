@@ -16,24 +16,16 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const mutation = useSubmissionMutation();
 
-  console.log('🔄 PendingSubmissions rendering:', {
-    showSelect,
-    selectedIds,
-    submissionsCount: submissions.length
-  });
-
   const handleToggleSelect = () => {
     setShowSelect(!showSelect);
     setSelectedIds([]);
   };
 
   const handleSelect = (id: number) => {
-    console.log('🔄 Handling selection:', { id });
     setSelectedIds(prev => {
       const newIds = prev.includes(id) 
         ? prev.filter(selectedId => selectedId !== id)
         : [...prev, id];
-      console.log('Updated selectedIds:', newIds);
       return newIds;
     });
   };
@@ -54,7 +46,6 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
 
       const actionCompleted = status === 'approved' ? 'onaylandı' : 'reddedildi';
       toast.success(`${selectedIds.length} gönderi başarıyla ${actionCompleted}`);
-      
       setShowSelect(false);
       setSelectedIds([]);
     } catch (error) {
@@ -70,30 +61,29 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
 
   return (
     <div className="space-y-4">
-      {submissions.length > 0 && (
-        <div className="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow">
-          <div className="flex items-center gap-2">
-            {showSelect && selectedIds.length > 0 && (
-              <>
-                <Button
-                  variant="default"
-                  onClick={() => handleBulkAction('approved')}
-                  className="bg-success hover:bg-success/90 text-white flex items-center gap-2"
-                >
-                  <Check className="h-4 w-4" />
-                  Seçilenleri Onayla ({selectedIds.length})
-                </Button>
-                <Button
-                  variant="default"
-                  onClick={() => handleBulkAction('rejected')}
-                  className="bg-danger hover:bg-danger/90 text-white flex items-center gap-2"
-                >
-                  <X className="h-4 w-4" />
-                  Seçilenleri Reddet ({selectedIds.length})
-                </Button>
-              </>
-            )}
-          </div>
+      <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow">
+        <h2 className="text-lg font-semibold text-gray-900">Bekleyen Gönderiler</h2>
+        <div className="flex items-center gap-2">
+          {showSelect && selectedIds.length > 0 && (
+            <>
+              <Button
+                variant="default"
+                onClick={() => handleBulkAction('approved')}
+                className="bg-success hover:bg-success/90 text-white flex items-center gap-2"
+              >
+                <Check className="h-4 w-4" />
+                Seçilenleri Onayla ({selectedIds.length})
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => handleBulkAction('rejected')}
+                className="flex items-center gap-2"
+              >
+                <X className="h-4 w-4" />
+                Seçilenleri Reddet ({selectedIds.length})
+              </Button>
+            </>
+          )}
           <Button
             variant={showSelect ? "secondary" : "outline"}
             onClick={handleToggleSelect}
@@ -103,8 +93,8 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
             {showSelect ? 'Seçimi İptal Et' : 'Toplu İşlem'}
           </Button>
         </div>
-      )}
-      
+      </div>
+
       <div className="grid grid-cols-1 gap-4">
         {submissions.map((submission) => (
           <SubmissionCard 
@@ -116,7 +106,7 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
           />
         ))}
         {submissions.length === 0 && (
-          <div className="col-span-full text-center text-gray-500">
+          <div className="text-center text-gray-500 p-4 bg-white rounded-lg">
             Bekleyen gönderi bulunmuyor
           </div>
         )}

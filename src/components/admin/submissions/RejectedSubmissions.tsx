@@ -84,30 +84,29 @@ export const RejectedSubmissions = ({ submissions, isLoading }: RejectedSubmissi
 
   return (
     <div className="space-y-4">
-      {submissions.length > 0 && (
-        <div className="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow">
-          <div className="flex items-center gap-2">
-            {showSelect && selectedIds.length > 0 && (
-              <>
-                <Button
-                  variant="default"
-                  onClick={handleBulkApprove}
-                  className="bg-success hover:bg-success/90 text-white flex items-center gap-2"
-                >
-                  <Check className="h-4 w-4" />
-                  Seçilenleri Onayla ({selectedIds.length})
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={handleBulkDelete}
-                  className="flex items-center gap-2"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Seçilenleri Sil ({selectedIds.length})
-                </Button>
-              </>
-            )}
-          </div>
+      <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow">
+        <h2 className="text-lg font-semibold text-gray-900">Reddedilen Gönderiler</h2>
+        <div className="flex items-center gap-2">
+          {showSelect && selectedIds.length > 0 && (
+            <>
+              <Button
+                variant="default"
+                onClick={handleBulkApprove}
+                className="bg-success hover:bg-success/90 text-white flex items-center gap-2"
+              >
+                <Check className="h-4 w-4" />
+                Seçilenleri Onayla ({selectedIds.length})
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleBulkDelete}
+                className="flex items-center gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                Seçilenleri Sil ({selectedIds.length})
+              </Button>
+            </>
+          )}
           <Button
             variant={showSelect ? "secondary" : "outline"}
             onClick={handleToggleSelect}
@@ -117,9 +116,9 @@ export const RejectedSubmissions = ({ submissions, isLoading }: RejectedSubmissi
             {showSelect ? 'Seçimi İptal Et' : 'Toplu İşlem'}
           </Button>
         </div>
-      )}
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-4">
         {submissions.map((submission) => (
           <SubmissionCard 
             key={submission.id} 
@@ -130,7 +129,7 @@ export const RejectedSubmissions = ({ submissions, isLoading }: RejectedSubmissi
           />
         ))}
         {submissions.length === 0 && (
-          <div className="col-span-full text-center text-gray-500">
+          <div className="text-center text-gray-500 p-4 bg-white rounded-lg">
             Reddedilmiş gönderi bulunmuyor
           </div>
         )}
