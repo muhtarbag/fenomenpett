@@ -12,13 +12,15 @@ interface Submission {
   created_at: string;
   status: 'pending' | 'approved' | 'rejected';
   updated_at: string;
+  user_id: string | null;
+  likes: number | null;
 }
 
 export const SubmissionCard = ({ submission }: { submission: Submission }) => {
   const queryClient = useQueryClient();
   
   const { mutate: updateStatus } = useMutation({
-    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+    mutationFn: async ({ id, status }: { id: number; status: 'approved' | 'rejected' }) => {
       const { error } = await supabase
         .from('submissions')
         .update({ status })
@@ -105,7 +107,7 @@ export const SubmissionCard = ({ submission }: { submission: Submission }) => {
 };
 
 export const SubmissionsList = () => {
-  const { data: submissions = [] } = useQuery({
+  const { data: submissions = [], isError } = useQuery({
     queryKey: ['submissions'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -114,9 +116,19 @@ export const SubmissionsList = () => {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+      
+      // Ensure the status is one of the allowed values
+      return (data || []).map(submission => ({
+        ...submission,
+        status: submission.status as 'pending' | 'approved' | 'rejected'
+      }));
     }
   });
+
+  if (isError) {
+    toast.error("Gönderiler yüklenirken bir hata oluştu");
+    return null;
+  }
 
   const pendingSubmissions = submissions.filter(s => s.status === 'pending');
   const approvedSubmissions = submissions.filter(s => s.status === 'approved');

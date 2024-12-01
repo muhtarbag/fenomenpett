@@ -44,7 +44,8 @@ const Admin = () => {
   const { 
     pendingSubmissions, 
     approvedSubmissions, 
-    rejectedSubmissions 
+    rejectedSubmissions,
+    SubmissionCard
   } = SubmissionsList();
 
   return (
