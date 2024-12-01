@@ -35,7 +35,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const Navigation = () => {
   const isMobile = useIsMobile();
   const { isAuthenticated, logout } = useAuth();
-  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -59,7 +58,7 @@ const Navigation = () => {
           Blog
         </Link>
       </Button>
-      {isAuthenticated ? (
+      {isAuthenticated && (
         <>
           <Button variant="ghost" asChild>
             <Link
@@ -78,17 +77,6 @@ const Navigation = () => {
             Çıkış Yap
           </Button>
         </>
-      ) : (
-        location.pathname !== '/admin' && (
-          <Button variant="ghost" asChild>
-            <Link
-              to="/login"
-              className="text-gray-600 hover:text-primary transition-colors"
-            >
-              Giriş Yap
-            </Link>
-          </Button>
-        )
       )}
     </div>
   );
@@ -112,22 +100,26 @@ const Navigation = () => {
 };
 
 const AppContent = () => {
+  const location = useLocation();
+
   return (
     <div className="flex flex-col min-h-screen">
-      <nav className="bg-white shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between h-16 items-center">
-            <Link to="/" className="flex items-center gap-2">
-              <img 
-                src="/lovable-uploads/d2dc077f-45fe-4cc7-8a4e-162eee6e4314.png" 
-                alt="FenomenPet Logo" 
-                className="h-8"
-              />
-            </Link>
-            <Navigation />
+      {location.pathname !== '/login' && (
+        <nav className="bg-white shadow-sm">
+          <div className="container mx-auto px-4">
+            <div className="flex justify-between h-16 items-center">
+              <Link to="/" className="flex items-center gap-2">
+                <img 
+                  src="/lovable-uploads/d2dc077f-45fe-4cc7-8a4e-162eee6e4314.png" 
+                  alt="FenomenPet Logo" 
+                  className="h-8"
+                />
+              </Link>
+              <Navigation />
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      )}
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Index />} />
