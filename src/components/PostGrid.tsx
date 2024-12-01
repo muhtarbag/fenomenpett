@@ -37,7 +37,7 @@ const PostGrid = ({ posts }: PostGridProps) => {
     }
   ];
 
-  const allPosts = posts.length === 0 ? placeholderPosts : posts;
+  const allPosts = [...posts, ...(posts.length === 0 ? placeholderPosts : [])];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">

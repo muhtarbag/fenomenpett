@@ -17,21 +17,27 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
   const mutation = useSubmissionMutation();
 
   const handleToggleSelect = () => {
+    console.log('🔄 Toggle select mode:', !showSelect);
     setShowSelect(!showSelect);
     setSelectedIds([]);
   };
 
   const handleSelect = (id: number) => {
+    console.log('✨ Handling selection for submission:', id);
     setSelectedIds(prev => {
       const newIds = prev.includes(id) 
         ? prev.filter(selectedId => selectedId !== id)
         : [...prev, id];
+      console.log('📊 Updated selection:', newIds);
       return newIds;
     });
   };
 
   const handleBulkAction = async (status: 'approved' | 'rejected') => {
+    console.log('🔄 Starting bulk action:', { status, selectedIds });
+    
     if (selectedIds.length === 0) {
+      console.log('⚠️ No submissions selected');
       toast.error("Lütfen en az bir gönderi seçin");
       return;
     }
@@ -40,15 +46,23 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
     const loadingToast = toast.loading(`Seçili gönderiler ${action}...`);
 
     try {
+      console.log('📝 Processing submissions:', selectedIds);
+      
+      // Process each submission sequentially
       for (const id of selectedIds) {
+        console.log(`🔄 Processing submission ${id}`);
         await mutation.mutateAsync({ id, status });
       }
 
       const actionCompleted = status === 'approved' ? 'onaylandı' : 'reddedildi';
+      console.log('✅ Bulk action completed successfully');
       toast.success(`${selectedIds.length} gönderi başarıyla ${actionCompleted}`);
+      
+      // Reset selection state
       setShowSelect(false);
       setSelectedIds([]);
     } catch (error) {
+      console.error('❌ Bulk action error:', error);
       toast.error("İşlem sırasında bir hata oluştu");
     } finally {
       toast.dismiss(loadingToast);
@@ -61,29 +75,30 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow">
-        <h2 className="text-lg font-semibold text-gray-900">Bekleyen Gönderiler</h2>
-        <div className="flex items-center gap-2">
-          {showSelect && selectedIds.length > 0 && (
-            <>
-              <Button
-                variant="default"
-                onClick={() => handleBulkAction('approved')}
-                className="bg-success hover:bg-success/90 text-white flex items-center gap-2"
-              >
-                <Check className="h-4 w-4" />
-                Seçilenleri Onayla ({selectedIds.length})
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={() => handleBulkAction('rejected')}
-                className="flex items-center gap-2"
-              >
-                <X className="h-4 w-4" />
-                Seçilenleri Reddet ({selectedIds.length})
-              </Button>
-            </>
-          )}
+      {submissions.length > 0 && (
+        <div className="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow">
+          <div className="flex items-center gap-2">
+            {showSelect && selectedIds.length > 0 && (
+              <>
+                <Button
+                  variant="default"
+                  onClick={() => handleBulkAction('approved')}
+                  className="bg-success hover:bg-success/90 text-white flex items-center gap-2"
+                >
+                  <Check className="h-4 w-4" />
+                  Seçilenleri Onayla ({selectedIds.length})
+                </Button>
+                <Button
+                  variant="default"
+                  onClick={() => handleBulkAction('rejected')}
+                  className="bg-danger hover:bg-danger/90 text-white flex items-center gap-2"
+                >
+                  <X className="h-4 w-4" />
+                  Seçilenleri Reddet ({selectedIds.length})
+                </Button>
+              </>
+            )}
+          </div>
           <Button
             variant={showSelect ? "secondary" : "outline"}
             onClick={handleToggleSelect}
@@ -93,9 +108,9 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
             {showSelect ? 'Seçimi İptal Et' : 'Toplu İşlem'}
           </Button>
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4">
+      )}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {submissions.map((submission) => (
           <SubmissionCard 
             key={submission.id} 
@@ -106,7 +121,7 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
           />
         ))}
         {submissions.length === 0 && (
-          <div className="text-center text-gray-500 p-4 bg-white rounded-lg">
+          <div className="col-span-full text-center text-gray-500">
             Bekleyen gönderi bulunmuyor
           </div>
         )}

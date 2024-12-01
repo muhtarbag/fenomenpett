@@ -4,7 +4,7 @@ import { ActionButtons } from "./SubmissionActions/ActionButtons";
 import { SubmissionStatusBadge } from "./submissions/SubmissionStatusBadge";
 import { SubmissionImage } from "./submissions/SubmissionImage";
 import { SubmissionInfo } from "./submissions/SubmissionInfo";
-import { Hash } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface SubmissionCardProps {
   submission: Submission;
@@ -14,24 +14,37 @@ interface SubmissionCardProps {
 }
 
 export const SubmissionCard = memo(({ 
-  submission,
+  submission, 
   showSelect = false,
   isSelected = false,
   onSelect
 }: SubmissionCardProps) => {
   if (!submission) {
+    console.error('No submission data provided');
     return null;
   }
 
   const { id, username, status, image_url, created_at, updated_at, comment } = submission;
 
+  console.log('🎴 Rendering SubmissionCard:', {
+    id,
+    username,
+    currentStatus: status,
+    timestamp: new Date().toISOString()
+  });
+
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden animate-fade-up">
       <div className="relative">
-        <div className="absolute top-3 right-3 z-40 bg-black/50 text-white px-2 py-1 rounded-md flex items-center gap-1">
-          <Hash className="h-4 w-4" />
-          <span className="text-sm font-medium">{id}</span>
-        </div>
+        {showSelect && (
+          <div className="absolute top-2 left-2 z-10">
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={() => onSelect?.(id)}
+              className="bg-white border-2"
+            />
+          </div>
+        )}
         <SubmissionImage 
           imageUrl={image_url} 
           username={username} 

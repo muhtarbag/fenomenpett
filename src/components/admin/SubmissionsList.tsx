@@ -5,6 +5,8 @@ import { RejectedSubmissions } from "./submissions/RejectedSubmissions";
 import { toast } from "sonner";
 
 export const SubmissionsList = () => {
+  console.log('🔄 SubmissionsList component rendering');
+  
   const { 
     pendingSubmissions, 
     approvedSubmissions, 
@@ -14,6 +16,7 @@ export const SubmissionsList = () => {
   } = useSubmissions();
 
   if (error) {
+    console.error('❌ Error loading submissions:', error);
     toast.error("Gönderiler yüklenirken bir hata oluştu");
     return (
       <div className="text-center text-red-600 p-4 bg-red-50 rounded-lg">
@@ -22,10 +25,19 @@ export const SubmissionsList = () => {
     );
   }
 
+  if (!pendingSubmissions || !approvedSubmissions || !rejectedSubmissions) {
+    console.error('❌ Missing submission data');
+    return (
+      <div className="text-center text-red-600 p-4 bg-red-50 rounded-lg">
+        Veri yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
+      </div>
+    );
+  }
+
   const hasNoSubmissions = 
-    (!pendingSubmissions?.length) && 
-    (!approvedSubmissions?.length) && 
-    (!rejectedSubmissions?.length);
+    pendingSubmissions.length === 0 && 
+    approvedSubmissions.length === 0 && 
+    rejectedSubmissions.length === 0;
 
   if (hasNoSubmissions && !isLoading) {
     return (
@@ -36,19 +48,21 @@ export const SubmissionsList = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <PendingSubmissions 
-        submissions={pendingSubmissions || []} 
+        submissions={pendingSubmissions} 
         isLoading={isLoading} 
       />
       <ApprovedSubmissions 
-        submissions={approvedSubmissions || []} 
+        submissions={approvedSubmissions} 
         isLoading={isLoading} 
       />
       <RejectedSubmissions 
-        submissions={rejectedSubmissions || []} 
+        submissions={rejectedSubmissions} 
         isLoading={isLoading} 
       />
     </div>
   );
 };
+
+export { SubmissionCard } from "./SubmissionCard";
