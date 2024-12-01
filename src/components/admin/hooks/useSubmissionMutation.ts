@@ -21,7 +21,7 @@ export const useSubmissionMutation = () => {
           updated_at: new Date().toISOString() 
         })
         .eq('id', id)
-        .select('*, status:status::text')
+        .select()
         .returns<Submission[]>();
       
       if (error) {
@@ -29,13 +29,19 @@ export const useSubmissionMutation = () => {
         throw new Error(`Failed to update submission: ${error.message}`);
       }
       
-      if (!data || data.length === 0) {
+      if (!data) {
         console.error('❌ No data returned after update');
         throw new Error('No data returned after update');
       }
+
+      // Convert string status to the correct type
+      const typedData = data.map(item => ({
+        ...item,
+        status: item.status as 'pending' | 'approved' | 'rejected'
+      }));
       
-      console.log('✅ Successfully updated submission:', data);
-      return data;
+      console.log('✅ Successfully updated submission:', typedData);
+      return typedData;
     },
     onSuccess: (data, variables) => {
       const action = variables.status === 'approved' ? 'onaylandı' : 'reddedildi';
