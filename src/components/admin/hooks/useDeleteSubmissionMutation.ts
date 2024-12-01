@@ -36,6 +36,7 @@ export const useDeleteSubmissionMutation = () => {
     },
     onSuccess: (deletedId) => {
       console.log('✨ Delete mutation success:', deletedId);
+      // Immediately invalidate the submissions query to trigger a refetch
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
     },
     onError: (error: Error) => {
