@@ -15,7 +15,7 @@ import {
 
 interface DeleteButtonProps {
   submissionId: number;
-  mutation: UseMutationResult<Submission[], Error, number, unknown>;
+  mutation: UseMutationResult<Submission, Error, number, unknown>;
   className?: string;
 }
 
