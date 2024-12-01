@@ -40,3 +40,94 @@ export const convertToWebP = async (file: File): Promise<File> => {
     img.src = URL.createObjectURL(file);
   });
 };
+
+const createImageBitmap = async (file: File): Promise<ImageBitmap> => {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      createImageBitmap(img)
+        .then(resolve)
+        .catch(reject);
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+};
+
+const getImageData = (img: ImageBitmap, size: number = 32): ImageData => {
+  const canvas = new OffscreenCanvas(size, size);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Could not get canvas context');
+  
+  ctx.drawImage(img, 0, 0, size, size);
+  return ctx.getImageData(0, 0, size, size);
+};
+
+const rgb2Gray = (r: number, g: number, b: number): number => {
+  return Math.floor(0.299 * r + 0.587 * g + 0.114 * b);
+};
+
+const calculateDCT = (pixels: number[]): number[] => {
+  const size = Math.sqrt(pixels.length);
+  const dct: number[] = new Array(pixels.length).fill(0);
+
+  for (let u = 0; u < size; u++) {
+    for (let v = 0; v < size; v++) {
+      let sum = 0;
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+          sum += pixels[i * size + j] *
+            Math.cos((2 * i + 1) * u * Math.PI / (2 * size)) *
+            Math.cos((2 * j + 1) * v * Math.PI / (2 * size));
+        }
+      }
+      dct[u * size + v] = sum;
+    }
+  }
+  return dct;
+};
+
+export const calculateImageHash = async (file: File): Promise<string> => {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const imageData = getImageData(bitmap, 32);
+    const pixels: number[] = [];
+    
+    // Convert to grayscale
+    for (let i = 0; i < imageData.data.length; i += 4) {
+      pixels.push(rgb2Gray(
+        imageData.data[i],
+        imageData.data[i + 1],
+        imageData.data[i + 2]
+      ));
+    }
+
+    // Calculate DCT
+    const dct = calculateDCT(pixels);
+    
+    // Calculate median of top-left 8x8 DCT coefficients
+    const dctValues = dct.slice(0, 64);
+    const median = dctValues.sort((a, b) => a - b)[32];
+    
+    // Generate hash
+    let hash = '';
+    for (let i = 0; i < 64; i++) {
+      hash += dctValues[i] > median ? '1' : '0';
+    }
+    
+    return hash;
+  } catch (error) {
+    console.error('Error calculating image hash:', error);
+    throw error;
+  }
+};
+
+export const calculateHammingDistance = (hash1: string, hash2: string): number => {
+  let distance = 0;
+  for (let i = 0; i < hash1.length; i++) {
+    if (hash1[i] !== hash2[i]) distance++;
+  }
+  return distance;
+};

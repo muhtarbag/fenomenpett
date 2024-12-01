@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { checkForDuplicates } from "./utils/duplicateCheck";
+import { calculateImageHash } from "@/utils/imageProcessing";
 import { SubmissionSuccess } from "./SubmissionSuccess";
 import { SubmissionFormFields } from "./SubmissionFormFields";
 
@@ -34,11 +35,56 @@ export const SubmissionForm = () => {
       setIsSubmitting(true);
       console.log('Gönderim işlemi başlatılıyor...');
 
+      // Calculate image hash
+      const imageHash = await calculateImageHash(image);
+      console.log('Image hash calculated:', imageHash);
+
+      // Check for duplicates using perceptual hash
+      const { isDuplicate, originalSubmission } = await checkForDuplicates(imageHash);
+      
+      if (isDuplicate && originalSubmission) {
+        // Upload image for reference but mark as rejected
+        const fileExt = image.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('submissions')
+          .upload(filePath, image);
+
+        if (uploadError) {
+          console.error('Storage yükleme hatası:', uploadError);
+          throw uploadError;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('submissions')
+          .getPublicUrl(filePath);
+
+        const { error: rejectionError } = await supabase
+          .from('rejected_submissions')
+          .insert([{
+            username,
+            image_url: publicUrl,
+            comment,
+            reason: `Duplicate image detected (Hamming distance within threshold). Original submission by user: ${originalSubmission.username}`,
+            original_submission_id: originalSubmission.id
+          }]);
+
+        if (rejectionError) {
+          console.error('Rejection kayıt hatası:', rejectionError);
+          throw rejectionError;
+        }
+
+        toast.error("Bu fotoğrafa çok benzer bir fotoğraf daha önce başka bir kullanıcı tarafından yüklenmiş. Lütfen farklı bir fotoğraf deneyin.");
+        return;
+      }
+
+      // If not a duplicate, proceed with submission
       const fileExt = image.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      console.log('Fotoğraf yükleniyor...', { fileName, filePath });
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('submissions')
         .upload(filePath, image);
@@ -52,34 +98,6 @@ export const SubmissionForm = () => {
         .from('submissions')
         .getPublicUrl(filePath);
 
-      console.log('Fotoğraf başarıyla yüklendi, public URL:', publicUrl);
-
-      const { isDuplicate, originalSubmission } = await checkForDuplicates(publicUrl);
-      
-      if (isDuplicate && originalSubmission) {
-        const { error: rejectionError } = await supabase
-          .from('rejected_submissions')
-          .insert([{
-            username,
-            image_url: publicUrl,
-            comment,
-            reason: `Duplicate image submission. Original submission by user: ${originalSubmission.username}`,
-            original_submission_id: originalSubmission.id
-          }]);
-
-        if (rejectionError) {
-          console.error('Rejection kayıt hatası:', rejectionError);
-          throw rejectionError;
-        }
-
-        await supabase.storage
-          .from('submissions')
-          .remove([filePath]);
-
-        toast.error("Bu fotoğraf daha önce başka bir kullanıcı tarafından yüklenmiş. Lütfen farklı bir fotoğraf deneyin.");
-        return;
-      }
-
       const { error: submissionError } = await supabase
         .from('submissions')
         .insert([{
@@ -87,7 +105,8 @@ export const SubmissionForm = () => {
           image_url: publicUrl,
           comment,
           status: 'pending',
-          likes: 0
+          likes: 0,
+          image_hash: imageHash
         }]);
 
       if (submissionError) {
