@@ -1,6 +1,7 @@
-import { Check, X } from "lucide-react";
+import { Check, X, Trash2 } from "lucide-react";
 import { Submission } from "./hooks/useSubmissions";
 import { useSubmissionMutation } from "./hooks/useSubmissionMutation";
+import { useDeleteSubmissionMutation } from "./hooks/useDeleteSubmissionMutation";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +26,7 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
   });
 
   const { mutate: updateStatus } = useSubmissionMutation();
+  const { mutate: deleteSubmission } = useDeleteSubmissionMutation();
 
   const handleApprove = (id: number) => {
     console.log('👍 Approving submission:', id);
@@ -34,6 +36,11 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
   const handleReject = (id: number) => {
     console.log('👎 Rejecting submission:', id);
     updateStatus({ id, status: 'rejected' });
+  };
+
+  const handleDelete = (id: number) => {
+    console.log('🗑️ Deleting submission:', id);
+    deleteSubmission(id);
   };
 
   const formatDate = (dateString: string) => {
@@ -114,6 +121,35 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
               </AlertDialogContent>
             </AlertDialog>
           </div>
+        )}
+        {submission.status === 'approved' && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors"
+              >
+                <Trash2 size={20} />
+                Gönderiyi Sil
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Gönderiyi Sil</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Bu gönderiyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>İptal</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => handleDelete(submission.id)}
+                  className="bg-danger hover:bg-danger/90"
+                >
+                  Sil
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </div>
     </div>
