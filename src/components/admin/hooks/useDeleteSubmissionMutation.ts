@@ -36,7 +36,6 @@ export const useDeleteSubmissionMutation = () => {
     },
     onSuccess: (deletedId) => {
       console.log('✨ Delete mutation success:', deletedId);
-      toast.success('Gönderi başarıyla silindi');
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
     },
     onError: (error: Error) => {

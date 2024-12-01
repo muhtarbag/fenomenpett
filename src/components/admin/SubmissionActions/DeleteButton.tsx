@@ -1,5 +1,6 @@
 import { Trash2 } from "lucide-react";
 import { UseMutationResult } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,16 +20,16 @@ interface DeleteButtonProps {
 }
 
 export const DeleteButton = ({ submissionId, mutation, className = "flex-1" }: DeleteButtonProps) => {
-  const handleDelete = () => {
-    console.log('🗑️ Deleting submission:', submissionId);
-    mutation.mutate(submissionId, {
-      onSuccess: () => {
-        console.log('✅ Successfully deleted submission:', submissionId);
-      },
-      onError: (error) => {
-        console.error('❌ Error deleting submission:', error);
-      }
-    });
+  const handleDelete = async () => {
+    try {
+      console.log('🗑️ Starting deletion process for submission:', submissionId);
+      await mutation.mutateAsync(submissionId);
+      console.log('✅ Successfully deleted submission:', submissionId);
+      toast.success('Gönderi başarıyla silindi');
+    } catch (error) {
+      console.error('❌ Error deleting submission:', error);
+      toast.error('Gönderi silinirken bir hata oluştu');
+    }
   };
 
   return (
