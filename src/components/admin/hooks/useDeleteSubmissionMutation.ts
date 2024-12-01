@@ -11,33 +11,33 @@ export const useDeleteSubmissionMutation = () => {
       console.log('🗑️ Deleting submission:', id);
       
       // Önce rejected_submissions tablosundan silme işlemi
-      if (id) {
-        const { error: rejectedError } = await supabase
-          .from('rejected_submissions')
-          .delete()
-          .eq('original_submission_id', id);
-        
-        if (rejectedError) {
-          console.error('❌ Error deleting from rejected_submissions:', rejectedError);
-          throw rejectedError;
-        }
+      const { error: rejectedError } = await supabase
+        .from('rejected_submissions')
+        .delete()
+        .eq('original_submission_id', id);
+      
+      if (rejectedError) {
+        console.error('❌ Error deleting from rejected_submissions:', rejectedError);
+        throw rejectedError;
       }
+
+      console.log('✅ Successfully deleted from rejected_submissions');
       
       // Sonra submissions tablosundan silme işlemi
-      const { error, data } = await supabase
+      const { error: submissionError, data } = await supabase
         .from('submissions')
         .delete()
         .eq('id', id)
-        .select('*, status:status::text')
-        .returns<Submission[]>();
+        .select()
+        .single();
       
-      if (error) {
-        console.error('❌ Error deleting submission:', error);
-        throw error;
+      if (submissionError) {
+        console.error('❌ Error deleting submission:', submissionError);
+        throw submissionError;
       }
       
       console.log('✅ Successfully deleted submission:', data);
-      return data;
+      return data as Submission;
     },
     onSuccess: () => {
       console.log('✨ Delete mutation success');
