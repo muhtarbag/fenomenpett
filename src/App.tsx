@@ -16,7 +16,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Submit from "./pages/Submit";
 import Admin from "./pages/Admin";
-import Login from "./pages/Login";
 import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
@@ -25,7 +24,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
   
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/admin" replace />;
   }
   
   return <>{children}</>;
@@ -111,7 +110,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/submit" element={<Submit />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Navigate to="/admin" replace />} />
           <Route 
             path="/admin" 
             element={
