@@ -110,9 +110,13 @@ const AppContent = () => {
             <div className="flex justify-between h-16 items-center">
               <Link to="/" className="flex items-center gap-2">
                 <img 
-                  src="/lovable-uploads/d2dc077f-45fe-4cc7-8a4e-162eee6e4314.png" 
+                  src="/lovable-uploads/logo.gif" 
                   alt="FenomenPet Logo" 
-                  className="h-8"
+                  className="h-8 w-auto"
+                  style={{
+                    imageRendering: 'pixelated',
+                    WebkitImageRendering: 'pixelated'
+                  }}
                 />
               </Link>
               <Navigation />
