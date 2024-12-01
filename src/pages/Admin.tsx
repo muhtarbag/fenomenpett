@@ -26,29 +26,89 @@ const Admin = () => {
       Promise.resolve([
         {
           id: 1,
-          username: "new_helper",
+          username: "animal_lover_2024",
           imageUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba",
-          comment: "Bu kediyi buldum ve biraz mama verdim",
+          comment: "Sokakta bulduğum kediye mama verdim",
           timestamp: "2024-02-20T10:00:00Z",
           status: 'pending'
         },
         {
           id: 2,
-          username: "animal_lover",
+          username: "pet_rescuer",
           imageUrl: "https://images.unsplash.com/photo-1573865526739-10659fec78a5",
-          comment: "Sokak köpeğine yardım ettim",
+          comment: "Yaralı köpeği veterinere götürdüm",
           timestamp: "2024-02-19T15:30:00Z",
           status: 'approved',
           actionTimestamp: "2024-02-19T16:00:00Z"
         },
         {
           id: 3,
-          username: "pet_friend",
+          username: "cat_whisperer",
           imageUrl: "https://images.unsplash.com/photo-1415369629372-26f2fe60c467",
-          comment: "Uygunsuz içerik",
+          comment: "Kedi maması dağıttım",
           timestamp: "2024-02-18T09:15:00Z",
           status: 'rejected',
           actionTimestamp: "2024-02-18T10:00:00Z"
+        },
+        {
+          id: 4,
+          username: "dog_friend",
+          imageUrl: "https://images.unsplash.com/photo-1543466835-00a7907e9de1",
+          comment: "Köpeklere su kabı bıraktım",
+          timestamp: "2024-02-17T14:20:00Z",
+          status: 'approved',
+          actionTimestamp: "2024-02-17T15:00:00Z"
+        },
+        {
+          id: 5,
+          username: "helping_paws",
+          imageUrl: "https://images.unsplash.com/photo-1548767797-d8c844163c4c",
+          comment: "Sokak hayvanlarına yemek verdim",
+          timestamp: "2024-02-16T11:45:00Z",
+          status: 'pending'
+        },
+        {
+          id: 6,
+          username: "animal_aid",
+          imageUrl: "https://images.unsplash.com/photo-1574158622682-e40e69881006",
+          comment: "Hasta kediyi tedavi ettirdim",
+          timestamp: "2024-02-15T16:30:00Z",
+          status: 'approved',
+          actionTimestamp: "2024-02-15T17:00:00Z"
+        },
+        {
+          id: 7,
+          username: "street_feeder",
+          imageUrl: "https://images.unsplash.com/photo-1533743983669-94fa5c4338ec",
+          comment: "Kuşlara yem verdim",
+          timestamp: "2024-02-14T13:10:00Z",
+          status: 'rejected',
+          actionTimestamp: "2024-02-14T14:00:00Z"
+        },
+        {
+          id: 8,
+          username: "pet_guardian",
+          imageUrl: "https://images.unsplash.com/photo-1511044568932-338cba0ad803",
+          comment: "Sokak köpeğine kulübe yaptım",
+          timestamp: "2024-02-13T09:00:00Z",
+          status: 'pending'
+        },
+        {
+          id: 9,
+          username: "animal_protector",
+          imageUrl: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7",
+          comment: "Yaralı kuşu veterinere götürdüm",
+          timestamp: "2024-02-12T15:45:00Z",
+          status: 'approved',
+          actionTimestamp: "2024-02-12T16:30:00Z"
+        },
+        {
+          id: 10,
+          username: "kind_heart",
+          imageUrl: "https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13",
+          comment: "Sokak kedilerine süt verdim",
+          timestamp: "2024-02-11T10:20:00Z",
+          status: 'pending'
         },
       ]),
   });
@@ -126,6 +186,26 @@ const Admin = () => {
   const approvedSubmissions = submissions.filter(s => s.status === 'approved');
   const rejectedSubmissions = submissions.filter(s => s.status === 'rejected');
 
+  const TransactionSummary = () => (
+    <div className="mt-12 p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-4 text-gray-900">İşlem Özeti</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="p-4 bg-yellow-50 rounded-lg">
+          <h3 className="font-semibold text-yellow-700">Bekleyen</h3>
+          <p className="text-2xl font-bold text-yellow-800">{pendingSubmissions.length}</p>
+        </div>
+        <div className="p-4 bg-green-50 rounded-lg">
+          <h3 className="font-semibold text-green-700">Onaylanan</h3>
+          <p className="text-2xl font-bold text-green-800">{approvedSubmissions.length}</p>
+        </div>
+        <div className="p-4 bg-red-50 rounded-lg">
+          <h3 className="font-semibold text-red-700">Reddedilen</h3>
+          <p className="text-2xl font-bold text-red-800">{rejectedSubmissions.length}</p>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
@@ -188,6 +268,8 @@ const Admin = () => {
             </div>
           </TabsContent>
         </Tabs>
+
+        <TransactionSummary />
       </div>
     </div>
   );
