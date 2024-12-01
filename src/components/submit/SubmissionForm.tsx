@@ -17,6 +17,11 @@ export const SubmissionForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!user) {
+      toast.error("Lütfen önce giriş yapın");
+      return;
+    }
+
     if (!username.trim()) {
       toast.error("Lütfen kullanıcı adınızı girin");
       return;
@@ -34,7 +39,7 @@ export const SubmissionForm = () => {
 
     try {
       setIsSubmitting(true);
-      console.log('Starting submission process...');
+      console.log('Starting submission process...', { userId: user.id });
 
       // Upload image to Supabase Storage
       const fileExt = image.name.split('.').pop();
@@ -71,7 +76,7 @@ export const SubmissionForm = () => {
           comment,
           status: 'pending',
           likes: 0,
-          user_id: user?.id // Add the user_id from the authenticated user
+          user_id: user.id
         });
 
       if (submissionError) {
