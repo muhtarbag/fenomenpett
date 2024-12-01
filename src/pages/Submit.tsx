@@ -55,6 +55,7 @@ const Submit = () => {
             <li>6. Bonus requires reaching 5000 TL and 1000 TL shooting transaction</li>
             <li>7. Internet replica photos are not accepted</li>
             <li>8. Thank you for helping stray animals!</li>
+            <li className="font-medium text-primary">9. Don't forget to write your comment!</li>
           </ul>
         </div>
 
@@ -125,14 +126,21 @@ const Submit = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Comment
             </label>
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-              placeholder="Describe how you helped the stray animal..."
-              required
-            />
+            <div className="space-y-2">
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                rows={3}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                placeholder="Describe how you helped the stray animal..."
+                required
+              />
+              <div className="text-sm text-gray-500">
+                <p className="font-medium">Example comments:</p>
+                <p>#Fenomenpet Fenomenbet Paw Friendly</p>
+                <p>#Fenomenbet - Fenomenbet Paws also wins!</p>
+              </div>
+            </div>
           </div>
 
           <button
