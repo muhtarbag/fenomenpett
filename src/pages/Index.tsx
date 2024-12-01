@@ -12,7 +12,7 @@ const MAX_POSTS = 100;
 const Index = () => {
   const [page, setPage] = useState(1);
   
-  const { data: posts = [], isLoading, error, hasNextPage, fetchNextPage, isFetchingNextPage } = useQuery({
+  const { data: posts = [], isLoading, error, isFetching } = useQuery({
     queryKey: ["approved-posts", page],
     queryFn: async () => {
       const from = (page - 1) * POSTS_PER_PAGE;
@@ -28,9 +28,6 @@ const Index = () => {
       if (error) throw error;
       return data || [];
     },
-    keepPreviousData: true,
-    retry: false,
-    refetchOnWindowFocus: false,
   });
 
   const loadMore = () => {
@@ -89,10 +86,10 @@ const Index = () => {
               <Button 
                 onClick={loadMore} 
                 variant="outline"
-                disabled={isFetchingNextPage}
+                disabled={isFetching}
                 className="animate-fade-in"
               >
-                {isFetchingNextPage ? "Yükleniyor..." : "Daha Fazla Göster"}
+                {isFetching ? "Yükleniyor..." : "Daha Fazla Göster"}
               </Button>
             </div>
           )}
