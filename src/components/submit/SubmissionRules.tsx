@@ -11,7 +11,7 @@ export const SubmissionRules = () => {
         <li className="font-bold">6. Bonus için 5000 TL ve 1000 TL çekim işlemi gerekli</li>
         <li className="font-bold text-red-500">7. İnternetten kopyalanan fotoğraflar kabul edilmez</li>
         <li className="font-bold">8. Sokak hayvanlarına yardım ettiğiniz için teşekkürler!</li>
-        <li className="font-bold text-red-500">9. Yorumunuzu yazmayı unutmayın!</li>
+        <li className="font-bold">9. Yorumunuzu yazmayı unutmayın!</li>
       </ul>
     </div>
   );
