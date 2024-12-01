@@ -40,7 +40,7 @@ const Footer = () => {
             <ul className="space-y-2 text-gray-300">
               <li>E-posta: info@fenomenpet.com</li>
               <li>Telefon: +90 (555) 123-4567</li>
-              <li>Adres: İstanbul, Türkiye</li>
+              <li>Adres: Malta</li>
             </ul>
           </div>
           
