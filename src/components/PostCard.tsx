@@ -20,6 +20,11 @@ const PostCard = ({ post }: PostCardProps) => {
     locale: tr,
   });
 
+  console.log('🖼️ Rendering PostCard image:', {
+    imageUrl: post.image_url,
+    username: post.username
+  });
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -30,6 +35,11 @@ const PostCard = ({ post }: PostCardProps) => {
               alt={`${post.username} tarafından paylaşıldı`}
               className="w-full h-64 object-cover"
               crossOrigin="anonymous"
+              onError={(e) => {
+                console.error('❌ Image load error:', post.image_url);
+                e.currentTarget.src = '/placeholder.svg';
+              }}
+              loading="lazy"
             />
             <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
               <img
@@ -37,6 +47,7 @@ const PostCard = ({ post }: PostCardProps) => {
                 alt="Fenomenbet Watermark"
                 className="w-3/4 max-w-md"
                 crossOrigin="anonymous"
+                loading="lazy"
               />
             </div>
           </div>
