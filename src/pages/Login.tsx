@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -16,13 +16,18 @@ const Login = () => {
     return <Navigate to="/admin" replace />;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (login(username, password)) {
-      toast.success("Giriş başarılı!");
-      navigate("/admin");
-    } else {
-      toast.error("Kullanıcı adı veya şifre hatalı!");
+    try {
+      const success = await login(email, password);
+      if (success) {
+        toast.success("Giriş başarılı!");
+        navigate("/admin");
+      } else {
+        toast.error("Email veya şifre hatalı!");
+      }
+    } catch (error) {
+      toast.error("Giriş yapılırken bir hata oluştu!");
     }
   };
 
@@ -38,11 +43,11 @@ const Login = () => {
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <Input
-                type="text"
+                type="email"
                 required
-                placeholder="Kullanıcı Adı"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Email Adresi"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div>
