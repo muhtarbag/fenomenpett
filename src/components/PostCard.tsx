@@ -2,14 +2,16 @@ import { useState } from "react";
 import { Heart } from "lucide-react";
 import SocialShare from "./SocialShare";
 
+interface Post {
+  id: number;
+  username: string;
+  image_url: string;  // Changed from imageUrl to match Supabase schema
+  comment: string;
+  likes: number;
+}
+
 interface PostCardProps {
-  post: {
-    id: number;
-    username: string;
-    imageUrl: string;
-    comment: string;
-    likes: number;
-  };
+  post: Post;
 }
 
 const PostCard = ({ post }: PostCardProps) => {
@@ -24,7 +26,7 @@ const PostCard = ({ post }: PostCardProps) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden animate-fade-up">
       <img
-        src={post.imageUrl}
+        src={post.image_url}  // Changed from imageUrl to match Supabase schema
         alt={`${post.username} tarafından paylaşıldı`}
         className="w-full h-64 object-cover"
       />

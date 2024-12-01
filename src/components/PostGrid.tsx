@@ -3,7 +3,7 @@ import PostCard from "./PostCard";
 interface Post {
   id: number;
   username: string;
-  imageUrl: string;
+  image_url: string;  // Changed from imageUrl to match Supabase schema
   comment: string;
   likes: number;
 }
