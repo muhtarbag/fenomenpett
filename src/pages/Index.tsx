@@ -84,14 +84,27 @@ const Index = () => {
           <PostGrid posts={posts} />
 
           {showLoadMore && (
-            <div className="text-center mt-8">
-              <a href="https://linkany.pro/fenomenbet" target="_blank" rel="noopener noreferrer">
-                <img 
-                  src="/lovable-uploads/317ada8f-0e1c-4d55-b53d-91630923accf.png" 
-                  alt="Fenomenbet Giriş" 
-                  className="h-12 mx-auto hover:opacity-90 transition-opacity"
-                />
-              </a>
+            <div className="space-y-8 mt-8">
+              <div className="text-center">
+                <Button 
+                  onClick={loadMore} 
+                  variant="outline"
+                  disabled={isFetching}
+                  className="animate-fade-in"
+                >
+                  {isFetching ? "Yükleniyor..." : "Daha Fazla Göster"}
+                </Button>
+              </div>
+              
+              <div className="text-center">
+                <a href="https://linkany.pro/fenomenbet" target="_blank" rel="noopener noreferrer">
+                  <img 
+                    src="/lovable-uploads/317ada8f-0e1c-4d55-b53d-91630923accf.png" 
+                    alt="Fenomenbet Giriş" 
+                    className="h-12 mx-auto hover:opacity-90 transition-opacity"
+                  />
+                </a>
+              </div>
             </div>
           )}
         </div>
