@@ -4,9 +4,11 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageUpload } from "./ImageUpload";
 import { SubmissionRules } from "./SubmissionRules";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const SubmissionForm = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [username, setUsername] = useState("");
   const [comment, setComment] = useState("");
   const [image, setImage] = useState<File | null>(null);
@@ -15,7 +17,6 @@ export const SubmissionForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate required fields
     if (!username.trim()) {
       toast.error("Lütfen kullanıcı adınızı girin");
       return;
@@ -43,7 +44,10 @@ export const SubmissionForm = () => {
       console.log('Uploading image to storage...', { fileName, filePath });
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('submissions')
-        .upload(filePath, image);
+        .upload(filePath, image, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) {
         console.error('Storage upload error:', uploadError);
@@ -66,7 +70,8 @@ export const SubmissionForm = () => {
           image_url: publicUrl,
           comment,
           status: 'pending',
-          likes: 0
+          likes: 0,
+          user_id: user?.id // Add the user_id from the authenticated user
         });
 
       if (submissionError) {
