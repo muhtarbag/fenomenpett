@@ -19,16 +19,23 @@ const Index = () => {
       Promise.resolve([
         {
           id: 1,
-          username: "demo_user",
-          imageUrl: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba",
-          comment: "Beautiful sunset!",
+          username: "animal_lover",
+          imageUrl: "https://images.unsplash.com/photo-1415369629372-26f2fe60c467",
+          comment: "Gave water to this sweet stray cat today!",
           likes: 42,
+        },
+        {
+          id: 2,
+          username: "pet_friend",
+          imageUrl: "https://images.unsplash.com/photo-1548681528-6a5c45b66b42",
+          comment: "Found this hungry dog and gave him some food.",
+          likes: 38,
         },
       ]),
   });
 
   const handleLike = (postId: number) => {
-    toast.success("Liked!");
+    toast.success("Thank you for showing support!");
   };
 
   const handleShare = (postId: number) => {
@@ -39,7 +46,9 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold text-center mb-12 text-gray-900">Photo Stream</h1>
+        <h1 className="text-4xl font-bold text-center mb-12 text-gray-900">
+          Stray Animal Care Photos
+        </h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {posts.map((post) => (
@@ -75,6 +84,12 @@ const Index = () => {
             </div>
           ))}
         </div>
+
+        {posts.length === 0 && (
+          <div className="text-center text-gray-500 mt-8">
+            No approved posts yet. Be the first to share your stray animal care photo!
+          </div>
+        )}
       </div>
     </div>
   );

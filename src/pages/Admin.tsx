@@ -19,9 +19,9 @@ const Admin = () => {
       Promise.resolve([
         {
           id: 1,
-          username: "pending_user",
-          imageUrl: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba",
-          comment: "Check out this amazing view!",
+          username: "new_helper",
+          imageUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba",
+          comment: "Found this cat and gave it some food",
           timestamp: "2024-02-20T10:00:00Z",
         },
       ]),
@@ -30,13 +30,13 @@ const Admin = () => {
   const handleApprove = async (id: number) => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 500));
-    toast.success("Post approved!");
+    toast.success("Photo approved and bonus will be credited within 48 hours!");
   };
 
   const handleReject = async (id: number) => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 500));
-    toast.success("Post rejected");
+    toast.error("Photo rejected - does not meet guidelines");
   };
 
   return (
