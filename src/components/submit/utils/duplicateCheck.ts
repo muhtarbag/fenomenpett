@@ -23,12 +23,17 @@ export const checkForDuplicates = async (imageHash: string): Promise<DuplicateCh
     return { isDuplicate: false, originalSubmission: null };
   }
 
+  if (!existingSubmissions) {
+    return { isDuplicate: false, originalSubmission: null };
+  }
+
   // Check for similar images using Hamming distance
   const SIMILARITY_THRESHOLD = 5; // Adjust this value to control sensitivity
   
-  const duplicate = existingSubmissions?.find(submission => {
+  const duplicate = existingSubmissions.find(submission => {
     if (!submission.image_hash) return false;
     const distance = calculateHammingDistance(imageHash, submission.image_hash);
+    console.log('Hamming distance for submission', submission.id, ':', distance);
     return distance <= SIMILARITY_THRESHOLD;
   });
 

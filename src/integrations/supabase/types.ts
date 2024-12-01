@@ -117,6 +117,7 @@ export type Database = {
           comment: string
           created_at: string
           id: number
+          image_hash: string | null
           image_url: string
           likes: number | null
           status: string | null
@@ -128,6 +129,7 @@ export type Database = {
           comment: string
           created_at?: string
           id?: number
+          image_hash?: string | null
           image_url: string
           likes?: number | null
           status?: string | null
@@ -139,6 +141,7 @@ export type Database = {
           comment?: string
           created_at?: string
           id?: number
+          image_hash?: string | null
           image_url?: string
           likes?: number | null
           status?: string | null

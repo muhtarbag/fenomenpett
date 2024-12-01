@@ -41,21 +41,6 @@ export const convertToWebP = async (file: File): Promise<File> => {
   });
 };
 
-const createImageBitmap = async (file: File): Promise<ImageBitmap> => {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      createImageBitmap(img)
-        .then(resolve)
-        .catch(reject);
-      URL.revokeObjectURL(url);
-    };
-    img.onerror = reject;
-    img.src = url;
-  });
-};
-
 const getImageData = (img: ImageBitmap, size: number = 32): ImageData => {
   const canvas = new OffscreenCanvas(size, size);
   const ctx = canvas.getContext('2d');
@@ -91,7 +76,15 @@ const calculateDCT = (pixels: number[]): number[] => {
 
 export const calculateImageHash = async (file: File): Promise<string> => {
   try {
-    const bitmap = await createImageBitmap(file);
+    const img = new Image();
+    const loadImagePromise = new Promise<HTMLImageElement>((resolve, reject) => {
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = URL.createObjectURL(file);
+    });
+
+    const loadedImg = await loadImagePromise;
+    const bitmap = await createImageBitmap(loadedImg);
     const imageData = getImageData(bitmap, 32);
     const pixels: number[] = [];
     
