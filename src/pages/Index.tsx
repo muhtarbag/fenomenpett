@@ -1,14 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-import PostCard from "@/components/PostCard";
+import { Button } from "@/components/ui/button";
+import Banner from "@/components/Banner";
+import PostGrid from "@/components/PostGrid";
+import { Link } from "react-router-dom";
 
 const Index = () => {
-  const isMobile = useIsMobile();
   const { data: posts = [] } = useQuery({
     queryKey: ["approved-posts"],
     queryFn: () =>
@@ -158,27 +154,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {isMobile ? (
-        <Carousel className="w-full">
-          <CarouselContent>
-            <CarouselItem>
-              <img
-                src="/lovable-uploads/e4fe31df-b619-4ae9-9d59-d6057f321c83.png"
-                alt="FenomenPet Mobil Banner"
-                className="w-full h-auto rounded-[30px]"
-              />
-            </CarouselItem>
-          </CarouselContent>
-        </Carousel>
-      ) : (
-        <div className="relative w-full h-[400px] overflow-hidden rounded-[40px] mx-auto max-w-7xl px-4">
-          <img
-            src="/lovable-uploads/7138849c-6a14-4a65-8f76-220e6fc26382.png"
-            alt="FenomenPet Banner"
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
+      <Banner />
       
       <div className="bg-primary text-white py-3 px-4 text-center">
         <p className="text-sm md:text-base animate-fade-in">
@@ -188,21 +164,18 @@ const Index = () => {
       
       <div className="py-8">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold text-center mb-12 text-gray-900">
-            Fenomenbet Login
-          </h1>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold mb-6 text-gray-900">
+              Fenomenbet Giriş Yap
+            </h1>
+            <Link to="/login">
+              <Button className="bg-primary hover:bg-primary/90 text-white px-8 py-3 text-lg rounded-lg">
+                Giriş Yap
+              </Button>
+            </Link>
           </div>
-
-          {posts.length === 0 && (
-            <div className="text-center text-gray-500 mt-8">
-              Henüz onaylanmış gönderi yok. Sokak hayvanlarına yardım fotoğrafınızı ilk paylaşan siz olun!
-            </div>
-          )}
+          
+          <PostGrid posts={posts} />
         </div>
       </div>
     </div>
