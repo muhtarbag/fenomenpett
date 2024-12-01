@@ -12,35 +12,13 @@ interface PostDialogContentProps {
 }
 
 const PostDialogContent = ({ post }: PostDialogContentProps) => {
-  console.log('🖼️ Rendering PostDialogContent image:', {
-    imageUrl: post.image_url,
-    username: post.username
-  });
-
   return (
     <div className="grid gap-6">
-      <div className="relative">
-        <img
-          src={post.image_url}
-          alt={`${post.username} tarafından paylaşıldı`}
-          className="w-full rounded-lg object-contain max-h-[60vh]"
-          crossOrigin="anonymous"
-          onError={(e) => {
-            console.error('❌ Dialog image load error:', post.image_url);
-            e.currentTarget.src = '/placeholder.svg';
-          }}
-          loading="lazy"
-        />
-        <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
-          <img
-            src="/lovable-uploads/10d8a44d-2040-49f8-89cb-eae4de94925a.png"
-            alt="Fenomenbet Watermark"
-            className="w-3/4 max-w-md"
-            crossOrigin="anonymous"
-            loading="lazy"
-          />
-        </div>
-      </div>
+      <img
+        src={post.image_url}
+        alt={`${post.username} tarafından paylaşıldı`}
+        className="w-full rounded-lg object-contain max-h-[60vh]"
+      />
       <div>
         <h3 className="font-semibold text-lg">@{post.username}</h3>
         <p className="text-gray-600 mt-2">{post.comment}</p>
