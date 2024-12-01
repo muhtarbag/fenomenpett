@@ -14,7 +14,8 @@ export const useDeleteSubmissionMutation = () => {
         .from('submissions')
         .delete()
         .eq('id', id)
-        .select();
+        .select('*, status:status::text')
+        .returns<Submission[]>();
       
       if (error) {
         console.error('❌ Error deleting submission:', error);

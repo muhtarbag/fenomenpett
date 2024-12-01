@@ -18,7 +18,8 @@ export const useSubmissionMutation = () => {
         .from('submissions')
         .update({ status, updated_at: new Date().toISOString() })
         .eq('id', id)
-        .select();
+        .select('*, status:status::text')
+        .returns<Submission[]>();
       
       if (error) {
         console.error('❌ Error updating submission:', error);
