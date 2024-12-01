@@ -6,10 +6,24 @@ import { Submission } from "./useSubmissions";
 export const useDeleteSubmissionMutation = () => {
   const queryClient = useQueryClient();
   
-  return useMutation<Submission[], Error, number>({
-    mutationFn: async (id) => {
+  return useMutation({
+    mutationFn: async (id: number) => {
       console.log('🗑️ Deleting submission:', id);
       
+      // Önce rejected_submissions tablosundan silme işlemi
+      if (id) {
+        const { error: rejectedError } = await supabase
+          .from('rejected_submissions')
+          .delete()
+          .eq('original_submission_id', id);
+        
+        if (rejectedError) {
+          console.error('❌ Error deleting from rejected_submissions:', rejectedError);
+          throw rejectedError;
+        }
+      }
+      
+      // Sonra submissions tablosundan silme işlemi
       const { error, data } = await supabase
         .from('submissions')
         .delete()
