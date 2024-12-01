@@ -26,7 +26,10 @@ export const SubmissionCard = ({ submission }: { submission: Submission }) => {
         .update({ status })
         .eq('id', id);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating submission:', error);
+        throw error;
+      }
     },
     onSuccess: (_, variables) => {
       const action = variables.status === 'approved' ? 'onaylandı' : 'reddedildi';
@@ -107,20 +110,26 @@ export const SubmissionCard = ({ submission }: { submission: Submission }) => {
 };
 
 export const SubmissionsList = () => {
-  const { data: submissions = [], isError } = useQuery({
+  const { data: submissions = [], isError, isLoading } = useQuery({
     queryKey: ['submissions'],
     queryFn: async () => {
+      console.log('Fetching submissions...');
       const { data, error } = await supabase
         .from('submissions')
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching submissions:', error);
+        throw error;
+      }
       
-      // Ensure the status is one of the allowed values
+      console.log('Fetched submissions:', data);
+      
+      // Ensure the status is one of the allowed values and default to 'pending' if null
       return (data || []).map(submission => ({
         ...submission,
-        status: submission.status as 'pending' | 'approved' | 'rejected'
+        status: submission.status || 'pending' as 'pending' | 'approved' | 'rejected'
       }));
     }
   });
@@ -130,9 +139,17 @@ export const SubmissionsList = () => {
     return null;
   }
 
-  const pendingSubmissions = submissions.filter(s => s.status === 'pending');
+  if (isLoading) {
+    console.log('Loading submissions...');
+  }
+
+  const pendingSubmissions = submissions.filter(s => !s.status || s.status === 'pending');
   const approvedSubmissions = submissions.filter(s => s.status === 'approved');
   const rejectedSubmissions = submissions.filter(s => s.status === 'rejected');
+
+  console.log('Pending submissions:', pendingSubmissions);
+  console.log('Approved submissions:', approvedSubmissions);
+  console.log('Rejected submissions:', rejectedSubmissions);
 
   return {
     pendingSubmissions,
