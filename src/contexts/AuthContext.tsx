@@ -23,10 +23,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    // Check for existing session
+    console.log('Setting up auth state...');
+    
+    // Initialize auth state
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+      console.log('Initial session:', session);
       if (session) {
+        setSession(session);
         setIsAuthenticated(true);
         setUser({ id: session.user.id });
       }
@@ -36,21 +39,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+      console.log('Auth state changed:', _event, session);
       if (session) {
+        setSession(session);
         setIsAuthenticated(true);
         setUser({ id: session.user.id });
       } else {
+        setSession(null);
         setIsAuthenticated(false);
         setUser(null);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log('Cleaning up auth subscription');
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
+      console.log('Attempting login...');
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -63,6 +72,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       if (data.user) {
+        console.log('Login successful:', data.user);
         setSession(data.session);
         setIsAuthenticated(true);
         setUser({ id: data.user.id });
@@ -77,16 +87,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     try {
+      console.log('Starting logout process...');
+      
       // Clear local state first
       setIsAuthenticated(false);
       setUser(null);
       setSession(null);
 
-      // Attempt to sign out from Supabase
-      await supabase.auth.signOut();
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Supabase signOut error:', error);
+        // Even if there's an error with Supabase, we keep the local state cleared
+        toast.error("Çıkış yaparken bir hata oluştu, ancak local oturum kapatıldı");
+        return;
+      }
+
+      console.log('Logout successful');
       toast.success("Başarıyla çıkış yapıldı");
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error('Error in logout process:', error);
       toast.error("Çıkış yaparken bir hata oluştu");
     }
   };
