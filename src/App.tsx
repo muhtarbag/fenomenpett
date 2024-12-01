@@ -114,8 +114,10 @@ const AppContent = () => {
                   alt="FenomenPet Logo" 
                   className="h-8 w-auto"
                   style={{
-                    imageRendering: 'pixelated',
                     WebkitImageRendering: 'pixelated',
+                    imageRendering: 'pixelated',
+                    MozImageRendering: 'pixelated',
+                    msImageRendering: 'pixelated'
                   } as React.CSSProperties}
                 />
               </Link>
