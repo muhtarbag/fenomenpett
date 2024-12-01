@@ -11,7 +11,8 @@ export const SubmissionRules = () => {
         <li className="font-bold">6. Bonus için 5000 TL ve 1000 TL çekim işlemi gerekli</li>
         <li className="font-bold text-red-500">7. İnternetten kopyalanan fotoğraflar kabul edilmez</li>
         <li className="font-bold">8. Yorumunuzu yazmayı unutmayın!</li>
-        <li className="font-bold">9. Sokak hayvanlarına yardım ettiğiniz için teşekkürler!</li>
+        <li className="font-bold">9. Bu kampanyadan her üye ayda 1 kere yararlanabilir. İlk katılımda yatırım şartı aranmamaktadır.* Sonraki katılımlarda, her iki bonus arasında min 100TL yatırım yapılması gerekmektedir.*</li>
+        <li className="font-bold">10. Patili dostlarımıza yardım ettiğiniz için teşekkürler!</li>
       </ul>
     </div>
   );
