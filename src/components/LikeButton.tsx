@@ -15,16 +15,24 @@ const LikeButton = ({ postId, initialLikes, className = "" }: LikeButtonProps) =
 
   useEffect(() => {
     const checkLikeStatus = async () => {
-      const { data: session } = await supabase.auth.getSession();
-      if (session?.session?.user?.id) {
-        const { data, error } = await supabase
-          .from('submission_likes')
-          .select('*')
-          .eq('submission_id', postId)
-          .eq('user_id', session.session.user.id);
-        
-        // Check if any likes exist for this user and post
-        setIsLiked(data && data.length > 0);
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        if (session?.session?.user?.id) {
+          const { data, error } = await supabase
+            .from('submission_likes')
+            .select('*')
+            .eq('submission_id', postId)
+            .eq('user_id', session.session.user.id);
+          
+          if (error) {
+            console.error('Error checking like status:', error);
+            return;
+          }
+          
+          setIsLiked(Boolean(data?.length));
+        }
+      } catch (error) {
+        console.error('Error checking like status:', error);
       }
     };
 
