@@ -4,7 +4,6 @@ import { ActionButtons } from "./SubmissionActions/ActionButtons";
 import { SubmissionStatusBadge } from "./submissions/SubmissionStatusBadge";
 import { SubmissionImage } from "./submissions/SubmissionImage";
 import { SubmissionInfo } from "./submissions/SubmissionInfo";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Hash } from "lucide-react";
 
 interface SubmissionCardProps {
@@ -26,24 +25,9 @@ export const SubmissionCard = memo(({
 
   const { id, username, status, image_url, created_at, updated_at, comment } = submission;
 
-  const handleSelect = () => {
-    if (onSelect) {
-      onSelect(id);
-    }
-  };
-
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="relative">
-        {showSelect && (
-          <div className="absolute top-3 left-3 z-50">
-            <Checkbox
-              checked={isSelected}
-              onCheckedChange={handleSelect}
-              className="h-5 w-5 border-2 border-white bg-white/90 rounded-sm shadow-lg"
-            />
-          </div>
-        )}
         <div className="absolute top-3 right-3 z-40 bg-black/50 text-white px-2 py-1 rounded-md flex items-center gap-1">
           <Hash className="h-4 w-4" />
           <span className="text-sm font-medium">{id}</span>
