@@ -16,6 +16,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Submit from "./pages/Submit";
 import Admin from "./pages/Admin";
+import Blog from "./pages/Blog";
 import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,14 @@ const Navigation = () => {
           className="text-gray-600 hover:text-primary transition-colors"
         >
           Fotoğraf Gönder
+        </Link>
+      </Button>
+      <Button variant="ghost" asChild>
+        <Link
+          to="/blog"
+          className="text-gray-600 hover:text-primary transition-colors"
+        >
+          Blog
         </Link>
       </Button>
       {isAuthenticated && (
@@ -110,6 +119,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/submit" element={<Submit />} />
+          <Route path="/blog" element={<Blog />} />
           <Route path="/login" element={<Navigate to="/admin" replace />} />
           <Route 
             path="/admin" 
