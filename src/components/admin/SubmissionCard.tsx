@@ -151,6 +151,44 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
             </AlertDialogContent>
           </AlertDialog>
         )}
+        {submission.status === 'rejected' && (
+          <div className="flex gap-4">
+            <button
+              onClick={() => handleApprove(submission.id)}
+              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-success text-white rounded-md hover:bg-success/90 transition-colors"
+            >
+              <Check size={20} />
+              Onayla
+            </button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors"
+                >
+                  <Trash2 size={20} />
+                  Sil
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Gönderiyi Sil</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Bu gönderiyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>İptal</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => handleDelete(submission.id)}
+                    className="bg-danger hover:bg-danger/90"
+                  >
+                    Sil
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )}
       </div>
     </div>
   );
