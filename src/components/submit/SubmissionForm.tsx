@@ -6,7 +6,11 @@ import { calculateImageHash } from "@/utils/imageProcessing";
 import { SubmissionSuccess } from "./SubmissionSuccess";
 import { SubmissionFormFields } from "./SubmissionFormFields";
 
-export const SubmissionForm = () => {
+interface SubmissionFormProps {
+  onSubmitSuccess?: () => void;
+}
+
+export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
   const [username, setUsername] = useState("");
   const [comment, setComment] = useState("");
   const [image, setImage] = useState<File | null>(null);
@@ -117,6 +121,7 @@ export const SubmissionForm = () => {
       console.log('Gönderi başarıyla kaydedildi');
       toast.success("Gönderiniz başarıyla kaydedildi! Moderatör onayından sonra yayınlanacaktır.");
       setIsSuccess(true);
+      onSubmitSuccess?.();
     } catch (error: any) {
       console.error('Gönderi hatası:', error);
       toast.error("Gönderiniz kaydedilirken bir hata oluştu: " + (error.message || "Bilinmeyen hata"));
