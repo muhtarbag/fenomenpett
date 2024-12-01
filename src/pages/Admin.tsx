@@ -16,6 +16,7 @@ import { SubmissionCard } from "@/components/admin/SubmissionCard";
 import { BlogPostForm } from "@/components/admin/BlogPostForm";
 import { BlogPostList } from "@/components/admin/BlogPostList";
 import { toast } from "sonner";
+import * as XLSX from 'xlsx';
 
 const TransactionSummary = ({ 
   pendingCount, 
@@ -65,12 +66,19 @@ const Admin = () => {
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
-  const downloadApprovedUsernames = () => {
+  const downloadApprovedUsernamesAsExcel = () => {
     try {
-      // Format date and extract data from approved submissions
+      // Format data for Excel
       const submissionData = approvedSubmissions.map(sub => ({
-        username: sub.username,
-        date: new Date(sub.created_at).toLocaleString('tr-TR', {
+        'Kullanıcı Adı': sub.username,
+        'Gönderim Tarihi': new Date(sub.created_at).toLocaleString('tr-TR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        'Onay Tarihi': new Date(sub.updated_at).toLocaleString('tr-TR', {
           year: 'numeric',
           month: '2-digit',
           day: '2-digit',
@@ -79,28 +87,20 @@ const Admin = () => {
         })
       }));
       
-      // Create CSV content with headers
-      const csvContent = "Kullanıcı Adı,Gönderim Tarihi\n" + 
-        submissionData.map(data => `${data.username},${data.date}`).join("\n");
+      // Create workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(submissionData);
       
-      // Create blob and download link
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement("a");
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, "Onaylanan Kullanıcılar");
       
-      // Create download URL
-      const url = window.URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", "onaylanan-kullanicilar.csv");
+      // Generate Excel file
+      XLSX.writeFile(wb, "onaylanan-kullanicilar.xlsx");
       
-      // Trigger download
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      toast.success("CSV dosyası başarıyla indirildi");
+      toast.success("Excel dosyası başarıyla indirildi");
     } catch (error) {
-      console.error('CSV indirme hatası:', error);
-      toast.error("CSV dosyası indirilirken bir hata oluştu");
+      console.error('Excel indirme hatası:', error);
+      toast.error("Excel dosyası indirilirken bir hata oluştu");
     }
   };
 
@@ -123,14 +123,16 @@ const Admin = () => {
 
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold">Yönetim Paneli</h2>
-          <Button
-            onClick={downloadApprovedUsernames}
-            className="flex items-center gap-2"
-            variant="outline"
-          >
-            <Download className="h-4 w-4" />
-            Onaylanan Kullanıcıları İndir
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={downloadApprovedUsernamesAsExcel}
+              className="flex items-center gap-2"
+              variant="outline"
+            >
+              <Download className="h-4 w-4" />
+              Excel Olarak İndir
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
