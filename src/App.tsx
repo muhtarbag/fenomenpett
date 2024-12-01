@@ -36,34 +36,41 @@ const Navigation = () => {
 
   const NavItems = () => (
     <div className={`${isMobile ? 'flex flex-col space-y-4 p-4' : 'flex items-center gap-4'}`}>
-      <Link
-        to="/submit"
-        className="text-gray-600 hover:text-primary transition-colors"
-      >
-        Fotoğraf Gönder
-      </Link>
+      <Button variant="ghost" asChild>
+        <Link
+          to="/submit"
+          className="text-gray-600 hover:text-primary transition-colors"
+        >
+          Fotoğraf Gönder
+        </Link>
+      </Button>
       {isAuthenticated ? (
         <>
-          <Link
-            to="/admin"
-            className="text-gray-600 hover:text-primary transition-colors"
-          >
-            Yönetici
-          </Link>
-          <button
+          <Button variant="ghost" asChild>
+            <Link
+              to="/admin"
+              className="text-gray-600 hover:text-primary transition-colors"
+            >
+              Yönetici
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
             onClick={logout}
             className="text-gray-600 hover:text-primary transition-colors text-left"
           >
             Çıkış Yap
-          </button>
+          </Button>
         </>
       ) : (
-        <Link
-          to="/login"
-          className="text-gray-600 hover:text-primary transition-colors"
-        >
-          Giriş Yap
-        </Link>
+        <Button variant="ghost" asChild>
+          <Link
+            to="/login"
+            className="text-gray-600 hover:text-primary transition-colors"
+          >
+            Giriş Yap
+          </Link>
+        </Button>
       )}
     </div>
   );
