@@ -20,18 +20,23 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
     console.log('Setting up auth state...');
     
     const setupAuth = async () => {
       try {
-        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        // Get initial session
+        const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Error getting initial session:', sessionError);
+          return;
+        }
+
         console.log('Initial session:', initialSession);
         
-        if (initialSession) {
-          setSession(initialSession);
+        if (initialSession?.user) {
           setIsAuthenticated(true);
           setUser({ 
             id: initialSession.user.id,
@@ -39,19 +44,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           });
         }
 
+        // Set up auth state change subscription
         const {
           data: { subscription },
         } = supabase.auth.onAuthStateChange(async (_event, currentSession) => {
           console.log('Auth state changed:', _event, currentSession);
-          if (currentSession) {
-            setSession(currentSession);
+          
+          if (currentSession?.user) {
             setIsAuthenticated(true);
             setUser({ 
               id: currentSession.user.id,
               email: currentSession.user.email 
             });
           } else {
-            setSession(null);
             setIsAuthenticated(false);
             setUser(null);
           }
@@ -85,7 +90,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (data.user) {
         console.log('Login successful:', data.user);
-        setSession(data.session);
         setIsAuthenticated(true);
         setUser({ 
           id: data.user.id,
@@ -105,7 +109,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // First clear the local state
       setIsAuthenticated(false);
       setUser(null);
-      setSession(null);
 
       // Then sign out from Supabase
       const { error } = await supabase.auth.signOut();
@@ -119,7 +122,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       toast.success('Başarıyla çıkış yapıldı');
       
       // Force reload the page to clear any cached state
-      window.location.href = '/';
+      window.location.href = '/login';
       
     } catch (error) {
       console.error('Error in logout process:', error);
