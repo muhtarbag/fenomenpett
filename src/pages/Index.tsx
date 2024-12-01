@@ -44,6 +44,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <div className="relative w-full h-[400px] overflow-hidden">
+        <img
+          src="/lovable-uploads/7138849c-6a14-4a65-8f76-220e6fc26382.png"
+          alt="FenomenPet Banner"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      
       <div className="bg-primary text-white py-3 px-4 text-center">
         <p className="text-sm md:text-base animate-fade-in">
           Help us make a difference! Share your stories of helping stray animals. 🐾
