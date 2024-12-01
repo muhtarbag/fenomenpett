@@ -17,42 +17,55 @@ export const PendingSubmissions = ({ submissions, isLoading }: PendingSubmission
   const mutation = useSubmissionMutation();
 
   const handleToggleSelect = () => {
+    console.log('🔄 Toggle select mode:', !showSelect);
     setShowSelect(!showSelect);
     setSelectedIds([]);
   };
 
   const handleSelect = (id: number) => {
-    setSelectedIds(prev => 
-      prev.includes(id) 
+    console.log('✨ Handling selection for submission:', id);
+    setSelectedIds(prev => {
+      const newIds = prev.includes(id) 
         ? prev.filter(selectedId => selectedId !== id)
-        : [...prev, id]
-    );
+        : [...prev, id];
+      console.log('📊 Updated selection:', newIds);
+      return newIds;
+    });
   };
 
   const handleBulkAction = async (status: 'approved' | 'rejected') => {
+    console.log('🔄 Starting bulk action:', { status, selectedIds });
+    
     if (selectedIds.length === 0) {
+      console.log('⚠️ No submissions selected');
       toast.error("Lütfen en az bir gönderi seçin");
       return;
     }
 
     const action = status === 'approved' ? 'onaylanıyor' : 'reddediliyor';
-    toast.loading(`Seçili gönderiler ${action}...`);
+    const loadingToast = toast.loading(`Seçili gönderiler ${action}...`);
 
     try {
+      console.log('📝 Processing submissions:', selectedIds);
+      
       // Process each submission sequentially
       for (const id of selectedIds) {
+        console.log(`🔄 Processing submission ${id}`);
         await mutation.mutateAsync({ id, status });
       }
 
       const actionCompleted = status === 'approved' ? 'onaylandı' : 'reddedildi';
+      console.log('✅ Bulk action completed successfully');
       toast.success(`${selectedIds.length} gönderi başarıyla ${actionCompleted}`);
       
       // Reset selection state
       setShowSelect(false);
       setSelectedIds([]);
     } catch (error) {
-      console.error('Bulk action error:', error);
+      console.error('❌ Bulk action error:', error);
       toast.error("İşlem sırasında bir hata oluştu");
+    } finally {
+      toast.dismiss(loadingToast);
     }
   };
 
