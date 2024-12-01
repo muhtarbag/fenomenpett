@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from 'xlsx';
 import { Submission } from "./hooks/useSubmissions";
+import { formatDownloadDate } from "@/utils/dateFormatters";
 
 interface DownloadButtonsProps {
   approvedSubmissions: Submission[];
@@ -68,20 +69,8 @@ export const DownloadButtons = ({ approvedSubmissions }: DownloadButtonsProps) =
   const formatSubmissionData = (submissions: Submission[]) => {
     return submissions.map(sub => ({
       'Kullanıcı Adı': sub.username || '',
-      'Gönderim Tarihi': new Date(sub.created_at).toLocaleString('tr-TR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      }),
-      'Onay Tarihi': new Date(sub.updated_at).toLocaleString('tr-TR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
+      'Gönderim Tarihi': formatDownloadDate(sub.created_at),
+      'Onay Tarihi': formatDownloadDate(sub.updated_at)
     }));
   };
 
