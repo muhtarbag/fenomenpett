@@ -5,7 +5,7 @@ import PostGrid from "@/components/PostGrid";
 import { Link } from "react-router-dom";
 
 const Index = () => {
-  const { data: posts = [] } = useQuery({
+  const { data: posts = [], isLoading, error } = useQuery({
     queryKey: ["approved-posts"],
     queryFn: () =>
       Promise.resolve([
@@ -150,7 +150,29 @@ const Index = () => {
           likes: 156,
         },
       ]),
+    retry: false, // Prevent retrying on error
+    refetchOnWindowFocus: false, // Prevent refetching when window gains focus
   });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600">Bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
