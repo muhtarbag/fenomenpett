@@ -10,7 +10,8 @@ import { LocationMap } from "@/components/admin/LocationMap";
 import { Stats } from "@/components/admin/Stats";
 import { DeviceStats } from "@/components/admin/DeviceStats";
 import { PerformanceMetrics } from "@/components/admin/PerformanceMetrics";
-import { SubmissionsList, SubmissionCard } from "@/components/admin/SubmissionsList";
+import { useSubmissions } from "@/components/admin/hooks/useSubmissions";
+import { SubmissionCard } from "@/components/admin/SubmissionCard";
 
 const TransactionSummary = ({ 
   pendingCount, 
@@ -45,8 +46,8 @@ const Admin = () => {
     pendingSubmissions, 
     approvedSubmissions, 
     rejectedSubmissions,
-    SubmissionCard
-  } = SubmissionsList();
+    isLoading
+  } = useSubmissions();
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -87,42 +88,54 @@ const Admin = () => {
           </TabsList>
 
           <TabsContent value="pending">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {pendingSubmissions.map((submission) => (
-                <SubmissionCard key={submission.id} submission={submission} />
-              ))}
-              {pendingSubmissions.length === 0 && (
-                <div className="col-span-full text-center text-gray-500">
-                  Bekleyen gönderi bulunmuyor
-                </div>
-              )}
-            </div>
+            {isLoading ? (
+              <div className="text-center">Yükleniyor...</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {pendingSubmissions.map((submission) => (
+                  <SubmissionCard key={submission.id} submission={submission} />
+                ))}
+                {pendingSubmissions.length === 0 && (
+                  <div className="col-span-full text-center text-gray-500">
+                    Bekleyen gönderi bulunmuyor
+                  </div>
+                )}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="approved">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {approvedSubmissions.map((submission) => (
-                <SubmissionCard key={submission.id} submission={submission} />
-              ))}
-              {approvedSubmissions.length === 0 && (
-                <div className="col-span-full text-center text-gray-500">
-                  Onaylanmış gönderi bulunmuyor
-                </div>
-              )}
-            </div>
+            {isLoading ? (
+              <div className="text-center">Yükleniyor...</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {approvedSubmissions.map((submission) => (
+                  <SubmissionCard key={submission.id} submission={submission} />
+                ))}
+                {approvedSubmissions.length === 0 && (
+                  <div className="col-span-full text-center text-gray-500">
+                    Onaylanmış gönderi bulunmuyor
+                  </div>
+                )}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="rejected">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {rejectedSubmissions.map((submission) => (
-                <SubmissionCard key={submission.id} submission={submission} />
-              ))}
-              {rejectedSubmissions.length === 0 && (
-                <div className="col-span-full text-center text-gray-500">
-                  Reddedilmiş gönderi bulunmuyor
-                </div>
-              )}
-            </div>
+            {isLoading ? (
+              <div className="text-center">Yükleniyor...</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {rejectedSubmissions.map((submission) => (
+                  <SubmissionCard key={submission.id} submission={submission} />
+                ))}
+                {rejectedSubmissions.length === 0 && (
+                  <div className="col-span-full text-center text-gray-500">
+                    Reddedilmiş gönderi bulunmuyor
+                  </div>
+                )}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
 

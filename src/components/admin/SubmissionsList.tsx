@@ -12,6 +12,7 @@ export const SubmissionsList = () => {
 
   if (isLoading) {
     console.log('⏳ Loading submissions...');
+    return <div className="text-center">Yükleniyor...</div>;
   }
 
   return {
