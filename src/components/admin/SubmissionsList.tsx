@@ -15,13 +15,19 @@ export const SubmissionsList = () => {
     return <div className="text-center">Yükleniyor...</div>;
   }
 
-  return {
-    pendingSubmissions,
-    approvedSubmissions,
-    rejectedSubmissions,
-    isLoading,
-    SubmissionCard
-  };
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {pendingSubmissions?.map((submission) => (
+        <SubmissionCard key={submission.id} submission={submission} />
+      ))}
+      {approvedSubmissions?.map((submission) => (
+        <SubmissionCard key={submission.id} submission={submission} />
+      ))}
+      {rejectedSubmissions?.map((submission) => (
+        <SubmissionCard key={submission.id} submission={submission} />
+      ))}
+    </div>
+  );
 };
 
 export { SubmissionCard };

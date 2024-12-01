@@ -8,6 +8,7 @@ export const useSubmissionMutation = () => {
   return useMutation({
     mutationFn: async ({ id, status }: { id: number; status: 'approved' | 'rejected' }) => {
       console.log('🔄 Updating submission status:', { id, status });
+      
       const { error, data } = await supabase
         .from('submissions')
         .update({ status })
@@ -18,7 +19,9 @@ export const useSubmissionMutation = () => {
         console.error('❌ Error updating submission:', error);
         throw error;
       }
+      
       console.log('✅ Successfully updated submission:', data);
+      return data;
     },
     onSuccess: (_, variables) => {
       const action = variables.status === 'approved' ? 'onaylandı' : 'reddedildi';
