@@ -4,11 +4,9 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageUpload } from "./ImageUpload";
 import { SubmissionRules } from "./SubmissionRules";
-import { useAuth } from "@/contexts/AuthContext";
 
 export const SubmissionForm = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [username, setUsername] = useState("");
   const [comment, setComment] = useState("");
   const [image, setImage] = useState<File | null>(null);
@@ -16,11 +14,6 @@ export const SubmissionForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) {
-      toast.error("Lütfen önce giriş yapın");
-      return;
-    }
 
     if (!username.trim()) {
       toast.error("Lütfen kullanıcı adınızı girin");
@@ -39,7 +32,7 @@ export const SubmissionForm = () => {
 
     try {
       setIsSubmitting(true);
-      console.log('Starting submission process...', { userId: user.id });
+      console.log('Starting submission process...');
 
       // Upload image to Supabase Storage
       const fileExt = image.name.split('.').pop();
@@ -75,8 +68,7 @@ export const SubmissionForm = () => {
           image_url: publicUrl,
           comment,
           status: 'pending',
-          likes: 0,
-          user_id: user.id
+          likes: 0
         });
 
       if (submissionError) {
