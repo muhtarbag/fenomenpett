@@ -32,53 +32,53 @@ export const SubmissionForm = () => {
 
     try {
       setIsSubmitting(true);
-      console.log('Starting submission process...');
+      console.log('Gönderim işlemi başlatılıyor...');
 
-      // Upload image to Supabase Storage
+      // Fotoğrafı Supabase Storage'a yükle
       const fileExt = image.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      console.log('Uploading image to storage...', { fileName, filePath });
+      console.log('Fotoğraf yükleniyor...', { fileName, filePath });
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('submissions')
         .upload(filePath, image);
 
       if (uploadError) {
-        console.error('Storage upload error:', uploadError);
+        console.error('Storage yükleme hatası:', uploadError);
         throw uploadError;
       }
 
-      // Get public URL for the uploaded image
+      // Yüklenen fotoğrafın public URL'ini al
       const { data: { publicUrl } } = supabase.storage
         .from('submissions')
         .getPublicUrl(filePath);
 
-      console.log('Image uploaded successfully, public URL:', publicUrl);
+      console.log('Fotoğraf başarıyla yüklendi, public URL:', publicUrl);
 
-      // Create submission record
-      console.log('Creating submission record...');
+      // Gönderi kaydını oluştur
+      console.log('Gönderi kaydı oluşturuluyor...');
       const { error: submissionError } = await supabase
         .from('submissions')
-        .insert({
+        .insert([{
           username,
           image_url: publicUrl,
           comment,
           status: 'pending',
           likes: 0
-        });
+        }]);
 
       if (submissionError) {
-        console.error('Submission insert error:', submissionError);
+        console.error('Gönderi kayıt hatası:', submissionError);
         throw submissionError;
       }
 
-      console.log('Submission created successfully');
+      console.log('Gönderi başarıyla kaydedildi');
       toast.success("Gönderiniz başarıyla kaydedildi! Moderatör onayından sonra yayınlanacaktır.");
       navigate("/");
-    } catch (error) {
-      console.error('Submission error:', error);
-      toast.error("Gönderiniz kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.");
+    } catch (error: any) {
+      console.error('Gönderi hatası:', error);
+      toast.error("Gönderiniz kaydedilirken bir hata oluştu: " + (error.message || "Bilinmeyen hata"));
     } finally {
       setIsSubmitting(false);
     }

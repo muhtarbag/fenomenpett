@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { convertToWebP } from "@/utils/imageProcessing";
 
 interface ImageUploadProps {
   image: File | null;
@@ -14,20 +13,26 @@ export const ImageUpload = ({ image, setImage }: ImageUploadProps) => {
     const file = e.target.files?.[0];
     if (file) {
       try {
-        console.log('Processing image...', file);
-        const webpFile = await convertToWebP(file);
-        setImage(webpFile);
+        console.log('Fotoğraf işleniyor...', file);
+        
+        // Dosya boyutu kontrolü (10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error("Fotoğraf boyutu 10MB'dan küçük olmalıdır");
+          return;
+        }
+
+        setImage(file);
 
         const reader = new FileReader();
         reader.onloadend = () => {
           setPreview(reader.result as string);
         };
-        reader.readAsDataURL(webpFile);
+        reader.readAsDataURL(file);
 
-        console.log('Image processed successfully');
+        console.log('Fotoğraf başarıyla işlendi');
         toast.success("Fotoğraf başarıyla yüklendi!");
       } catch (error) {
-        console.error('Error processing image:', error);
+        console.error('Fotoğraf işleme hatası:', error);
         toast.error("Fotoğraf yüklenirken bir hata oluştu.");
       }
     }
