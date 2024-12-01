@@ -22,7 +22,7 @@ const Index = () => {
       try {
         const { data, error } = await supabase
           .from('submissions')
-          .select('*')
+          .select('id, username, image_url, comment, likes, created_at')
           .eq('status', 'approved')
           .order('created_at', { ascending: false })
           .range(from, to);
