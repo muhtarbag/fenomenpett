@@ -25,15 +25,27 @@ interface RejectButtonProps {
 
 export const RejectButton = ({ submissionId, mutation }: RejectButtonProps) => {
   const handleReject = () => {
-    console.log('👎 Rejecting submission:', submissionId);
+    console.log('👎 Starting rejection process for submission:', {
+      id: submissionId,
+      timestamp: new Date().toISOString()
+    });
+    
     mutation.mutate(
       { id: submissionId, status: 'rejected' },
       {
         onSuccess: (data) => {
-          console.log('✅ Successfully rejected submission:', { id: submissionId, data });
+          console.log('✅ Successfully rejected submission:', { 
+            id: submissionId, 
+            data,
+            timestamp: new Date().toISOString()
+          });
         },
         onError: (error) => {
-          console.error('❌ Error rejecting submission:', { id: submissionId, error });
+          console.error('❌ Error rejecting submission:', { 
+            id: submissionId, 
+            error,
+            timestamp: new Date().toISOString()
+          });
         }
       }
     );

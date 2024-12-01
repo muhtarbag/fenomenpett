@@ -13,14 +13,23 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
   console.log('🎴 Rendering SubmissionCard:', {
     id: submission.id,
     username: submission.username,
-    currentStatus: submission.status
+    currentStatus: submission.status,
+    timestamp: new Date().toISOString()
   });
 
   const updateMutation = useSubmissionMutation();
   const deleteMutation = useDeleteSubmissionMutation();
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('tr-TR');
+    const date = new Date(dateString);
+    return date.toLocaleString('tr-TR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
   };
 
   return (
