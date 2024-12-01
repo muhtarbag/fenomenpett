@@ -32,13 +32,13 @@ const App = () => (
                     to="/submit"
                     className="text-gray-600 hover:text-primary transition-colors"
                   >
-                    Submit Photo
+                    Fotoğraf Gönder
                   </Link>
                   <Link
                     to="/admin"
                     className="text-gray-600 hover:text-primary transition-colors"
                   >
-                    Admin
+                    Yönetici
                   </Link>
                 </div>
               </div>

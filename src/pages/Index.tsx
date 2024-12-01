@@ -18,16 +18,16 @@ const Index = () => {
       Promise.resolve([
         {
           id: 1,
-          username: "animal_lover",
+          username: "hayvan_sever",
           imageUrl: "https://images.unsplash.com/photo-1415369629372-26f2fe60c467",
-          comment: "Found this sweet stray cat and gave her water and food!",
+          comment: "Bu tatlı sokak kedisini buldum ve ona su ve mama verdim!",
           likes: 42,
         },
         {
           id: 2,
-          username: "pet_friend",
+          username: "pati_dostu",
           imageUrl: "https://images.unsplash.com/photo-1548681528-6a5c45b66b42",
-          comment: "This hungry dog now has a full belly and lots of love ❤️",
+          comment: "Bu aç köpeğin karnı artık tok ve sevgiyle dolu ❤️",
           likes: 38,
         },
         {
@@ -160,12 +160,12 @@ const Index = () => {
   });
 
   const handleLike = (postId: number) => {
-    toast.success("Thank you for showing support!");
+    toast.success("Desteğiniz için teşekkürler!");
   };
 
   const handleShare = (postId: number) => {
     navigator.clipboard.writeText(window.location.href);
-    toast.success("Link copied to clipboard!");
+    toast.success("Bağlantı panoya kopyalandı!");
   };
 
   return (
@@ -180,14 +180,14 @@ const Index = () => {
       
       <div className="bg-primary text-white py-3 px-4 text-center">
         <p className="text-sm md:text-base animate-fade-in">
-          Help us make a difference! Share your stories of helping stray animals. 🐾
+          Fark yaratmamıza yardım edin! Sokak hayvanlarına yardım hikayelerinizi paylaşın. 🐾
         </p>
       </div>
       
       <div className="py-8">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold text-center mb-12 text-gray-900">
-            Stray Animal Care Photos
+            Sokak Hayvanı Yardım Fotoğrafları
           </h1>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -198,7 +198,7 @@ const Index = () => {
               >
                 <img
                   src={post.imageUrl}
-                  alt={`Posted by ${post.username}`}
+                  alt={`${post.username} tarafından paylaşıldı`}
                   className="w-full h-64 object-cover"
                 />
                 <div className="p-4">
@@ -217,7 +217,7 @@ const Index = () => {
                       className="flex items-center gap-1 text-gray-600 hover:text-primary transition-colors"
                     >
                       <Share2 size={20} />
-                      <span>Share</span>
+                      <span>Paylaş</span>
                     </button>
                   </div>
                 </div>
@@ -227,7 +227,7 @@ const Index = () => {
 
           {posts.length === 0 && (
             <div className="text-center text-gray-500 mt-8">
-              No approved posts yet. Be the first to share your stray animal care photo!
+              Henüz onaylanmış gönderi yok. Sokak hayvanlarına yardım fotoğrafınızı ilk paylaşan siz olun!
             </div>
           )}
         </div>
