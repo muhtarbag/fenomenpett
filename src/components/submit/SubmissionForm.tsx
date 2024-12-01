@@ -14,17 +14,26 @@ export const SubmissionForm = () => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const checkForDuplicates = async (imageUrl: string) => {
-    const { data: existingSubmissions } = await supabase
+    // Check both approved and pending submissions for duplicates
+    const { data: existingSubmissions, error } = await supabase
       .from('submissions')
-      .select('id, image_url')
+      .select('id, image_url, username')
       .or(`status.eq.approved,status.eq.pending`);
 
-    // Simple URL comparison for now
-    const isDuplicate = existingSubmissions?.some(submission => 
+    if (error) {
+      console.error('Error checking for duplicates:', error);
+      return { isDuplicate: false, originalSubmission: null };
+    }
+
+    // Find any submission with the same image URL
+    const duplicateSubmission = existingSubmissions?.find(submission => 
       submission.image_url === imageUrl
     );
 
-    return isDuplicate;
+    return {
+      isDuplicate: !!duplicateSubmission,
+      originalSubmission: duplicateSubmission
+    };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,7 +58,7 @@ export const SubmissionForm = () => {
       setIsSubmitting(true);
       console.log('Gönderim işlemi başlatılıyor...');
 
-      // Fotoğrafı Supabase Storage'a yükle
+      // Upload photo to Supabase Storage
       const fileExt = image.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
@@ -64,7 +73,7 @@ export const SubmissionForm = () => {
         throw uploadError;
       }
 
-      // Yüklenen fotoğrafın public URL'ini al
+      // Get the public URL of the uploaded photo
       const { data: { publicUrl } } = supabase.storage
         .from('submissions')
         .getPublicUrl(filePath);
@@ -72,17 +81,18 @@ export const SubmissionForm = () => {
       console.log('Fotoğraf başarıyla yüklendi, public URL:', publicUrl);
 
       // Check for duplicates
-      const isDuplicate = await checkForDuplicates(publicUrl);
+      const { isDuplicate, originalSubmission } = await checkForDuplicates(publicUrl);
       
-      if (isDuplicate) {
-        // If duplicate, add to rejected submissions
+      if (isDuplicate && originalSubmission) {
+        // Add to rejected submissions with more detailed reason
         const { error: rejectionError } = await supabase
           .from('rejected_submissions')
           .insert([{
             username,
             image_url: publicUrl,
             comment,
-            reason: 'Duplicate image submission'
+            reason: `Duplicate image submission. Original submission by user: ${originalSubmission.username}`,
+            original_submission_id: originalSubmission.id
           }]);
 
         if (rejectionError) {
@@ -90,12 +100,12 @@ export const SubmissionForm = () => {
           throw rejectionError;
         }
 
-        // Delete the uploaded file
+        // Delete the uploaded duplicate file
         await supabase.storage
           .from('submissions')
           .remove([filePath]);
 
-        toast.error("Bu fotoğraf daha önce yüklenmiş. Lütfen farklı bir fotoğraf deneyin.");
+        toast.error("Bu fotoğraf daha önce başka bir kullanıcı tarafından yüklenmiş. Lütfen farklı bir fotoğraf deneyin.");
         return;
       }
 
@@ -119,7 +129,7 @@ export const SubmissionForm = () => {
       toast.success("Gönderiniz başarıyla kaydedildi! Moderatör onayından sonra yayınlanacaktır.");
       setIsSuccess(true);
       
-      // 5 saniye sonra ana sayfaya yönlendir
+      // Redirect to home page after 5 seconds
       setTimeout(() => {
         navigate("/");
       }, 5000);
