@@ -80,7 +80,15 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
           throw rejectionError;
         }
 
-        toast.error("Bu fotoğrafa çok benzer bir fotoğraf daha önce başka bir kullanıcı tarafından yüklenmiş. Lütfen farklı bir fotoğraf deneyin.");
+        toast.error("Bu fotoğrafa çok benzer bir fotoğraf daha önce başka bir kullanıcı tarafından yüklenmiş. Lütfen farklı bir fotoğraf deneyin.", {
+          style: {
+            fontSize: '1.2rem',
+            fontWeight: 'bold',
+            color: '#FF0000',
+            backgroundColor: '#FFF',
+            border: '2px solid #FF0000'
+          },
+        });
         return;
       }
 
