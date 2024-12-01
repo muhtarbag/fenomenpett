@@ -9,6 +9,8 @@ interface DuplicateCheckResult {
 }
 
 export const checkForDuplicates = async (imageUrl: string): Promise<DuplicateCheckResult> => {
+  console.log('Checking for duplicates:', imageUrl);
+  
   const { data: existingSubmissions, error } = await supabase
     .from('submissions')
     .select('id, image_url, username')
