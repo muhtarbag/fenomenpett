@@ -78,10 +78,10 @@ export const SubmissionForm = () => {
       toast.success("Gönderiniz başarıyla kaydedildi! Moderatör onayından sonra yayınlanacaktır.");
       setIsSuccess(true);
       
-      // 3 saniye sonra ana sayfaya yönlendir
+      // 5 saniye sonra ana sayfaya yönlendir
       setTimeout(() => {
         navigate("/");
-      }, 3000);
+      }, 5000);
     } catch (error: any) {
       console.error('Gönderi hatası:', error);
       toast.error("Gönderiniz kaydedilirken bir hata oluştu: " + (error.message || "Bilinmeyen hata"));
