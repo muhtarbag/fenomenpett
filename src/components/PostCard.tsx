@@ -1,25 +1,25 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import LikeButton from "./LikeButton";
-import SocialShare from "./SocialShare";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import PostDialogContent from "./PostDialogContent";
-
-interface Post {
-  id: number;
-  username: string;
-  image_url: string;
-  comment: string;
-  likes: number;
-}
+import { formatDistanceToNow } from "date-fns";
+import { tr } from "date-fns/locale";
 
 interface PostCardProps {
-  post: Post;
+  post: {
+    id: number;
+    username: string;
+    image_url: string;
+    comment: string;
+    likes: number;
+    created_at: string;
+  };
 }
 
 const PostCard = ({ post }: PostCardProps) => {
+  const timeAgo = formatDistanceToNow(new Date(post.created_at), {
+    addSuffix: true,
+    locale: tr,
+  });
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -29,31 +29,25 @@ const PostCard = ({ post }: PostCardProps) => {
               src={post.image_url}
               alt={`${post.username} tarafından paylaşıldı`}
               className="w-full h-64 object-cover"
+              crossOrigin="anonymous"
             />
             <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
               <img
                 src="/lovable-uploads/10d8a44d-2040-49f8-89cb-eae4de94925a.png"
                 alt="Fenomenbet Watermark"
                 className="w-3/4 max-w-md"
+                crossOrigin="anonymous"
               />
             </div>
           </div>
           <div className="p-4">
             <p className="font-semibold text-gray-900">@{post.username}</p>
             <p className="text-gray-600 mt-1 line-clamp-2">{post.comment}</p>
-            <div className="mt-4 flex items-center justify-between">
-              <div onClick={(e) => e.stopPropagation()}>
-                <LikeButton postId={post.id} initialLikes={post.likes} />
-              </div>
-              <div onClick={(e) => e.stopPropagation()}>
-                <SocialShare url={window.location.href} />
-              </div>
-            </div>
+            <p className="text-sm text-gray-500 mt-2">{timeAgo}</p>
           </div>
         </div>
       </DialogTrigger>
-      
-      <DialogContent className="sm:max-w-[800px]">
+      <DialogContent className="max-w-3xl">
         <PostDialogContent post={post} />
       </DialogContent>
     </Dialog>
