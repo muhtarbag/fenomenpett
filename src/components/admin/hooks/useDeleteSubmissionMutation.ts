@@ -1,12 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Submission } from "./useSubmissions";
 
 export const useDeleteSubmissionMutation = () => {
   const queryClient = useQueryClient();
   
-  return useMutation({
-    mutationFn: async (id: number) => {
+  return useMutation<Submission[], Error, number>({
+    mutationFn: async (id) => {
       console.log('🗑️ Deleting submission:', id);
       
       const { error, data } = await supabase

@@ -1,12 +1,17 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Submission } from "./useSubmissions";
 
 export const useSubmissionMutation = () => {
   const queryClient = useQueryClient();
   
-  return useMutation({
-    mutationFn: async ({ id, status }: { id: number; status: 'approved' | 'rejected' }) => {
+  return useMutation<
+    Submission[],
+    Error,
+    { id: number; status: 'approved' | 'rejected' }
+  >({
+    mutationFn: async ({ id, status }) => {
       console.log('🔄 Starting submission status update:', { id, status });
       
       const { error, data } = await supabase

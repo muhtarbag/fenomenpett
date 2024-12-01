@@ -1,18 +1,9 @@
-import { Check, X, Trash2 } from "lucide-react";
 import { Submission } from "./hooks/useSubmissions";
 import { useSubmissionMutation } from "./hooks/useSubmissionMutation";
 import { useDeleteSubmissionMutation } from "./hooks/useDeleteSubmissionMutation";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { ApproveButton } from "./SubmissionActions/ApproveButton";
+import { RejectButton } from "./SubmissionActions/RejectButton";
+import { DeleteButton } from "./SubmissionActions/DeleteButton";
 
 interface SubmissionCardProps {
   submission: Submission;
@@ -25,50 +16,8 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
     currentStatus: submission.status
   });
 
-  const { mutate: updateStatus, isLoading: isUpdating } = useSubmissionMutation();
-  const { mutate: deleteSubmission, isLoading: isDeleting } = useDeleteSubmissionMutation();
-
-  const handleApprove = async (id: number) => {
-    console.log('👍 Approving submission:', id);
-    updateStatus(
-      { id, status: 'approved' },
-      {
-        onSuccess: () => {
-          console.log('✅ Successfully approved submission:', id);
-        },
-        onError: (error) => {
-          console.error('❌ Error approving submission:', error);
-        }
-      }
-    );
-  };
-
-  const handleReject = async (id: number) => {
-    console.log('👎 Rejecting submission:', id);
-    updateStatus(
-      { id, status: 'rejected' },
-      {
-        onSuccess: () => {
-          console.log('✅ Successfully rejected submission:', id);
-        },
-        onError: (error) => {
-          console.error('❌ Error rejecting submission:', error);
-        }
-      }
-    );
-  };
-
-  const handleDelete = async (id: number) => {
-    console.log('🗑️ Deleting submission:', id);
-    deleteSubmission(id, {
-      onSuccess: () => {
-        console.log('✅ Successfully deleted submission:', id);
-      },
-      onError: (error) => {
-        console.error('❌ Error deleting submission:', error);
-      }
-    });
-  };
+  const updateMutation = useSubmissionMutation();
+  const deleteMutation = useDeleteSubmissionMutation();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString('tr-TR');
@@ -111,114 +60,38 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
           )}
         </div>
         <p className="text-gray-600 mb-4">{submission.comment}</p>
+        
         {submission.status === 'pending' && (
           <div className="flex gap-4">
-            <button
-              onClick={() => handleApprove(submission.id)}
-              disabled={isUpdating}
-              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-success text-white rounded-md hover:bg-success/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Check size={20} />
-              {isUpdating ? 'İşleniyor...' : 'Onayla'}
-            </button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <button
-                  disabled={isUpdating}
-                  className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <X size={20} />
-                  {isUpdating ? 'İşleniyor...' : 'Reddet'}
-                </button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Gönderiyi Reddet</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Bu gönderiyi reddetmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>İptal</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => handleReject(submission.id)}
-                    className="bg-danger hover:bg-danger/90"
-                  >
-                    Reddet
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <ApproveButton 
+              submissionId={submission.id} 
+              mutation={updateMutation} 
+            />
+            <RejectButton 
+              submissionId={submission.id} 
+              mutation={updateMutation} 
+            />
           </div>
         )}
+
         {submission.status === 'approved' && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <button
-                disabled={isDeleting}
-                className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Trash2 size={20} />
-                {isDeleting ? 'Siliniyor...' : 'Gönderiyi Sil'}
-              </button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Gönderiyi Sil</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Bu gönderiyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>İptal</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => handleDelete(submission.id)}
-                  className="bg-danger hover:bg-danger/90"
-                >
-                  Sil
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <DeleteButton 
+            submissionId={submission.id} 
+            mutation={deleteMutation}
+            className="w-full" 
+          />
         )}
+
         {submission.status === 'rejected' && (
           <div className="flex gap-4">
-            <button
-              onClick={() => handleApprove(submission.id)}
-              disabled={isUpdating}
-              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-success text-white rounded-md hover:bg-success/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Check size={20} />
-              {isUpdating ? 'İşleniyor...' : 'Onayla'}
-            </button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <button
-                  disabled={isDeleting}
-                  className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Trash2 size={20} />
-                  {isDeleting ? 'Siliniyor...' : 'Sil'}
-                </button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Gönderiyi Sil</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Bu gönderiyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>İptal</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => handleDelete(submission.id)}
-                    className="bg-danger hover:bg-danger/90"
-                  >
-                    Sil
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <ApproveButton 
+              submissionId={submission.id} 
+              mutation={updateMutation} 
+            />
+            <DeleteButton 
+              submissionId={submission.id} 
+              mutation={deleteMutation} 
+            />
           </div>
         )}
       </div>
