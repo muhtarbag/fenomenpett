@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import SocialShare from "./SocialShare";
 import {
@@ -6,6 +6,8 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Post {
   id: number;
@@ -21,11 +23,64 @@ interface PostCardProps {
 
 const PostCard = ({ post }: PostCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(post.likes);
+  const [likeCount, setLikeCount] = useState(post.likes || 0);
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+  useEffect(() => {
+    const checkIfLiked = async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (session?.session?.user) {
+        const { data } = await supabase
+          .from('submission_likes')
+          .select('*')
+          .eq('submission_id', post.id)
+          .eq('user_id', session.session.user.id)
+          .single();
+        
+        setIsLiked(!!data);
+      }
+    };
+
+    checkIfLiked();
+  }, [post.id]);
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    const { data: session } = await supabase.auth.getSession();
+    if (!session?.session?.user) {
+      toast.error("Beğenmek için giriş yapmalısınız");
+      return;
+    }
+
+    try {
+      if (isLiked) {
+        // Unlike
+        const { error } = await supabase
+          .from('submission_likes')
+          .delete()
+          .eq('submission_id', post.id)
+          .eq('user_id', session.session.user.id);
+
+        if (error) throw error;
+        setIsLiked(false);
+        setLikeCount(prev => Math.max(0, prev - 1));
+      } else {
+        // Like
+        const { error } = await supabase
+          .from('submission_likes')
+          .insert({
+            submission_id: post.id,
+            user_id: session.session.user.id
+          });
+
+        if (error) throw error;
+        setIsLiked(true);
+        setLikeCount(prev => prev + 1);
+      }
+    } catch (error: any) {
+      console.error('Like error:', error);
+      toast.error("Bir hata oluştu");
+    }
   };
 
   return (
@@ -42,10 +97,7 @@ const PostCard = ({ post }: PostCardProps) => {
             <p className="text-gray-600 mt-1 line-clamp-2">{post.comment}</p>
             <div className="mt-4 flex items-center justify-between">
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleLike();
-                }}
+                onClick={handleLike}
                 className="flex items-center gap-1 text-gray-600 hover:text-primary transition-colors"
               >
                 <Heart
