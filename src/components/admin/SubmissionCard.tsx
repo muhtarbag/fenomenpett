@@ -5,6 +5,7 @@ import { SubmissionStatusBadge } from "./submissions/SubmissionStatusBadge";
 import { SubmissionImage } from "./submissions/SubmissionImage";
 import { SubmissionInfo } from "./submissions/SubmissionInfo";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Hash } from "lucide-react";
 
 interface SubmissionCardProps {
   submission: Submission;
@@ -45,6 +46,10 @@ export const SubmissionCard = memo(({
             />
           </div>
         )}
+        <div className="absolute top-2 right-2 z-10 bg-black/50 text-white px-2 py-1 rounded-md flex items-center gap-1">
+          <Hash className="h-4 w-4" />
+          <span className="text-sm font-medium">{id}</span>
+        </div>
         <SubmissionImage 
           imageUrl={image_url} 
           username={username} 
