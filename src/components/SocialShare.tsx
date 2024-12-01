@@ -1,16 +1,19 @@
-import { Share, Instagram, Facebook, Twitter, Youtube, Linkedin } from "lucide-react";
+import { Share, Instagram, Facebook, Twitter, Link as LinkIcon, MessageCircle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/use-toast";
 
 interface SocialShareProps {
   url: string;
 }
 
 const SocialShare = ({ url }: SocialShareProps) => {
+  const { toast } = useToast();
+  
   const shareData = {
     title: 'Fenomenpet - Sokak Hayvanlarına Yardım',
     text: 'Sokak hayvanlarına yardım etmek için siz de katılın!',
@@ -33,19 +36,25 @@ const SocialShare = ({ url }: SocialShareProps) => {
       case 'whatsapp':
         shareUrl = `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
         break;
-      case 'telegram':
-        shareUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`;
-        break;
-      case 'linkedin':
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
-        break;
       case 'instagram':
-        // Instagram doesn't have a direct share URL, so we'll open Instagram in a new tab
+        // Instagram doesn't have a direct share URL, so we'll open Instagram
         window.open('https://instagram.com', '_blank', 'noopener,noreferrer');
         return;
-      case 'youtube':
-        // YouTube doesn't have a direct share URL, so we'll open YouTube in a new tab
-        window.open('https://youtube.com', '_blank', 'noopener,noreferrer');
+      case 'copy':
+        try {
+          await navigator.clipboard.writeText(url);
+          toast({
+            description: "Bağlantı kopyalandı!",
+            duration: 2000,
+          });
+        } catch (err) {
+          console.error('Failed to copy:', err);
+          toast({
+            variant: "destructive",
+            description: "Bağlantı kopyalanamadı",
+            duration: 2000,
+          });
+        }
         return;
       default:
         if (navigator.share) {
@@ -73,23 +82,23 @@ const SocialShare = ({ url }: SocialShareProps) => {
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => handleShare('instagram')} className="cursor-pointer">
           <Instagram className="mr-2 h-4 w-4" />
-          Instagram'da Paylaş
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleShare('facebook')} className="cursor-pointer">
-          <Facebook className="mr-2 h-4 w-4" />
-          Facebook'ta Paylaş
+          Instagram
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleShare('twitter')} className="cursor-pointer">
           <Twitter className="mr-2 h-4 w-4" />
-          Twitter'da Paylaş
+          Twitter
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleShare('linkedin')} className="cursor-pointer">
-          <Linkedin className="mr-2 h-4 w-4" />
-          LinkedIn'de Paylaş
+        <DropdownMenuItem onClick={() => handleShare('facebook')} className="cursor-pointer">
+          <Facebook className="mr-2 h-4 w-4" />
+          Facebook
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleShare('youtube')} className="cursor-pointer">
-          <Youtube className="mr-2 h-4 w-4" />
-          YouTube'da Paylaş
+        <DropdownMenuItem onClick={() => handleShare('whatsapp')} className="cursor-pointer">
+          <MessageCircle className="mr-2 h-4 w-4" />
+          WhatsApp
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleShare('copy')} className="cursor-pointer">
+          <LinkIcon className="mr-2 h-4 w-4" />
+          Linki Kopyala
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
