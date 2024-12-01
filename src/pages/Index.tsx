@@ -165,9 +165,6 @@ const Index = () => {
       <div className="py-8">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-6 text-gray-900">
-              Fenomenbet Giriş Yap
-            </h1>
             <a href="https://linkany.pro/fenomenbet" target="_blank" rel="noopener noreferrer">
               <Button className="bg-primary hover:bg-primary/90 text-white px-8 py-3 text-lg rounded-lg">
                 Giriş Yap
