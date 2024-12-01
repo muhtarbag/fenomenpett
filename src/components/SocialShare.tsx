@@ -1,4 +1,4 @@
-import { Facebook, Twitter, Link as LinkIcon, Instagram, WhatsApp } from "lucide-react";
+import { Facebook, Twitter, Link as LinkIcon, Instagram, MessageSquare } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -51,7 +51,7 @@ const SocialShare = ({ url }: SocialShareProps) => {
             rel="noopener noreferrer"
             className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md transition-colors"
           >
-            <WhatsApp size={20} className="text-[#25D366]" />
+            <MessageSquare size={20} className="text-[#25D366]" />
             <span>WhatsApp</span>
           </a>
           <a
