@@ -42,7 +42,7 @@ export const SubmissionCard = memo(({
             <Checkbox
               checked={isSelected}
               onCheckedChange={() => onSelect?.(id)}
-              className="bg-white/90 border-2 w-5 h-5 rounded-sm shadow-sm hover:bg-white/100 transition-colors"
+              className="bg-white/90 border-2 w-6 h-6 rounded-sm shadow-md hover:bg-white/100 transition-colors"
             />
           </div>
         )}
