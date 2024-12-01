@@ -4,12 +4,21 @@ import { ActionButtons } from "./SubmissionActions/ActionButtons";
 import { SubmissionStatusBadge } from "./submissions/SubmissionStatusBadge";
 import { SubmissionImage } from "./submissions/SubmissionImage";
 import { SubmissionInfo } from "./submissions/SubmissionInfo";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface SubmissionCardProps {
   submission: Submission;
+  showSelect?: boolean;
+  isSelected?: boolean;
+  onSelect?: (id: number) => void;
 }
 
-export const SubmissionCard = memo(({ submission }: SubmissionCardProps) => {
+export const SubmissionCard = memo(({ 
+  submission, 
+  showSelect = false,
+  isSelected = false,
+  onSelect
+}: SubmissionCardProps) => {
   if (!submission) {
     console.error('No submission data provided');
     return null;
@@ -26,10 +35,21 @@ export const SubmissionCard = memo(({ submission }: SubmissionCardProps) => {
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden animate-fade-up">
-      <SubmissionImage 
-        imageUrl={image_url} 
-        username={username} 
-      />
+      <div className="relative">
+        {showSelect && (
+          <div className="absolute top-2 left-2 z-10">
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={() => onSelect?.(id)}
+              className="bg-white border-2"
+            />
+          </div>
+        )}
+        <SubmissionImage 
+          imageUrl={image_url} 
+          username={username} 
+        />
+      </div>
       <div className="p-4">
         <div className="flex justify-between items-start mb-4">
           <SubmissionInfo 
