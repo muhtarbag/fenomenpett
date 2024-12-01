@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { convertToWebP } from "@/utils/imageProcessing";
+import { supabase } from "@/integrations/supabase/client";
 
 const Submit = () => {
   const navigate = useNavigate();
@@ -15,36 +16,75 @@ const Submit = () => {
     const file = e.target.files?.[0];
     if (file) {
       try {
-        // Convert the image to WebP format
         const webpFile = await convertToWebP(file);
         setImage(webpFile);
 
-        // Create preview
         const reader = new FileReader();
         reader.onloadend = () => {
           setPreview(reader.result as string);
         };
         reader.readAsDataURL(webpFile);
 
-        toast.success("Fotoğraf başarıyla optimize edildi!");
+        toast.success("Fotoğraf başarıyla yüklendi!");
       } catch (error) {
-        toast.error("Fotoğraf optimizasyonu sırasında bir hata oluştu.");
         console.error('Error processing image:', error);
+        toast.error("Fotoğraf yüklenirken bir hata oluştu.");
       }
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!username || !image || !comment) {
       toast.error("Lütfen tüm alanları doldurun");
       return;
     }
 
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    toast.success("Gönderiniz için teşekkürler! 48 saat içinde incelenecektir.");
-    navigate("/");
+    try {
+      setIsSubmitting(true);
+
+      // Upload image to Supabase Storage
+      const fileExt = image.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('submissions')
+        .upload(filePath, image);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get public URL for the uploaded image
+      const { data: { publicUrl } } = supabase.storage
+        .from('submissions')
+        .getPublicUrl(filePath);
+
+      // Create submission record
+      const { error: submissionError } = await supabase
+        .from('submissions')
+        .insert({
+          username,
+          image_url: publicUrl,
+          comment,
+          status: 'pending',
+          likes: 0
+        });
+
+      if (submissionError) {
+        throw submissionError;
+      }
+
+      toast.success("Gönderiniz başarıyla kaydedildi! Moderatör onayından sonra yayınlanacaktır.");
+      navigate("/");
+    } catch (error) {
+      console.error('Submission error:', error);
+      toast.error("Gönderiniz kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
