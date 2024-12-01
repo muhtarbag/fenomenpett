@@ -11,24 +11,19 @@ export const useDeleteSubmissionMutation = () => {
       console.log('🗑️ Starting deletion process for submission:', id);
       
       try {
-        // İlk olarak gönderinin var olup olmadığını kontrol et
+        // First check if the submission exists
         const { data: submission, error: checkError } = await supabase
           .from('submissions')
           .select('*')
           .eq('id', id)
-          .maybeSingle();
+          .single();
 
         if (checkError) {
           console.error('❌ Error checking submission:', checkError);
           throw new Error('Gönderi kontrol edilirken bir hata oluştu');
         }
 
-        if (!submission) {
-          console.log('⚠️ Submission not found');
-          throw new Error('Gönderi bulunamadı');
-        }
-
-        // Önce rejected_submissions tablosundan sil
+        // Delete from rejected_submissions first
         const { error: rejectedError } = await supabase
           .from('rejected_submissions')
           .delete()
@@ -41,7 +36,7 @@ export const useDeleteSubmissionMutation = () => {
 
         console.log('✅ Successfully deleted from rejected_submissions');
 
-        // Sonra ana submissions tablosundan sil
+        // Then delete from main submissions table
         const { error: submissionError } = await supabase
           .from('submissions')
           .delete()
@@ -52,8 +47,8 @@ export const useDeleteSubmissionMutation = () => {
           throw new Error('Gönderi silinirken bir hata oluştu');
         }
 
-        console.log('✅ Successfully deleted submission');
-        return submission as Submission;
+        console.log('✅ Successfully deleted submission:', id);
+        return submission;
 
       } catch (error) {
         console.error('❌ Delete operation failed:', error);
