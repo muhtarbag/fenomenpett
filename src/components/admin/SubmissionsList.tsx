@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check, X, Clock } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -128,6 +128,31 @@ export const SubmissionCard = ({ submission }: { submission: Submission }) => {
 
 export const SubmissionsList = () => {
   console.log('🔄 SubmissionsList component rendering');
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Subscribe to changes on the submissions table
+    const channel = supabase
+      .channel('submissions_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'submissions'
+        },
+        (payload) => {
+          console.log('Realtime update received:', payload);
+          // Invalidate and refetch submissions when changes occur
+          queryClient.invalidateQueries({ queryKey: ['submissions'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const { data: submissions = [], isError, isLoading } = useQuery({
     queryKey: ['submissions'],
