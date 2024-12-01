@@ -33,7 +33,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (initialSession) {
           setSession(initialSession);
           setIsAuthenticated(true);
-          setUser({ id: initialSession.user.id });
+          setUser({ 
+            id: initialSession.user.id,
+            email: initialSession.user.email 
+          });
         }
 
         const {
@@ -43,7 +46,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           if (currentSession) {
             setSession(currentSession);
             setIsAuthenticated(true);
-            setUser({ id: currentSession.user.id });
+            setUser({ 
+              id: currentSession.user.id,
+              email: currentSession.user.email 
+            });
           } else {
             setSession(null);
             setIsAuthenticated(false);
@@ -52,7 +58,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
 
         return () => {
-          console.log('Cleaning up auth subscription');
           subscription.unsubscribe();
         };
       } catch (error) {
@@ -82,7 +87,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.log('Login successful:', data.user);
         setSession(data.session);
         setIsAuthenticated(true);
-        setUser({ id: data.user.id });
+        setUser({ 
+          id: data.user.id,
+          email: data.user.email 
+        });
         return true;
       }
       return false;
@@ -93,37 +101,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    console.log('Starting logout process...');
-    
     try {
-      // Clear local state first
+      // First clear the local state
       setIsAuthenticated(false);
       setUser(null);
       setSession(null);
 
-      // Get current session
-      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      // Then sign out from Supabase
+      const { error } = await supabase.auth.signOut();
       
-      if (currentSession) {
-        console.log('Found active session, signing out...');
-        const { error } = await supabase.auth.signOut({
-          scope: 'local'  // Only clear the current tab's session
-        });
-        
-        if (error) {
-          console.error('Supabase signOut error:', error);
-          toast.error("Çıkış yaparken bir hata oluştu, ancak local oturum kapatıldı");
-          return;
-        }
-      } else {
-        console.log('No active session found, skipping Supabase signOut');
+      if (error) {
+        console.error('Logout error:', error);
+        toast.error('Çıkış yaparken bir hata oluştu');
+        return;
       }
 
-      console.log('Logout successful');
-      toast.success("Başarıyla çıkış yapıldı");
+      toast.success('Başarıyla çıkış yapıldı');
+      
+      // Force reload the page to clear any cached state
+      window.location.href = '/';
+      
     } catch (error) {
       console.error('Error in logout process:', error);
-      toast.error("Çıkış yaparken bir hata oluştu");
+      toast.error('Çıkış yaparken bir hata oluştu');
     }
   };
 
