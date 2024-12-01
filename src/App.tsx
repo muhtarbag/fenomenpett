@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Menu, LogOut } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -33,7 +33,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const Navigation = () => {
   const isMobile = useIsMobile();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
 
   const NavItems = () => (
     <div className={`${isMobile ? 'flex flex-col space-y-4 p-4' : 'flex items-center gap-4'}`}>
@@ -46,14 +50,24 @@ const Navigation = () => {
         </Link>
       </Button>
       {isAuthenticated && (
-        <Button variant="ghost" asChild>
-          <Link
-            to="/admin"
+        <>
+          <Button variant="ghost" asChild>
+            <Link
+              to="/admin"
+              className="text-gray-600 hover:text-primary transition-colors"
+            >
+              Yönetici
+            </Link>
+          </Button>
+          <Button 
+            variant="ghost" 
+            onClick={handleLogout}
             className="text-gray-600 hover:text-primary transition-colors"
           >
-            Yönetici
-          </Link>
-        </Button>
+            <LogOut className="mr-2 h-4 w-4" />
+            Çıkış Yap
+          </Button>
+        </>
       )}
     </div>
   );
