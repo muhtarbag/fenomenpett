@@ -7,11 +7,11 @@ export const useSubmissionMutation = () => {
   
   return useMutation({
     mutationFn: async ({ id, status }: { id: number; status: 'approved' | 'rejected' }) => {
-      console.log('🔄 Updating submission status:', { id, status });
+      console.log('🔄 Starting submission status update:', { id, status });
       
       const { error, data } = await supabase
         .from('submissions')
-        .update({ status })
+        .update({ status, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select();
       

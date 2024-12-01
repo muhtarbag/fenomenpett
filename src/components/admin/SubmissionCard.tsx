@@ -19,28 +19,55 @@ interface SubmissionCardProps {
 }
 
 export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
-  console.log('Rendering SubmissionCard for:', {
+  console.log('🎴 Rendering SubmissionCard:', {
     id: submission.id,
     username: submission.username,
-    status: submission.status
+    currentStatus: submission.status
   });
 
-  const { mutate: updateStatus } = useSubmissionMutation();
-  const { mutate: deleteSubmission } = useDeleteSubmissionMutation();
+  const { mutate: updateStatus, isLoading: isUpdating } = useSubmissionMutation();
+  const { mutate: deleteSubmission, isLoading: isDeleting } = useDeleteSubmissionMutation();
 
-  const handleApprove = (id: number) => {
+  const handleApprove = async (id: number) => {
     console.log('👍 Approving submission:', id);
-    updateStatus({ id, status: 'approved' });
+    updateStatus(
+      { id, status: 'approved' },
+      {
+        onSuccess: () => {
+          console.log('✅ Successfully approved submission:', id);
+        },
+        onError: (error) => {
+          console.error('❌ Error approving submission:', error);
+        }
+      }
+    );
   };
 
-  const handleReject = (id: number) => {
+  const handleReject = async (id: number) => {
     console.log('👎 Rejecting submission:', id);
-    updateStatus({ id, status: 'rejected' });
+    updateStatus(
+      { id, status: 'rejected' },
+      {
+        onSuccess: () => {
+          console.log('✅ Successfully rejected submission:', id);
+        },
+        onError: (error) => {
+          console.error('❌ Error rejecting submission:', error);
+        }
+      }
+    );
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     console.log('🗑️ Deleting submission:', id);
-    deleteSubmission(id);
+    deleteSubmission(id, {
+      onSuccess: () => {
+        console.log('✅ Successfully deleted submission:', id);
+      },
+      onError: (error) => {
+        console.error('❌ Error deleting submission:', error);
+      }
+    });
   };
 
   const formatDate = (dateString: string) => {
@@ -88,18 +115,20 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
           <div className="flex gap-4">
             <button
               onClick={() => handleApprove(submission.id)}
-              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-success text-white rounded-md hover:bg-success/90 transition-colors"
+              disabled={isUpdating}
+              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-success text-white rounded-md hover:bg-success/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Check size={20} />
-              Onayla
+              {isUpdating ? 'İşleniyor...' : 'Onayla'}
             </button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <button
-                  className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors"
+                  disabled={isUpdating}
+                  className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <X size={20} />
-                  Reddet
+                  {isUpdating ? 'İşleniyor...' : 'Reddet'}
                 </button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -126,10 +155,11 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <button
-                className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors"
+                disabled={isDeleting}
+                className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Trash2 size={20} />
-                Gönderiyi Sil
+                {isDeleting ? 'Siliniyor...' : 'Gönderiyi Sil'}
               </button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -155,18 +185,20 @@ export const SubmissionCard = ({ submission }: SubmissionCardProps) => {
           <div className="flex gap-4">
             <button
               onClick={() => handleApprove(submission.id)}
-              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-success text-white rounded-md hover:bg-success/90 transition-colors"
+              disabled={isUpdating}
+              className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-success text-white rounded-md hover:bg-success/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Check size={20} />
-              Onayla
+              {isUpdating ? 'İşleniyor...' : 'Onayla'}
             </button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <button
-                  className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors"
+                  disabled={isDeleting}
+                  className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Trash2 size={20} />
-                  Sil
+                  {isDeleting ? 'Siliniyor...' : 'Sil'}
                 </button>
               </AlertDialogTrigger>
               <AlertDialogContent>
