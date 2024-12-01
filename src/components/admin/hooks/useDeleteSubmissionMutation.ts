@@ -7,7 +7,7 @@ export const useDeleteSubmissionMutation = () => {
   
   return useMutation({
     mutationFn: async (id: number) => {
-      console.log('🗑️ Deleting submission:', id);
+      console.log('🗑️ Starting deletion process for submission:', id);
       
       // First delete from rejected_submissions if it exists
       const { error: rejectedError } = await supabase
@@ -42,13 +42,11 @@ export const useDeleteSubmissionMutation = () => {
         throw new Error('Gönderi silinirken bir hata oluştu');
       }
 
-      console.log('✅ Successfully deleted submission:', id);
+      console.log('✅ Successfully deleted submission and related records:', id);
       return id;
     },
     onSuccess: (deletedId) => {
       console.log('✨ Delete mutation success:', deletedId);
-      // Remove all queries from the cache to force a fresh fetch
-      queryClient.removeQueries({ queryKey: ['submissions'] });
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
       toast.success('Gönderi başarıyla silindi');
     },
