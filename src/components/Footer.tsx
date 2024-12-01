@@ -50,7 +50,12 @@ const Footer = () => {
               <a href="#" className="text-gray-300 hover:text-white transition-colors">
                 <Facebook size={24} />
               </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+              <a 
+                href="https://instagram.com/fenomenbet_official" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-300 hover:text-white transition-colors"
+              >
                 <Instagram size={24} />
               </a>
               <a 
