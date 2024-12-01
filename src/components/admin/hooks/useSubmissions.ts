@@ -37,7 +37,6 @@ export const useSubmissions = () => {
             const status = payload.new.status === 'approved' ? 'onaylandı' : 'reddedildi';
             toast.success(`Gönderi ${status}`);
             
-            // Log the status change
             console.log(`📊 Post status changed:`, {
               id: payload.new.id,
               oldStatus: payload.old.status,
@@ -57,7 +56,7 @@ export const useSubmissions = () => {
     };
   }, [queryClient]);
 
-  const { data: submissions = [], isError, isLoading } = useQuery({
+  const { data: submissions = [], isError, error, isLoading } = useQuery({
     queryKey: ['submissions'],
     queryFn: async () => {
       console.log('📡 Fetching submissions...');
@@ -78,7 +77,7 @@ export const useSubmissions = () => {
   });
 
   if (isError) {
-    console.error('❌ Error in submissions hook');
+    console.error('❌ Error in submissions hook:', error);
     toast.error("Gönderiler yüklenirken bir hata oluştu");
   }
 
@@ -86,7 +85,6 @@ export const useSubmissions = () => {
   const approvedSubmissions = submissions.filter(s => s.status === 'approved');
   const rejectedSubmissions = submissions.filter(s => s.status === 'rejected');
 
-  // Log the sorting results
   console.log('📊 Submissions by status:', {
     pending: pendingSubmissions.map(s => ({ id: s.id, created_at: s.created_at })),
     approved: approvedSubmissions.map(s => ({ id: s.id, created_at: s.created_at })),
@@ -97,6 +95,7 @@ export const useSubmissions = () => {
     pendingSubmissions,
     approvedSubmissions,
     rejectedSubmissions,
-    isLoading
+    isLoading,
+    error
   };
 };

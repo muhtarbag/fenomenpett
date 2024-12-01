@@ -7,12 +7,44 @@ export const SubmissionsList = () => {
     pendingSubmissions, 
     approvedSubmissions, 
     rejectedSubmissions,
-    isLoading 
+    isLoading,
+    error 
   } = useSubmissions();
+
+  if (error) {
+    console.error('❌ Error loading submissions:', error);
+    return (
+      <div className="text-center text-red-600">
+        Gönderiler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
+      </div>
+    );
+  }
 
   if (isLoading) {
     console.log('⏳ Loading submissions...');
     return <div className="text-center">Yükleniyor...</div>;
+  }
+
+  if (!pendingSubmissions || !approvedSubmissions || !rejectedSubmissions) {
+    console.error('❌ Missing submission data');
+    return (
+      <div className="text-center text-red-600">
+        Veri yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
+      </div>
+    );
+  }
+
+  const hasNoSubmissions = 
+    pendingSubmissions.length === 0 && 
+    approvedSubmissions.length === 0 && 
+    rejectedSubmissions.length === 0;
+
+  if (hasNoSubmissions) {
+    return (
+      <div className="text-center text-gray-500">
+        Henüz gönderi bulunmuyor.
+      </div>
+    );
   }
 
   return (
