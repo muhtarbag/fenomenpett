@@ -8,7 +8,7 @@ export const SubmissionRules = () => {
         <li className="font-bold">3. Yüz veya çevre detayları gerekli değil</li>
         <li className="font-bold">4. Fotoğraf yüklemeden önce kullanıcı adı gerekli</li>
         <li className="font-bold">5. 500 TL bonus 48 saat içinde tanımlanacak</li>
-        <li className="font-bold">6. Bonus için 5000 TL ve 1000 TL çekim işlemi gerekli</li>
+        <li className="font-bold">6. Bu bonusla çekim yapabilmeniz için bonusunuzu 5000 TL 'ye ulaştırıp 1000 TL çekim işlemi vermeniz gerekmektedir.</li>
         <li className="font-bold text-red-500">7. İnternetten kopyalanan fotoğraflar kabul edilmez</li>
         <li className="font-bold">8. Yorumunuzu yazmayı unutmayın!</li>
         <li className="font-bold">9. Bu kampanyadan her üye ayda 1 kere yararlanabilir. İlk katılımda yatırım şartı aranmamaktadır.* Sonraki katılımlarda, her iki bonus arasında min 250TL yatırım yapılması gerekmektedir.*</li>
