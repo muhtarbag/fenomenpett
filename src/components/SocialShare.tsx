@@ -1,4 +1,4 @@
-import { Share, Instagram } from "lucide-react";
+import { Share, Instagram, Facebook, Twitter, Youtube, Linkedin } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,9 +36,16 @@ const SocialShare = ({ url }: SocialShareProps) => {
       case 'telegram':
         shareUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`;
         break;
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+        break;
       case 'instagram':
         // Instagram doesn't have a direct share URL, so we'll open Instagram in a new tab
         window.open('https://instagram.com', '_blank', 'noopener,noreferrer');
+        return;
+      case 'youtube':
+        // YouTube doesn't have a direct share URL, so we'll open YouTube in a new tab
+        window.open('https://youtube.com', '_blank', 'noopener,noreferrer');
         return;
       default:
         if (navigator.share) {
@@ -68,17 +75,21 @@ const SocialShare = ({ url }: SocialShareProps) => {
           <Instagram className="mr-2 h-4 w-4" />
           Instagram'da Paylaş
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleShare('facebook')}>
+        <DropdownMenuItem onClick={() => handleShare('facebook')} className="cursor-pointer">
+          <Facebook className="mr-2 h-4 w-4" />
           Facebook'ta Paylaş
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleShare('twitter')}>
+        <DropdownMenuItem onClick={() => handleShare('twitter')} className="cursor-pointer">
+          <Twitter className="mr-2 h-4 w-4" />
           Twitter'da Paylaş
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleShare('whatsapp')}>
-          WhatsApp'ta Paylaş
+        <DropdownMenuItem onClick={() => handleShare('linkedin')} className="cursor-pointer">
+          <Linkedin className="mr-2 h-4 w-4" />
+          LinkedIn'de Paylaş
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleShare('telegram')}>
-          Telegram'da Paylaş
+        <DropdownMenuItem onClick={() => handleShare('youtube')} className="cursor-pointer">
+          <Youtube className="mr-2 h-4 w-4" />
+          YouTube'da Paylaş
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
