@@ -33,7 +33,6 @@ export const useSubmissions = () => {
           console.log('📡 Realtime update received:', payload);
           queryClient.invalidateQueries({ queryKey: ['submissions'] });
           
-          // Show toast notification for status changes
           if (payload.eventType === 'UPDATE' && payload.new.status !== payload.old.status) {
             const status = payload.new.status === 'approved' ? 'onaylandı' : 'reddedildi';
             toast.success(`Gönderi ${status}`);
@@ -56,7 +55,7 @@ export const useSubmissions = () => {
       console.log('📡 Fetching submissions...');
       const { data, error } = await supabase
         .from('submissions')
-        .select('*')
+        .select('*, status:status::text')
         .order('created_at', { ascending: false });
       
       if (error) {

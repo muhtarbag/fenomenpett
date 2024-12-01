@@ -16,22 +16,30 @@ export const useSubmissionMutation = () => {
       
       const { error, data } = await supabase
         .from('submissions')
-        .update({ status, updated_at: new Date().toISOString() })
+        .update({ 
+          status, 
+          updated_at: new Date().toISOString() 
+        })
         .eq('id', id)
         .select('*, status:status::text')
         .returns<Submission[]>();
       
       if (error) {
         console.error('❌ Error updating submission:', error);
-        throw error;
+        throw new Error(`Failed to update submission: ${error.message}`);
+      }
+      
+      if (!data || data.length === 0) {
+        console.error('❌ No data returned after update');
+        throw new Error('No data returned after update');
       }
       
       console.log('✅ Successfully updated submission:', data);
       return data;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
       const action = variables.status === 'approved' ? 'onaylandı' : 'reddedildi';
-      console.log('✨ Mutation success:', { action });
+      console.log('✨ Mutation success:', { action, data });
       toast.success(`Fotoğraf ${action}`);
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
     },

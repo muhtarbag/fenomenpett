@@ -29,11 +29,11 @@ export const RejectButton = ({ submissionId, mutation }: RejectButtonProps) => {
     mutation.mutate(
       { id: submissionId, status: 'rejected' },
       {
-        onSuccess: () => {
-          console.log('✅ Successfully rejected submission:', submissionId);
+        onSuccess: (data) => {
+          console.log('✅ Successfully rejected submission:', { id: submissionId, data });
         },
         onError: (error) => {
-          console.error('❌ Error rejecting submission:', error);
+          console.error('❌ Error rejecting submission:', { id: submissionId, error });
         }
       }
     );
