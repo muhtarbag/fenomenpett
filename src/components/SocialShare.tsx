@@ -43,7 +43,7 @@ const SocialShare = ({ url }: SocialShareProps) => {
             className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-md transition-colors"
           >
             <Twitter size={20} className="text-[#1DA1F2]" />
-            <span>Twitter</span>
+            <span>X (Twitter)</span>
           </a>
           <a
             href={`https://api.whatsapp.com/send?text=${encodeURIComponent(url)}`}
