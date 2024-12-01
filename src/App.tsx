@@ -4,6 +4,15 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { Menu } from "lucide-react";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTrigger,
+  DrawerClose,
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 import Index from "./pages/Index";
 import Submit from "./pages/Submit";
 import Admin from "./pages/Admin";
@@ -12,7 +21,6 @@ import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
 
-// Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
   
@@ -23,9 +31,63 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const AppContent = () => {
+const Navigation = () => {
   const { isAuthenticated, logout } = useAuth();
+  const isMobile = useIsMobile();
 
+  const NavItems = () => (
+    <div className={`${isMobile ? 'flex flex-col space-y-4 p-4' : 'flex gap-4'}`}>
+      <Link
+        to="/submit"
+        className="text-gray-600 hover:text-primary transition-colors"
+      >
+        Fotoğraf Gönder
+      </Link>
+      {isAuthenticated ? (
+        <>
+          <Link
+            to="/admin"
+            className="text-gray-600 hover:text-primary transition-colors"
+          >
+            Yönetici
+          </Link>
+          <button
+            onClick={logout}
+            className="text-gray-600 hover:text-primary transition-colors text-left"
+          >
+            Çıkış Yap
+          </button>
+        </>
+      ) : (
+        <Link
+          to="/login"
+          className="text-gray-600 hover:text-primary transition-colors"
+        >
+          Giriş Yap
+        </Link>
+      )}
+    </div>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer>
+        <DrawerTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <Menu className="h-6 w-6" />
+          </Button>
+        </DrawerTrigger>
+        <DrawerContent>
+          <NavItems />
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  return <NavItems />;
+};
+
+const AppContent = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <nav className="bg-white shadow-sm">
@@ -38,37 +100,7 @@ const AppContent = () => {
                 className="h-8"
               />
             </Link>
-            <div className="flex gap-4">
-              <Link
-                to="/submit"
-                className="text-gray-600 hover:text-primary transition-colors"
-              >
-                Fotoğraf Gönder
-              </Link>
-              {isAuthenticated ? (
-                <>
-                  <Link
-                    to="/admin"
-                    className="text-gray-600 hover:text-primary transition-colors"
-                  >
-                    Yönetici
-                  </Link>
-                  <button
-                    onClick={logout}
-                    className="text-gray-600 hover:text-primary transition-colors"
-                  >
-                    Çıkış Yap
-                  </button>
-                </>
-              ) : (
-                <Link
-                  to="/login"
-                  className="text-gray-600 hover:text-primary transition-colors"
-                >
-                  Giriş Yap
-                </Link>
-              )}
-            </div>
+            <Navigation />
           </div>
         </div>
       </nav>
