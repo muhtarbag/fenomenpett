@@ -22,10 +22,10 @@ const Index = () => {
       try {
         const { data, error } = await supabase
           .from('submissions')
-          .select('id, username, image_url, comment, likes, created_at')
+          .select('id, username, image_url, comment, likes')
           .eq('status', 'approved')
-          .order('created_at', { ascending: false })
-          .range(from, to);
+          .range(from, to)
+          .order('created_at', { ascending: false });
         
         if (error) {
           console.error("Supabase error:", error);
