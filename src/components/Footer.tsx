@@ -53,7 +53,12 @@ const Footer = () => {
               <a href="#" className="text-gray-300 hover:text-white transition-colors">
                 <Instagram size={24} />
               </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+              <a 
+                href="https://x.com/FenomenbetTRX" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-300 hover:text-white transition-colors"
+              >
                 <Twitter size={24} />
               </a>
               <a 
