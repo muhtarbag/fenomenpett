@@ -12,6 +12,7 @@ import { VisitorChart } from "@/components/admin/VisitorChart";
 import { LocationMap } from "@/components/admin/LocationMap";
 import { Stats } from "@/components/admin/Stats";
 import { DeviceStats } from "@/components/admin/DeviceStats";
+import { PerformanceMetrics } from "@/components/admin/PerformanceMetrics";
 
 interface Submission {
   id: number;
@@ -303,3 +304,4 @@ const Admin = () => {
 };
 
 export default Admin;
+
