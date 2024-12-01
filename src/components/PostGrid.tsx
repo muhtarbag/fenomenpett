@@ -3,7 +3,7 @@ import PostCard from "./PostCard";
 interface Post {
   id: number;
   username: string;
-  image_url: string;  // Changed from imageUrl to match Supabase schema
+  image_url: string;
   comment: string;
   likes: number;
 }
@@ -19,7 +19,7 @@ const PostGrid = ({ posts }: PostGridProps) => {
         <PostCard key={post.id} post={post} />
       ))}
       {posts.length === 0 && (
-        <div className="text-center text-gray-500 mt-8">
+        <div className="col-span-full text-center text-gray-500 mt-8">
           Henüz onaylanmış gönderi yok. Sokak hayvanlarına yardım fotoğrafınızı ilk paylaşan siz olun!
         </div>
       )}

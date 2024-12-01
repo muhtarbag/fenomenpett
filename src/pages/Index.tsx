@@ -4,23 +4,42 @@ import Banner from "@/components/Banner";
 import PostGrid from "@/components/PostGrid";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+
+const POSTS_PER_PAGE = 12;
+const MAX_POSTS = 100;
 
 const Index = () => {
-  const { data: posts = [], isLoading, error } = useQuery({
-    queryKey: ["approved-posts"],
+  const [page, setPage] = useState(1);
+  
+  const { data: posts = [], isLoading, error, hasNextPage, fetchNextPage, isFetchingNextPage } = useQuery({
+    queryKey: ["approved-posts", page],
     queryFn: async () => {
+      const from = (page - 1) * POSTS_PER_PAGE;
+      const to = from + POSTS_PER_PAGE - 1;
+      
       const { data, error } = await supabase
         .from('submissions')
         .select('*')
         .eq('status', 'approved')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(from, to);
       
       if (error) throw error;
       return data || [];
     },
+    keepPreviousData: true,
     retry: false,
     refetchOnWindowFocus: false,
   });
+
+  const loadMore = () => {
+    if (page * POSTS_PER_PAGE < MAX_POSTS) {
+      setPage(prev => prev + 1);
+    }
+  };
+
+  const showLoadMore = posts.length > 0 && page * POSTS_PER_PAGE < MAX_POSTS;
 
   if (isLoading) {
     return (
@@ -64,6 +83,19 @@ const Index = () => {
           </div>
           
           <PostGrid posts={posts} />
+
+          {showLoadMore && (
+            <div className="text-center mt-8">
+              <Button 
+                onClick={loadMore} 
+                variant="outline"
+                disabled={isFetchingNextPage}
+                className="animate-fade-in"
+              >
+                {isFetchingNextPage ? "Yükleniyor..." : "Daha Fazla Göster"}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
