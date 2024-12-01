@@ -1,4 +1,4 @@
-import { Instagram, Twitter, Youtube, Telegram } from "lucide-react";
+import { Instagram, Twitter, Youtube, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -53,7 +53,7 @@ const Footer = () => {
                 rel="noopener noreferrer" 
                 className="text-gray-300 hover:text-white transition-colors"
               >
-                <Telegram size={24} />
+                <MessageSquare size={24} />
               </a>
               <a 
                 href="https://instagram.com/fenomenbet_official" 
