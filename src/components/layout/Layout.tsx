@@ -21,15 +21,9 @@ export const Layout = ({ children }: LayoutProps) => {
           <div className="flex justify-between h-16 items-center">
             <Link to="/" className="flex items-center gap-2">
               <img 
-                src="/lovable-uploads/logo.gif" 
+                src="/lovable-uploads/a06650c0-2ee1-42dd-9217-cef8bdd67039.png" 
                 alt="FenomenPet Logo" 
                 className="h-8 w-auto"
-                style={{
-                  imageRendering: 'pixelated',
-                  WebkitImageRendering: 'pixelated',
-                  MozImageRendering: 'pixelated',
-                  msImageRendering: 'pixelated'
-                } as React.CSSProperties}
               />
             </Link>
             <Navigation />
