@@ -2,6 +2,12 @@ import { useState } from "react";
 import { Heart, Share2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 
 interface Post {
   id: number;
@@ -12,6 +18,7 @@ interface Post {
 }
 
 const Index = () => {
+  const isMobile = useIsMobile();
   const { data: posts = [] } = useQuery<Post[]>({
     queryKey: ["approved-posts"],
     queryFn: () =>
@@ -170,13 +177,27 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="relative w-full h-[400px] overflow-hidden">
-        <img
-          src="/lovable-uploads/7138849c-6a14-4a65-8f76-220e6fc26382.png"
-          alt="FenomenPet Banner"
-          className="w-full h-full object-cover"
-        />
-      </div>
+      {isMobile ? (
+        <Carousel className="w-full">
+          <CarouselContent>
+            <CarouselItem>
+              <img
+                src="/lovable-uploads/e4fe31df-b619-4ae9-9d59-d6057f321c83.png"
+                alt="FenomenPet Mobil Banner"
+                className="w-full h-auto"
+              />
+            </CarouselItem>
+          </CarouselContent>
+        </Carousel>
+      ) : (
+        <div className="relative w-full h-[400px] overflow-hidden">
+          <img
+            src="/lovable-uploads/7138849c-6a14-4a65-8f76-220e6fc26382.png"
+            alt="FenomenPet Banner"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
       
       <div className="bg-primary text-white py-3 px-4 text-center">
         <p className="text-sm md:text-base animate-fade-in">
