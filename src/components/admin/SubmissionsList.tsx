@@ -126,7 +126,6 @@ export const SubmissionsList = () => {
       
       console.log('Fetched submissions:', data);
       
-      // Ensure the status is one of the allowed values and cast it properly
       return (data || []).map(submission => ({
         ...submission,
         status: (submission.status || 'pending') as Submission['status']
