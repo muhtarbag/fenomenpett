@@ -25,36 +25,43 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     console.log('Setting up auth state...');
     
-    // Initialize auth state
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session:', session);
-      if (session) {
-        setSession(session);
-        setIsAuthenticated(true);
-        setUser({ id: session.user.id });
-      }
-    });
+    const setupAuth = async () => {
+      try {
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        console.log('Initial session:', initialSession);
+        
+        if (initialSession) {
+          setSession(initialSession);
+          setIsAuthenticated(true);
+          setUser({ id: initialSession.user.id });
+        }
 
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state changed:', _event, session);
-      if (session) {
-        setSession(session);
-        setIsAuthenticated(true);
-        setUser({ id: session.user.id });
-      } else {
-        setSession(null);
-        setIsAuthenticated(false);
-        setUser(null);
-      }
-    });
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange(async (_event, currentSession) => {
+          console.log('Auth state changed:', _event, currentSession);
+          if (currentSession) {
+            setSession(currentSession);
+            setIsAuthenticated(true);
+            setUser({ id: currentSession.user.id });
+          } else {
+            setSession(null);
+            setIsAuthenticated(false);
+            setUser(null);
+          }
+        });
 
-    return () => {
-      console.log('Cleaning up auth subscription');
-      subscription.unsubscribe();
+        return () => {
+          console.log('Cleaning up auth subscription');
+          subscription.unsubscribe();
+        };
+      } catch (error) {
+        console.error('Error setting up auth:', error);
+        toast.error('Authentication setup failed');
+      }
     };
+
+    setupAuth();
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -86,21 +93,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
+    console.log('Starting logout process...');
+    
     try {
-      console.log('Starting logout process...');
-      
       // Clear local state first
       setIsAuthenticated(false);
       setUser(null);
       setSession(null);
 
-      // Sign out from Supabase
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error('Supabase signOut error:', error);
-        // Even if there's an error with Supabase, we keep the local state cleared
-        toast.error("Çıkış yaparken bir hata oluştu, ancak local oturum kapatıldı");
-        return;
+      // Get current session
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      
+      if (currentSession) {
+        console.log('Found active session, signing out...');
+        const { error } = await supabase.auth.signOut({
+          scope: 'local'  // Only clear the current tab's session
+        });
+        
+        if (error) {
+          console.error('Supabase signOut error:', error);
+          toast.error("Çıkış yaparken bir hata oluştu, ancak local oturum kapatıldı");
+          return;
+        }
+      } else {
+        console.log('No active session found, skipping Supabase signOut');
       }
 
       console.log('Logout successful');
