@@ -1,13 +1,9 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 
-interface BlogPost {
-  id: number;
-  title: string;
-  content: string;
-  created_at: string;
-}
+type BlogPost = Tables<"blog_posts">;
 
 const Blog = () => {
   const { data: posts, isLoading } = useQuery({
