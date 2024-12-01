@@ -3,49 +3,49 @@ import { Users, Globe, Clock, Activity, MousePointerClick, ArrowUpRight, Timer, 
 
 const stats = [
   {
-    title: "Total Visitors",
+    title: "Toplam Ziyaretçi",
     value: "24,589",
     icon: Users,
     change: "+12%",
   },
   {
-    title: "Active Users",
+    title: "Aktif Kullanıcı",
     value: "1,234",
     icon: Activity,
     change: "+4%",
   },
   {
-    title: "Avg. Session",
-    value: "4m 32s",
+    title: "Ort. Oturum Süresi",
+    value: "4d 32s",
     icon: Clock,
     change: "+8%",
   },
   {
-    title: "Bounce Rate",
+    title: "Hemen Çıkma Oranı",
     value: "24%",
     icon: Globe,
     change: "-2%",
   },
   {
-    title: "Click Rate",
+    title: "Tıklama Oranı",
     value: "3.2%",
     icon: MousePointerClick,
     change: "+1.5%",
   },
   {
-    title: "Conversion Rate",
+    title: "Dönüşüm Oranı",
     value: "2.8%",
     icon: ArrowUpRight,
     change: "+0.5%",
   },
   {
-    title: "Page Load Time",
+    title: "Sayfa Yüklenme Süresi",
     value: "0.8s",
     icon: Timer,
     change: "-12%",
   },
   {
-    title: "User Engagement",
+    title: "Kullanıcı Etkileşimi",
     value: "78%",
     icon: Brain,
     change: "+5%",
@@ -68,7 +68,7 @@ export const Stats = () => {
             <p className={`text-xs ${
               stat.change.startsWith('+') ? 'text-green-500' : 'text-red-500'
             }`}>
-              {stat.change} from last month
+              {stat.change} geçen aya göre
             </p>
           </CardContent>
         </Card>

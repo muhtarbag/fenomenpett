@@ -69,7 +69,7 @@ const Admin = () => {
         </div>
 
         {/* Submissions Management */}
-        <h2 className="text-2xl font-bold mb-8">Submissions Management</h2>
+        <h2 className="text-2xl font-bold mb-8">Gönderi Yönetimi</h2>
         <Tabs defaultValue="pending" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="pending" className="flex items-center gap-2">

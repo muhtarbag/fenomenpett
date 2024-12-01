@@ -2,26 +2,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const visitorLocations = [
-  { country: "United States", city: "New York", visitors: 1234, ip: "192.168.1.1" },
-  { country: "Germany", city: "Berlin", visitors: 856, ip: "192.168.1.2" },
-  { country: "Japan", city: "Tokyo", visitors: 645, ip: "192.168.1.3" },
-  { country: "Brazil", city: "São Paulo", visitors: 432, ip: "192.168.1.4" },
-  { country: "Australia", city: "Sydney", visitors: 321, ip: "192.168.1.5" },
+  { country: "Amerika Birleşik Devletleri", city: "New York", visitors: 1234, ip: "192.168.1.1" },
+  { country: "Almanya", city: "Berlin", visitors: 856, ip: "192.168.1.2" },
+  { country: "Japonya", city: "Tokyo", visitors: 645, ip: "192.168.1.3" },
+  { country: "Brezilya", city: "São Paulo", visitors: 432, ip: "192.168.1.4" },
+  { country: "Avustralya", city: "Sidney", visitors: 321, ip: "192.168.1.5" },
 ];
 
 export const LocationMap = () => {
   return (
     <Card className="col-span-4">
       <CardHeader>
-        <CardTitle>Visitor Locations</CardTitle>
+        <CardTitle>Ziyaretçi Konumları</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Country</TableHead>
-              <TableHead>City</TableHead>
-              <TableHead>Visitors</TableHead>
+              <TableHead>Ülke</TableHead>
+              <TableHead>Şehir</TableHead>
+              <TableHead>Ziyaretçi</TableHead>
               <TableHead>IP</TableHead>
             </TableRow>
           </TableHeader>
