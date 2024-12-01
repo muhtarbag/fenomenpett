@@ -53,6 +53,7 @@ export type Database = {
           comment: string
           created_at: string
           id: number
+          image_hash: string | null
           image_url: string
           original_submission_id: number | null
           reason: string
@@ -62,6 +63,7 @@ export type Database = {
           comment: string
           created_at?: string
           id?: number
+          image_hash?: string | null
           image_url: string
           original_submission_id?: number | null
           reason: string
@@ -71,6 +73,7 @@ export type Database = {
           comment?: string
           created_at?: string
           id?: number
+          image_hash?: string | null
           image_url?: string
           original_submission_id?: number | null
           reason?: string
