@@ -8,6 +8,9 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { VisitorChart } from "@/components/admin/VisitorChart";
+import { LocationMap } from "@/components/admin/LocationMap";
+import { Stats } from "@/components/admin/Stats";
 
 interface Submission {
   id: number;
@@ -210,9 +213,22 @@ const Admin = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold text-center mb-12 text-gray-900">
-          Gönderileri Yönet
+          Admin Dashboard
         </h1>
 
+        {/* Dashboard Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <Stats />
+        </div>
+
+        {/* Charts and Maps */}
+        <div className="grid grid-cols-1 md:grid-cols-8 gap-4 mb-8">
+          <VisitorChart />
+          <LocationMap />
+        </div>
+
+        {/* Submissions Management */}
+        <h2 className="text-2xl font-bold mb-8">Submissions Management</h2>
         <Tabs defaultValue="pending" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="pending" className="flex items-center gap-2">
