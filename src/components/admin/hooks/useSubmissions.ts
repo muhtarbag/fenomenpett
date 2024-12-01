@@ -36,6 +36,14 @@ export const useSubmissions = () => {
           if (payload.eventType === 'UPDATE' && payload.new.status !== payload.old.status) {
             const status = payload.new.status === 'approved' ? 'onaylandı' : 'reddedildi';
             toast.success(`Gönderi ${status}`);
+            
+            // Log the status change
+            console.log(`📊 Post status changed:`, {
+              id: payload.new.id,
+              oldStatus: payload.old.status,
+              newStatus: payload.new.status,
+              timestamp: new Date().toISOString()
+            });
           }
         }
       )
@@ -78,10 +86,11 @@ export const useSubmissions = () => {
   const approvedSubmissions = submissions.filter(s => s.status === 'approved');
   const rejectedSubmissions = submissions.filter(s => s.status === 'rejected');
 
-  console.log('📊 Processed submissions:', {
-    pending: pendingSubmissions.length,
-    approved: approvedSubmissions.length,
-    rejected: rejectedSubmissions.length
+  // Log the sorting results
+  console.log('📊 Submissions by status:', {
+    pending: pendingSubmissions.map(s => ({ id: s.id, created_at: s.created_at })),
+    approved: approvedSubmissions.map(s => ({ id: s.id, created_at: s.created_at })),
+    rejected: rejectedSubmissions.map(s => ({ id: s.id, created_at: s.created_at }))
   });
 
   return {

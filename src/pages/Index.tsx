@@ -15,27 +15,30 @@ const Index = () => {
   const { data: posts = [], isLoading, error, isFetching } = useQuery({
     queryKey: ["approved-posts", page],
     queryFn: async () => {
-      console.log("Fetching posts...");
+      console.log("📡 Fetching approved posts for page:", page);
       const from = (page - 1) * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
       
       try {
         const { data, error } = await supabase
           .from('submissions')
-          .select('id, username, image_url, comment, likes')
+          .select('id, username, image_url, comment, likes, created_at')
           .eq('status', 'approved')
-          .order('created_at', { ascending: false }) // Sort by creation date, newest first
+          .order('created_at', { ascending: false })
           .range(from, to);
         
         if (error) {
-          console.error("Supabase error:", error);
+          console.error("❌ Supabase error:", error);
           throw error;
         }
         
-        console.log("Posts fetched successfully:", data?.length || 0);
+        console.log("✅ Approved posts fetched:", {
+          count: data?.length || 0,
+          posts: data?.map(p => ({ id: p.id, created_at: p.created_at }))
+        });
         return data || [];
       } catch (err) {
-        console.error("Failed to fetch posts:", err);
+        console.error("❌ Failed to fetch posts:", err);
         throw err;
       }
     },
