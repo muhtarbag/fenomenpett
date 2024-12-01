@@ -77,25 +77,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     try {
+      // Get the current session
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      
       // Clear local state first
       setIsAuthenticated(false);
       setUser(null);
       setSession(null);
 
-      // Then attempt to sign out from Supabase
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error('Logout error:', error);
-        // Even if there's an error, we keep the local state cleared
-        toast.error("Çıkış yaparken bir hata oluştu");
-        return;
+      // Only attempt to sign out from Supabase if we have a session
+      if (currentSession) {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          console.error('Logout error:', error);
+          toast.error("Çıkış yaparken bir hata oluştu");
+          return;
+        }
       }
 
       toast.success("Başarıyla çıkış yapıldı");
     } catch (error) {
       console.error('Error logging out:', error);
-      // The local state is already cleared, so the user is effectively logged out
       toast.error("Çıkış yaparken bir hata oluştu");
     }
   };
