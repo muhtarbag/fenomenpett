@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
+import { Instagram, Twitter, Youtube, Telegram } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -47,8 +47,13 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Bizi Takip Edin</h3>
             <div className="flex gap-4">
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                <Facebook size={24} />
+              <a 
+                href="https://t.me/Fenomenbetofficial" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                <Telegram size={24} />
               </a>
               <a 
                 href="https://instagram.com/fenomenbet_official" 
