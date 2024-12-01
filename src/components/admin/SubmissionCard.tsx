@@ -14,7 +14,7 @@ interface SubmissionCardProps {
 }
 
 export const SubmissionCard = memo(({ 
-  submission, 
+  submission,
   showSelect = false,
   isSelected = false,
   onSelect
