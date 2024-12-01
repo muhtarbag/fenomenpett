@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 
-const POSTS_PER_PAGE = 54;
-const MAX_POSTS = 54;
+const POSTS_PER_PAGE = 55;
+const MAX_POSTS = 110; // Setting this higher than initial load to allow for more content
 
 const Index = () => {
   const [page, setPage] = useState(1);
@@ -29,6 +29,14 @@ const Index = () => {
       return data || [];
     },
   });
+
+  const loadMore = () => {
+    if (page * POSTS_PER_PAGE < MAX_POSTS) {
+      setPage(prev => prev + 1);
+    }
+  };
+
+  const showLoadMore = posts.length >= POSTS_PER_PAGE;
 
   if (isLoading) {
     return (
@@ -72,6 +80,19 @@ const Index = () => {
           </div>
           
           <PostGrid posts={posts} />
+
+          {showLoadMore && (
+            <div className="text-center mt-8">
+              <Button 
+                onClick={loadMore} 
+                variant="outline"
+                disabled={isFetching}
+                className="animate-fade-in"
+              >
+                {isFetching ? "Yükleniyor..." : "Daha Fazla Göster"}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
