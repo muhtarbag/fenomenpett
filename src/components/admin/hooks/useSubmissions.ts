@@ -13,6 +13,7 @@ export interface Submission {
   updated_at: string;
   user_id: string | null;
   likes: number | null;
+  image_hash: string | null;
 }
 
 export const useSubmissions = () => {

@@ -12,7 +12,7 @@ export const useDeleteSubmissionMutation = () => {
       
       try {
         // First check if the submission exists
-        const { data: submission, error: checkError } = await supabase
+        const { data: submissionData, error: checkError } = await supabase
           .from('submissions')
           .select('*')
           .eq('id', id)
@@ -22,6 +22,9 @@ export const useDeleteSubmissionMutation = () => {
           console.error('❌ Error checking submission:', checkError);
           throw new Error('Gönderi kontrol edilirken bir hata oluştu');
         }
+
+        // Type assertion to ensure the submission data matches our Submission type
+        const submission = submissionData as Submission;
 
         // Delete from rejected_submissions first
         const { error: rejectedError } = await supabase
