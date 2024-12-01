@@ -11,6 +11,7 @@ export const SubmissionForm = () => {
   const [comment, setComment] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +76,12 @@ export const SubmissionForm = () => {
 
       console.log('Gönderi başarıyla kaydedildi');
       toast.success("Gönderiniz başarıyla kaydedildi! Moderatör onayından sonra yayınlanacaktır.");
-      navigate("/");
+      setIsSuccess(true);
+      
+      // 3 saniye sonra ana sayfaya yönlendir
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
     } catch (error: any) {
       console.error('Gönderi hatası:', error);
       toast.error("Gönderiniz kaydedilirken bir hata oluştu: " + (error.message || "Bilinmeyen hata"));
@@ -83,6 +89,21 @@ export const SubmissionForm = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (isSuccess) {
+    return (
+      <div className="flex flex-col items-center justify-center space-y-6 text-center animate-fade-up">
+        <img
+          src="/lovable-uploads/158fdeca-b966-4efa-8ce7-4b7bdae90615.png"
+          alt="Katılımınız için teşekkürler"
+          className="max-w-full h-auto rounded-lg shadow-lg"
+        />
+        <p className="text-lg text-gray-600">
+          Ana sayfaya yönlendiriliyorsunuz...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md animate-fade-up">
