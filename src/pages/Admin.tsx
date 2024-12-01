@@ -11,6 +11,7 @@ import {
 import { VisitorChart } from "@/components/admin/VisitorChart";
 import { LocationMap } from "@/components/admin/LocationMap";
 import { Stats } from "@/components/admin/Stats";
+import { DeviceStats } from "@/components/admin/DeviceStats";
 
 interface Submission {
   id: number;
@@ -225,6 +226,11 @@ const Admin = () => {
         <div className="grid grid-cols-1 md:grid-cols-8 gap-4 mb-8">
           <VisitorChart />
           <LocationMap />
+        </div>
+
+        {/* Device Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-8 gap-4 mb-8">
+          <DeviceStats />
         </div>
 
         {/* Submissions Management */}
