@@ -17,39 +17,48 @@ interface Submission {
 }
 
 export const SubmissionCard = ({ submission }: { submission: Submission }) => {
+  console.log('Rendering SubmissionCard for:', {
+    id: submission.id,
+    username: submission.username,
+    status: submission.status
+  });
+
   const queryClient = useQueryClient();
   
   const { mutate: updateStatus } = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: 'approved' | 'rejected' }) => {
-      console.log('Updating submission status:', { id, status });
-      const { error } = await supabase
+      console.log('🔄 Updating submission status:', { id, status });
+      const { error, data } = await supabase
         .from('submissions')
         .update({ status })
-        .eq('id', id);
+        .eq('id', id)
+        .select();
       
       if (error) {
-        console.error('Error updating submission:', error);
+        console.error('❌ Error updating submission:', error);
         throw error;
       }
+      console.log('✅ Successfully updated submission:', data);
     },
     onSuccess: (_, variables) => {
       const action = variables.status === 'approved' ? 'onaylandı' : 'reddedildi';
+      console.log('✨ Mutation success:', { action });
       toast.success(`Fotoğraf ${action}`);
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
     },
     onError: (error) => {
-      console.error('Mutation error:', error);
+      console.error('❌ Mutation error:', error);
       toast.error("Bir hata oluştu: " + error.message);
     }
   });
 
   const handleApprove = (id: number) => {
-    console.log('Approving submission:', id);
+    console.log('👍 Approving submission:', id);
     updateStatus({ id, status: 'approved' });
   };
 
   const handleReject = (id: number) => {
-    console.log('Rejecting submission:', id);
+    console.log('👎 Rejecting submission:', id);
     updateStatus({ id, status: 'rejected' });
   };
 
@@ -63,6 +72,10 @@ export const SubmissionCard = ({ submission }: { submission: Submission }) => {
         src={submission.image_url}
         alt={`${submission.username} tarafından gönderildi`}
         className="w-full h-64 object-cover"
+        onError={(e) => {
+          console.error('❌ Image load error:', submission.image_url);
+          e.currentTarget.src = '/placeholder.svg';
+        }}
       />
       <div className="p-4">
         <div className="flex justify-between items-start mb-4">
@@ -114,21 +127,23 @@ export const SubmissionCard = ({ submission }: { submission: Submission }) => {
 };
 
 export const SubmissionsList = () => {
+  console.log('🔄 SubmissionsList component rendering');
+
   const { data: submissions = [], isError, isLoading } = useQuery({
     queryKey: ['submissions'],
     queryFn: async () => {
-      console.log('Fetching submissions...');
+      console.log('📡 Fetching submissions...');
       const { data, error } = await supabase
         .from('submissions')
         .select('*')
         .order('created_at', { ascending: false });
       
       if (error) {
-        console.error('Error fetching submissions:', error);
+        console.error('❌ Error fetching submissions:', error);
         throw error;
       }
       
-      console.log('Raw submissions data:', data);
+      console.log('✅ Raw submissions data:', data);
       
       return (data || []).map(submission => {
         const processedSubmission: Submission = {
@@ -141,23 +156,23 @@ export const SubmissionsList = () => {
   });
 
   if (isError) {
-    console.error('Error in SubmissionsList component');
+    console.error('❌ Error in SubmissionsList component');
     toast.error("Gönderiler yüklenirken bir hata oluştu");
     return null;
   }
 
   if (isLoading) {
-    console.log('Loading submissions...');
+    console.log('⏳ Loading submissions...');
   }
 
   const pendingSubmissions = submissions.filter(s => !s.status || s.status === 'pending');
   const approvedSubmissions = submissions.filter(s => s.status === 'approved');
   const rejectedSubmissions = submissions.filter(s => s.status === 'rejected');
 
-  console.log('Processed submissions:', {
-    pending: pendingSubmissions,
-    approved: approvedSubmissions,
-    rejected: rejectedSubmissions
+  console.log('📊 Processed submissions:', {
+    pending: pendingSubmissions.length,
+    approved: approvedSubmissions.length,
+    rejected: rejectedSubmissions.length
   });
 
   return {
