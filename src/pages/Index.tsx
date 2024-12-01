@@ -36,7 +36,7 @@ const Index = () => {
     }
   };
 
-  const showLoadMore = posts.length >= POSTS_PER_PAGE;
+  const showLoadMore = posts.length === POSTS_PER_PAGE;
 
   if (isLoading) {
     return (
@@ -85,14 +85,13 @@ const Index = () => {
 
           {showLoadMore && (
             <div className="text-center mt-8">
-              <Button 
-                onClick={loadMore} 
-                variant="outline"
-                disabled={isFetching}
-                className="animate-fade-in"
-              >
-                {isFetching ? "Yükleniyor..." : "Daha Fazla Göster"}
-              </Button>
+              <a href="https://linkany.pro/fenomenbet" target="_blank" rel="noopener noreferrer">
+                <img 
+                  src="/lovable-uploads/317ada8f-0e1c-4d55-b53d-91630923accf.png" 
+                  alt="Fenomenbet Giriş" 
+                  className="h-12 mx-auto hover:opacity-90 transition-opacity"
+                />
+              </a>
             </div>
           )}
         </div>
