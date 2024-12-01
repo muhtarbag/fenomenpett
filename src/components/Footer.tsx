@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Twitter } from "lucide-react";
+import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -55,6 +55,14 @@ const Footer = () => {
               </a>
               <a href="#" className="text-gray-300 hover:text-white transition-colors">
                 <Twitter size={24} />
+              </a>
+              <a 
+                href="https://youtube.com/@fenomenbet-official" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                <Youtube size={24} />
               </a>
             </div>
           </div>
