@@ -20,7 +20,6 @@ interface Submission {
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
   comment: string;
-  transaction_id: string;
 }
 
 interface RejectedSubmission {
@@ -55,13 +54,11 @@ export default function CheckStatus() {
     queryFn: async () => {
       if (!searchedUsername) return [];
       
-      let query = supabase
+      const { data: submissionsData, error: submissionsError } = await supabase
         .from("submissions")
         .select("*")
         .eq("username", searchedUsername)
         .order("created_at", { ascending: false });
-
-      const { data: submissionsData, error: submissionsError } = await query;
 
       if (submissionsError) {
         toast.error("Gönderiler yüklenirken bir hata oluştu");
@@ -86,7 +83,7 @@ export default function CheckStatus() {
 
       return [...(submissionsData || []), ...transformedRejectedData].sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      ) as CombinedSubmission[];
+      );
     },
     enabled: !!searchedUsername,
   });
@@ -98,19 +95,6 @@ export default function CheckStatus() {
       return;
     }
     setSearchedUsername(username.trim());
-  };
-
-  const getSubmissionInfo = (submission: CombinedSubmission) => {
-    if ('reason' in submission) {
-      return {
-        status: 'rejected' as const,
-        description: submission.reason
-      };
-    }
-    return {
-      status: submission.status || 'pending',
-      description: '-'
-    };
   };
 
   return (
@@ -161,24 +145,21 @@ export default function CheckStatus() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {submissions.map((submission) => {
-                  const info = getSubmissionInfo(submission);
-                  return (
-                    <TableRow key={submission.id}>
-                      <TableCell>
-                        {new Date(submission.created_at).toLocaleDateString("tr-TR")}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={statusColors[info.status]}>
-                          {statusTranslations[info.status]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="max-w-xs">
-                        {info.description}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                {submissions.map((submission) => (
+                  <TableRow key={submission.id}>
+                    <TableCell>
+                      {new Date(submission.created_at).toLocaleDateString("tr-TR")}
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={statusColors[submission.status || 'pending']}>
+                        {statusTranslations[submission.status || 'pending']}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="max-w-xs">
+                      {'reason' in submission ? submission.reason : submission.comment || '-'}
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>
