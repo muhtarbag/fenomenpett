@@ -46,9 +46,6 @@ const Login = () => {
             alt="FenomenPet Logo" 
             className="mx-auto h-12 w-auto mb-4"
           />
-          <h2 className="text-2xl font-bold text-gray-900">
-            Yönetici Girişi
-          </h2>
         </div>
         
         <form className="space-y-6" onSubmit={handleSubmit}>
