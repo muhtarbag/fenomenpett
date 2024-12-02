@@ -20,6 +20,7 @@ interface Submission {
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
   comment: string;
+  transaction_id: string;
 }
 
 interface RejectedSubmission {
@@ -44,18 +45,28 @@ const statusTranslations = {
 
 export default function CheckStatus() {
   const [username, setUsername] = useState("");
+  const [transactionId, setTransactionId] = useState("");
   const [searchedUsername, setSearchedUsername] = useState<string | null>(null);
+  const [searchedTransactionId, setSearchedTransactionId] = useState<string | null>(null);
 
   const { data: submissions, isLoading: isLoadingSubmissions } = useQuery({
-    queryKey: ["submissions", searchedUsername],
+    queryKey: ["submissions", searchedUsername, searchedTransactionId],
     queryFn: async () => {
-      if (!searchedUsername) return [];
+      if (!searchedUsername && !searchedTransactionId) return [];
       
-      const { data: submissionsData, error: submissionsError } = await supabase
+      let query = supabase
         .from("submissions")
         .select("*")
-        .eq("username", searchedUsername)
         .order("created_at", { ascending: false });
+
+      if (searchedUsername) {
+        query = query.eq("username", searchedUsername);
+      }
+      if (searchedTransactionId) {
+        query = query.eq("transaction_id", searchedTransactionId);
+      }
+
+      const { data: submissionsData, error: submissionsError } = await query;
 
       if (submissionsError) {
         toast.error("Gönderiler yüklenirken bir hata oluştu");
@@ -65,7 +76,7 @@ export default function CheckStatus() {
       const { data: rejectedData, error: rejectedError } = await supabase
         .from("rejected_submissions")
         .select("*")
-        .eq("username", searchedUsername)
+        .eq("username", searchedUsername || '')
         .order("created_at", { ascending: false });
 
       if (rejectedError) {
@@ -77,87 +88,115 @@ export default function CheckStatus() {
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
     },
-    enabled: !!searchedUsername,
+    enabled: !!(searchedUsername || searchedTransactionId),
   });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username.trim()) {
-      toast.error("Lütfen bir kullanıcı adı girin");
+    if (!username.trim() && !transactionId.trim()) {
+      toast.error("Lütfen kullanıcı adı veya işlem numarası girin");
       return;
     }
     setSearchedUsername(username.trim());
+    setSearchedTransactionId(transactionId.trim());
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Gönderi Durumu Sorgula</h1>
-      
-      <form onSubmit={handleSearch} className="mb-8">
-        <div className="flex gap-4 max-w-md">
-          <Input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Kullanıcı adınızı girin"
-            className="flex-1"
-          />
-          <Button type="submit">Sorgula</Button>
-        </div>
-      </form>
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6 text-center">Gönderi Durumu Sorgula</h1>
+        
+        <form onSubmit={handleSearch} className="space-y-4 mb-8">
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                Kullanıcı Adı
+              </label>
+              <Input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Kullanıcı adınızı girin"
+                className="w-full"
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="transactionId" className="block text-sm font-medium text-gray-700 mb-1">
+                İşlem Numarası
+              </label>
+              <Input
+                id="transactionId"
+                type="text"
+                value={transactionId}
+                onChange={(e) => setTransactionId(e.target.value)}
+                placeholder="TRX-XXXXXXXXXXXXXX"
+                className="w-full"
+              />
+            </div>
+          </div>
 
-      {isLoadingSubmissions && (
-        <div className="text-center text-gray-500">Yükleniyor...</div>
-      )}
+          <Button type="submit" className="w-full">Sorgula</Button>
+        </form>
 
-      {searchedUsername && submissions?.length === 0 && !isLoadingSubmissions && (
-        <div className="text-center text-gray-500">
-          Bu kullanıcı adına ait gönderi bulunamadı
-        </div>
-      )}
+        {isLoadingSubmissions && (
+          <div className="text-center text-gray-500 py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+            <p className="mt-2">Yükleniyor...</p>
+          </div>
+        )}
 
-      {submissions && submissions.length > 0 && (
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tarih</TableHead>
-                <TableHead>Durum</TableHead>
-                <TableHead>Yorum</TableHead>
-                <TableHead>Açıklama</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {submissions.map((submission) => (
-                <TableRow key={submission.id}>
-                  <TableCell>
-                    {new Date(submission.created_at).toLocaleDateString("tr-TR")}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      className={
-                        "reason" in submission
-                          ? statusColors.rejected
-                          : statusColors[submission.status]
-                      }
-                    >
-                      {"reason" in submission
-                        ? statusTranslations.rejected
-                        : statusTranslations[submission.status]}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="max-w-xs truncate">
-                    {submission.comment}
-                  </TableCell>
-                  <TableCell className="max-w-xs">
-                    {"reason" in submission ? submission.reason : "-"}
-                  </TableCell>
+        {(searchedUsername || searchedTransactionId) && submissions?.length === 0 && !isLoadingSubmissions && (
+          <div className="text-center text-gray-500 bg-gray-50 rounded-lg p-8">
+            <p className="text-lg">Gönderi bulunamadı</p>
+            <p className="text-sm mt-2">Lütfen bilgilerinizi kontrol edip tekrar deneyin</p>
+          </div>
+        )}
+
+        {submissions && submissions.length > 0 && (
+          <div className="overflow-x-auto bg-white rounded-lg shadow">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>İşlem No</TableHead>
+                  <TableHead>Tarih</TableHead>
+                  <TableHead>Durum</TableHead>
+                  <TableHead>Açıklama</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+              </TableHeader>
+              <TableBody>
+                {submissions.map((submission) => (
+                  <TableRow key={submission.id}>
+                    <TableCell className="font-mono text-sm">
+                      {submission.transaction_id || '-'}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(submission.created_at).toLocaleDateString("tr-TR")}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        className={
+                          "reason" in submission
+                            ? statusColors.rejected
+                            : statusColors[submission.status || 'pending']
+                        }
+                      >
+                        {"reason" in submission
+                          ? statusTranslations.rejected
+                          : statusTranslations[submission.status || 'pending']}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="max-w-xs">
+                      {"reason" in submission ? submission.reason : "-"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
