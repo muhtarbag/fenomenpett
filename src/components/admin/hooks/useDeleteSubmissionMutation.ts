@@ -4,24 +4,13 @@ import { toast } from "sonner";
 
 export const useDeleteSubmissionMutation = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (id: number) => {
       console.log('🗑️ Starting deletion process for submission:', id);
-      
+
       try {
-        // First delete from rejected_submissions if it exists
-        const { error: rejectedError } = await supabase
-          .from('rejected_submissions')
-          .delete()
-          .eq('original_submission_id', id);
-
-        if (rejectedError) {
-          console.error('❌ Error deleting from rejected_submissions:', rejectedError);
-          throw new Error('Reddedilen gönderi silinirken bir hata oluştu');
-        }
-
-        // Then delete from submission_likes
+        // First delete from submission_likes table
         const { error: likesError } = await supabase
           .from('submission_likes')
           .delete()
@@ -29,7 +18,18 @@ export const useDeleteSubmissionMutation = () => {
 
         if (likesError) {
           console.error('❌ Error deleting from submission_likes:', likesError);
-          throw new Error('Beğeniler silinirken bir hata oluştu');
+          throw new Error(`Failed to delete likes: ${likesError.message}`);
+        }
+
+        // Then delete from rejected_submissions table if it exists there
+        const { error: rejectedError } = await supabase
+          .from('rejected_submissions')
+          .delete()
+          .eq('original_submission_id', id);
+
+        if (rejectedError) {
+          console.error('❌ Error deleting from rejected_submissions:', rejectedError);
+          throw new Error(`Failed to delete rejected submission: ${rejectedError.message}`);
         }
 
         // Finally delete from submissions table
@@ -40,24 +40,24 @@ export const useDeleteSubmissionMutation = () => {
 
         if (submissionError) {
           console.error('❌ Error deleting from submissions:', submissionError);
-          throw new Error('Gönderi silinirken bir hata oluştu');
+          throw new Error(`Failed to delete submission: ${submissionError.message}`);
         }
 
-        console.log('✅ Successfully deleted submission and related records:', id);
+        console.log('✅ Successfully deleted submission and related records');
         return id;
-      } catch (error) {
+      } catch (error: any) {
         console.error('❌ Delete operation failed:', error);
         throw error;
       }
     },
-    onSuccess: (deletedId) => {
-      console.log('✨ Delete mutation success:', deletedId);
+    onSuccess: () => {
+      toast.success("İçerik başarıyla silindi");
+      // Invalidate and refetch relevant queries
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
-      toast.success('Gönderi başarıyla silindi');
     },
     onError: (error: Error) => {
-      console.error('❌ Delete mutation error:', error);
-      toast.error(error.message || "Silme işlemi başarısız oldu");
+      console.error('❌ Mutation error:', error);
+      toast.error(`Silme işlemi başarısız: ${error.message}`);
     }
   });
 };
