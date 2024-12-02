@@ -15,6 +15,39 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
   const [isLiked, setIsLiked] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Set up realtime subscription for likes
+  useEffect(() => {
+    if (isPlaceholder) return;
+
+    console.log('🔄 Setting up realtime subscription for likes on post:', postId);
+    
+    const channel = supabase
+      .channel(`likes_${postId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'submissions',
+          filter: `id=eq.${postId}`
+        },
+        (payload) => {
+          console.log('📡 Realtime like update received:', payload);
+          if (payload.new && typeof payload.new.likes === 'number') {
+            setLikeCount(payload.new.likes);
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log(`📡 Like subscription status for post ${postId}:`, status);
+      });
+
+    return () => {
+      console.log('🔄 Cleaning up likes subscription for post:', postId);
+      supabase.removeChannel(channel);
+    };
+  }, [postId, isPlaceholder]);
+
   useEffect(() => {
     const checkLikeStatus = async () => {
       if (isPlaceholder) return;
@@ -141,15 +174,6 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
     } catch (error: any) {
       console.error('Like error:', error);
       toast.error("Bir hata oluştu. Lütfen tekrar deneyin.");
-      
-      // Revert optimistic update
-      if (isLiked) {
-        setLikeCount(prev => prev + 1);
-        setIsLiked(true);
-      } else {
-        setLikeCount(prev => Math.max(0, prev - 1));
-        setIsLiked(false);
-      }
     } finally {
       setIsProcessing(false);
     }
@@ -165,7 +189,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
     >
       <Heart
         size={20}
-        className={`${isLiked ? 'fill-red-500 text-red-500' : 'fill-red-500'}`}
+        className={`${isLiked ? 'fill-red-500 text-red-500' : ''}`}
       />
       <span className="text-red-500">{likeCount}</span>
     </button>
