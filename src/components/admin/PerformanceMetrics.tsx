@@ -19,11 +19,11 @@ export const PerformanceMetrics = () => {
       const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
       const resources = performance.getEntriesByType("resource");
 
-      // Sayfa başına ortalama kaynak kullanımını hesapla
+      // Sayfa başına ortalama kaynak kullanımını hesapla - daha gerçekçi eşikler
       const calculateResourceUsage = (resourceCount: number): "Low" | "Medium" | "High" => {
-        if (resourceCount < 10) return "Low";
-        if (resourceCount < 20) return "Medium";
-        return "High";
+        if (resourceCount < 30) return "Low";        // 0-29 resources
+        if (resourceCount < 50) return "Medium";     // 30-49 resources
+        return "High";                               // 50+ resources
       };
 
       // Her sayfa için metrikleri hesapla
@@ -31,6 +31,8 @@ export const PerformanceMetrics = () => {
       const metrics = pages.map(page => {
         const loadTime = (navigation.loadEventEnd - navigation.startTime).toFixed(2);
         const resourceCount = resources.length;
+        
+        console.log(`${page} için kaynak sayısı:`, resourceCount);
         
         return {
           page,
