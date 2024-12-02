@@ -14,6 +14,7 @@ export interface Submission {
   user_id: string | null;
   likes: number | null;
   image_hash: string | null;
+  transaction_id: string;
 }
 
 export const useSubmissions = () => {
