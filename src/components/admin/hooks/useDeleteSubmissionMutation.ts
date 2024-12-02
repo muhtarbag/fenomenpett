@@ -14,36 +14,17 @@ export const useDeleteSubmissionMutation = () => {
         console.log('🔍 Checking for rejected submissions with original_submission_id:', id);
         const { data: rejectedData, error: findError } = await supabase
           .from('rejected_submissions')
-          .select('*')
+          .delete()
           .eq('original_submission_id', id);
 
-        console.log('🔍 Rejected submissions check result:', { 
-          rejectedData, 
-          findError,
-          found: rejectedData?.length ?? 0
-        });
-
         if (findError) {
-          console.error('❌ Error checking rejected submissions:', findError);
-          throw new Error(`Failed to check rejected submissions: ${findError.message}`);
+          console.error('❌ Error deleting rejected submissions:', findError);
+          throw new Error(`Failed to delete rejected submissions: ${findError.message}`);
         }
+        console.log('✅ Checked/deleted rejected submissions');
 
-        if (rejectedData && rejectedData.length > 0) {
-          console.log('📝 Found rejected submission records, attempting to delete them...');
-          const { error: rejectedError } = await supabase
-            .from('rejected_submissions')
-            .delete()
-            .eq('original_submission_id', id);
-
-          if (rejectedError) {
-            console.error('❌ Error deleting from rejected_submissions:', rejectedError);
-            throw new Error(`Failed to delete rejected submission: ${rejectedError.message}`);
-          }
-          console.log('✅ Successfully deleted rejected submissions records');
-        }
-
-        // Then delete from submission_likes table
-        console.log('🗑️ Attempting to delete from submission_likes...');
+        // Delete from submission_likes table
+        console.log('🗑️ Deleting from submission_likes...');
         const { error: likesError } = await supabase
           .from('submission_likes')
           .delete()
@@ -53,10 +34,10 @@ export const useDeleteSubmissionMutation = () => {
           console.error('❌ Error deleting from submission_likes:', likesError);
           throw new Error(`Failed to delete likes: ${likesError.message}`);
         }
-        console.log('✅ Successfully deleted submission likes');
+        console.log('✅ Deleted submission likes');
 
         // Finally delete from submissions table
-        console.log('🗑️ Attempting to delete from submissions table...');
+        console.log('🗑️ Deleting from submissions table...');
         const { error: submissionError } = await supabase
           .from('submissions')
           .delete()
@@ -75,19 +56,17 @@ export const useDeleteSubmissionMutation = () => {
       }
     },
     onSuccess: (deletedId) => {
-      console.log('✨ Delete mutation success, invalidating queries for ID:', deletedId);
+      console.log('✨ Delete mutation success:', deletedId);
       
-      // Force a complete cache invalidation
-      queryClient.invalidateQueries({ 
-        queryKey: ['submissions'],
-        refetchType: 'all',
-        exact: true
+      // Immediately update the cache to remove the deleted submission
+      queryClient.setQueryData(['submissions'], (oldData: any) => {
+        if (!oldData) return [];
+        return oldData.filter((submission: any) => submission.id !== deletedId);
       });
       
-      // Also remove the specific submission from the cache
-      queryClient.setQueryData(['submissions'], (oldData: any) => {
-        if (!oldData) return oldData;
-        return oldData.filter((submission: any) => submission.id !== deletedId);
+      // Then invalidate the query to trigger a refetch
+      queryClient.invalidateQueries({ 
+        queryKey: ['submissions']
       });
       
       toast.success("İçerik başarıyla silindi");

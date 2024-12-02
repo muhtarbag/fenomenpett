@@ -32,7 +32,16 @@ export const useSubmissions = () => {
         },
         (payload) => {
           console.log('📡 Realtime update received:', payload);
-          queryClient.invalidateQueries({ queryKey: ['submissions'] });
+          
+          if (payload.eventType === 'DELETE') {
+            console.log('🗑️ Submission deleted:', payload.old.id);
+            queryClient.setQueryData(['submissions'], (oldData: any) => {
+              if (!oldData) return [];
+              return oldData.filter((submission: any) => submission.id !== payload.old.id);
+            });
+          } else {
+            queryClient.invalidateQueries({ queryKey: ['submissions'] });
+          }
           
           if (payload.eventType === 'UPDATE' && payload.new.status !== payload.old.status) {
             const status = payload.new.status === 'approved' ? 'onaylandı' : 'reddedildi';
