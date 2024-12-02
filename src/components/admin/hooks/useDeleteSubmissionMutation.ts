@@ -42,6 +42,7 @@ export const useDeleteSubmissionMutation = () => {
         throw new Error('Gönderi silinirken bir hata oluştu');
       }
 
+      console.log('✅ Successfully deleted submission:', submissionId);
       return submissionId;
     },
     onMutate: async (submissionId) => {
@@ -51,7 +52,7 @@ export const useDeleteSubmissionMutation = () => {
       // Snapshot the previous value
       const previousSubmissions = queryClient.getQueryData(['submissions']);
 
-      // Optimistically remove the submission from the cache
+      // Optimistically update to the new value
       queryClient.setQueryData(['submissions'], (old: any[] | undefined) => {
         if (!old) return [];
         return old.filter(submission => submission.id !== submissionId);
@@ -71,9 +72,12 @@ export const useDeleteSubmissionMutation = () => {
       console.log('✅ Successfully deleted submission:', submissionId);
       toast.success('Gönderi başarıyla silindi');
       
-      // Force a complete cache refresh and refetch
+      // Force a complete cache refresh
       queryClient.removeQueries({ queryKey: ['submissions'] });
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure cache consistency
       queryClient.refetchQueries({ queryKey: ['submissions'] });
     }
   });
