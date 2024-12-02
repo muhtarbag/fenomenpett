@@ -33,10 +33,12 @@ export const useDeleteSubmissionMutation = () => {
         }
 
         // Finally delete from submissions table
-        const { error: submissionError } = await supabase
+        const { data, error: submissionError } = await supabase
           .from('submissions')
           .delete()
-          .eq('id', id);
+          .eq('id', id)
+          .select()
+          .maybeSingle();
 
         if (submissionError) {
           console.error('❌ Error deleting from submissions:', submissionError);
@@ -52,7 +54,6 @@ export const useDeleteSubmissionMutation = () => {
     },
     onSuccess: (deletedId) => {
       console.log('✨ Delete mutation success:', deletedId);
-      // Force a complete refresh of the submissions data
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
       toast.success('Gönderi başarıyla silindi');
     },
