@@ -13,20 +13,19 @@ const Stories: React.FC = () => {
   const [autoPlay, setAutoPlay] = useState(true);
   const { shuffledStories } = useStories();
 
-  // Auto-advance stories every 5 seconds
   useInterval(
     () => {
       if (autoPlay && api) {
         api.scrollNext();
       }
     },
-    5000 // 5 seconds interval
+    5000
   );
 
   if (!shuffledStories.length) return null;
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 mb-8">
+    <div className="w-full max-w-full mx-auto mb-6">
       <Carousel
         className="w-full"
         opts={{
@@ -37,7 +36,7 @@ const Stories: React.FC = () => {
         onMouseEnter={() => setAutoPlay(false)}
         onMouseLeave={() => setAutoPlay(true)}
       >
-        <CarouselContent className="flex gap-4">
+        <CarouselContent className="-ml-1">
           {shuffledStories.map((story) => (
             <StoryItem key={story.id} story={story} />
           ))}

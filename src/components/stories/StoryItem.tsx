@@ -11,16 +11,16 @@ interface StoryItemProps {
 
 const StoryItem: React.FC<StoryItemProps> = ({ story }) => {
   return (
-    <CarouselItem className="basis-auto">
+    <CarouselItem className="basis-auto pl-1">
       <Dialog>
         <DialogTrigger asChild>
-          <div className="flex flex-col items-center gap-1 cursor-pointer min-w-[72px]">
-            <div className="rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 to-fuchsia-600">
-              <Avatar className="w-16 h-16 border-2 border-white">
+          <div className="flex flex-col items-center gap-2 cursor-pointer min-w-[90px]">
+            <div className="rounded-full p-[3px] bg-gradient-to-tr from-yellow-400 to-fuchsia-600">
+              <Avatar className="w-20 h-20 border-2 border-white">
                 <AvatarImage src={story.image_url} alt={story.username} />
               </Avatar>
             </div>
-            <span className="text-xs text-gray-600 truncate max-w-[72px]">
+            <span className="text-sm text-gray-600 truncate max-w-[90px]">
               @{story.username}
             </span>
           </div>
