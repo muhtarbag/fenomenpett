@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Collapsible,
   CollapsibleContent,
@@ -25,19 +26,12 @@ export const ErrorReportForm = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(
-        "https://dwzevlymqzpstliaxxgo.supabase.co/functions/v1/send-error-report",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const { error } = await supabase.functions.invoke('send-error-report', {
+        body: formData
+      });
 
-      if (!response.ok) {
-        throw new Error("Hata raporu gönderilemedi");
+      if (error) {
+        throw error;
       }
 
       toast.success("Hata raporu başarıyla gönderildi!");
