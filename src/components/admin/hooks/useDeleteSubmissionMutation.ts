@@ -9,7 +9,7 @@ export const useDeleteSubmissionMutation = () => {
     mutationFn: async (submissionId: number) => {
       console.log('🗑️ Starting deletion process for submission:', submissionId);
 
-      // First, delete all likes for this submission
+      // First, delete associated likes
       const { error: likesError } = await supabase
         .from('submission_likes')
         .delete()
@@ -17,10 +17,10 @@ export const useDeleteSubmissionMutation = () => {
 
       if (likesError) {
         console.error('❌ Error deleting likes:', likesError);
-        throw new Error('Beğeniler silinirken bir hata oluştu');
+        throw likesError;
       }
 
-      // Then, delete any rejected submission records
+      // Then, delete associated rejected submissions
       const { error: rejectedError } = await supabase
         .from('rejected_submissions')
         .delete()
@@ -28,23 +28,33 @@ export const useDeleteSubmissionMutation = () => {
 
       if (rejectedError) {
         console.error('❌ Error deleting rejected submission:', rejectedError);
-        throw new Error('Reddedilen gönderi silinirken bir hata oluştu');
+        throw rejectedError;
       }
 
       // Finally, delete the submission itself
-      const { error: submissionError } = await supabase
+      const { data, error: submissionError } = await supabase
         .from('submissions')
         .delete()
         .eq('id', submissionId)
-        .single();
+        .select();
 
       if (submissionError) {
         console.error('❌ Error deleting submission:', submissionError);
-        throw new Error('Gönderi silinirken bir hata oluştu');
+        throw submissionError;
       }
 
-      console.log('✅ Successfully deleted submission and related records:', submissionId);
+      // If no rows were deleted, throw an error
+      if (!data || data.length === 0) {
+        const error = new Error('Submission not found or already deleted');
+        console.error('❌ Submission not found:', error);
+        throw error;
+      }
+
       return submissionId;
+    },
+    onError: (error) => {
+      console.error('❌ Delete mutation error:', error);
+      toast.error("Gönderi silinirken bir hata oluştu");
     },
     onSuccess: (deletedId) => {
       console.log('✨ Delete mutation success:', deletedId);
@@ -62,10 +72,6 @@ export const useDeleteSubmissionMutation = () => {
       });
       
       toast.success("Gönderi başarıyla silindi");
-    },
-    onError: (error: Error) => {
-      console.error('❌ Delete mutation error:', error);
-      toast.error(error.message || "Gönderi silinirken bir hata oluştu");
     }
   });
 };
