@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet";
+import { rejectionReasons } from "@/components/admin/SubmissionActions/RejectButton";
 
 const CheckStatus = () => {
   const [username, setUsername] = useState("");
@@ -28,7 +29,6 @@ const CheckStatus = () => {
         throw error;
       }
 
-      // Return the first submission or null if none found
       return data && data.length > 0 ? data[0] : null;
     },
     enabled: searchInitiated && !!username,
@@ -41,6 +41,11 @@ const CheckStatus = () => {
       return;
     }
     setSearchInitiated(true);
+  };
+
+  const getRejectionReasonText = (reason: string) => {
+    const reasonData = rejectionReasons[reason as keyof typeof rejectionReasons];
+    return reasonData ? reasonData.label : reason;
   };
 
   return (
@@ -133,7 +138,7 @@ const CheckStatus = () => {
                 {submission.status === 'rejected' && submission.rejection_reason && (
                   <div>
                     <p className="text-sm text-gray-600">Red Nedeni:</p>
-                    <p className="text-red-600">{submission.rejection_reason}</p>
+                    <p className="text-red-600">{getRejectionReasonText(submission.rejection_reason)}</p>
                   </div>
                 )}
                 
