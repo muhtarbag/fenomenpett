@@ -22,10 +22,11 @@ interface DeleteButtonProps {
 export const DeleteButton = ({ submissionId, mutation, className = "flex-1" }: DeleteButtonProps) => {
   const handleDelete = async () => {
     try {
-      console.log('🗑️ Starting deletion process for submission:', submissionId);
-      await mutation.mutateAsync(submissionId);
+      console.log('🗑️ DeleteButton: Starting deletion for submission:', submissionId);
+      const result = await mutation.mutateAsync(submissionId);
+      console.log('✅ DeleteButton: Deletion completed:', result);
     } catch (error) {
-      console.error('❌ Error deleting submission:', error);
+      console.error('❌ DeleteButton: Error during deletion:', error);
       toast.error('Gönderi silinirken bir hata oluştu');
     }
   };
