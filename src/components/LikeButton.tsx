@@ -2,12 +2,18 @@ import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 interface LikeButtonProps {
   postId: number;
   initialLikes: number;
   className?: string;
   isPlaceholder?: boolean;
+}
+
+interface SubmissionPayload {
+  id: number;
+  likes: number;
 }
 
 const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = false }: LikeButtonProps) => {
@@ -31,7 +37,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
           table: 'submissions',
           filter: `id=eq.${postId}`
         },
-        (payload) => {
+        (payload: RealtimePostgresChangesPayload<SubmissionPayload>) => {
           console.log('📡 Realtime like update received:', payload);
           if (payload.new && typeof payload.new.likes === 'number') {
             setLikeCount(payload.new.likes);
