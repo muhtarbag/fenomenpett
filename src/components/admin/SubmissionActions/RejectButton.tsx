@@ -61,13 +61,11 @@ export const RejectButton = ({ submissionId, mutation }: RejectButtonProps) => {
       timestamp: new Date().toISOString()
     });
     
-    const selectedReasonData = rejectionReasons.find(r => r.value === selectedReason);
-    
     mutation.mutate(
       { 
         id: submissionId, 
         status: 'rejected',
-        reason: selectedReasonData?.value
+        reason: selectedReason // Doğrudan seçilen nedeni gönderiyoruz
       },
       {
         onSuccess: (data) => {

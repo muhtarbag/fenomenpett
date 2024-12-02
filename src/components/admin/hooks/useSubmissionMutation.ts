@@ -18,12 +18,19 @@ export const useSubmissionMutation = () => {
     }) => {
       console.log('🔄 Starting submission status update:', { id, status, reason });
       
+      const updateData: any = {
+        status,
+        updated_at: new Date().toISOString()
+      };
+
+      // Eğer red nedeni varsa, rejection_reason'ı da güncelle
+      if (status === 'rejected' && reason) {
+        updateData.rejection_reason = reason;
+      }
+      
       const { error: submissionError, data: submissionData } = await supabase
         .from('submissions')
-        .update({ 
-          status,
-          updated_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', id)
         .select('*');
       
