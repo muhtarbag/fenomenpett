@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut, Upload, FileText, Search } from "lucide-react";
 
 export const Navigation = () => {
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <div className="flex items-center gap-4">
@@ -42,7 +42,7 @@ export const Navigation = () => {
         <Button
           variant="ghost"
           className="flex items-center gap-2"
-          onClick={() => signOut()}
+          onClick={() => logout()}
         >
           <LogOut size={20} />
           <span className="hidden sm:inline">Çıkış Yap</span>
