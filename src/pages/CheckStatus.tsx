@@ -20,7 +20,7 @@ interface Submission {
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
   comment: string;
-  rejection_reason?: string;
+  rejection_reason?: 'duplicate_photo' | 'inappropriate_photo' | 'invalid_username' | 'copied_photo' | null;
 }
 
 const statusColors = {
@@ -151,7 +151,9 @@ export default function CheckStatus() {
                         </p>
                         {submission.status === 'rejected' && (
                           <p className="text-sm text-red-600">
-                            {rejectionReasonTranslations[submission.rejection_reason || ''] || 'Belirtilmemiş red sebebi'}
+                            {submission.rejection_reason ? 
+                              rejectionReasonTranslations[submission.rejection_reason] : 
+                              'Belirtilmemiş red sebebi'}
                           </p>
                         )}
                       </TableCell>
