@@ -51,20 +51,24 @@ export const useDeleteSubmissionMutation = () => {
       }
     },
     onSuccess: (deletedId) => {
-      console.log('✨ Delete mutation success, invalidating queries');
+      console.log('✨ Delete mutation success:', deletedId);
       toast.success("İçerik başarıyla silindi");
       
-      // Update the cache immediately to remove the deleted item
-      queryClient.setQueryData(['submissions'], (oldData: any) => {
+      // First update the cache to immediately remove the deleted item
+      queryClient.setQueryData(['submissions'], (oldData: any[]) => {
         if (!oldData) return [];
-        return oldData.filter((submission: any) => submission.id !== deletedId);
+        console.log('🔄 Updating cache, removing submission:', deletedId);
+        return oldData.filter(submission => submission.id !== deletedId);
       });
       
-      // Then invalidate the query to ensure fresh data
-      queryClient.invalidateQueries({ queryKey: ['submissions'] });
+      // Then invalidate and refetch to ensure data consistency
+      queryClient.invalidateQueries({ 
+        queryKey: ['submissions'],
+        refetchType: 'all'
+      });
     },
     onError: (error: Error) => {
-      console.error('❌ Mutation error:', error);
+      console.error('❌ Delete mutation error:', error);
       toast.error(`Silme işlemi başarısız: ${error.message}`);
     }
   });
