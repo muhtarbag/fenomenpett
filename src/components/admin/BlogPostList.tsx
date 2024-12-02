@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Pencil, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,48 +28,32 @@ interface BlogPost {
 
 export const BlogPostList = () => {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
-  const queryClient = useQueryClient();
 
-  const { data: posts, isLoading } = useQuery({
+  const { data: posts, refetch } = useQuery({
     queryKey: ["blog-posts"],
     queryFn: async () => {
-      console.log("🔄 Fetching blog posts...");
       const { data, error } = await supabase
         .from("blog_posts")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("❌ Error fetching blog posts:", error);
-        throw error;
-      }
-      
-      console.log("✅ Fetched blog posts:", data);
+      if (error) throw error;
       return data as BlogPost[];
     },
   });
 
   const handleDelete = async (id: number) => {
     try {
-      console.log("🗑️ Attempting to delete blog post:", id);
-      
       const { error } = await supabase
         .from("blog_posts")
         .delete()
         .eq("id", id);
 
-      if (error) {
-        console.error("❌ Error deleting blog post:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log("✅ Successfully deleted blog post:", id);
       toast.success("Blog yazısı başarıyla silindi");
-      
-      // Invalidate and refetch the query to update the UI
-      await queryClient.invalidateQueries({ queryKey: ["blog-posts"] });
+      refetch();
     } catch (error: any) {
-      console.error("❌ Delete operation failed:", error);
       toast.error("Blog yazısı silinirken bir hata oluştu: " + error.message);
     }
   };
@@ -79,8 +63,6 @@ export const BlogPostList = () => {
     if (!editingPost) return;
 
     try {
-      console.log("📝 Updating blog post:", editingPost.id);
-      
       const { error } = await supabase
         .from("blog_posts")
         .update({
@@ -89,26 +71,15 @@ export const BlogPostList = () => {
         })
         .eq("id", editingPost.id);
 
-      if (error) {
-        console.error("❌ Error updating blog post:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log("✅ Successfully updated blog post:", editingPost.id);
       toast.success("Blog yazısı başarıyla güncellendi");
       setEditingPost(null);
-      
-      // Invalidate and refetch the query to update the UI
-      await queryClient.invalidateQueries({ queryKey: ["blog-posts"] });
+      refetch();
     } catch (error: any) {
-      console.error("❌ Update operation failed:", error);
       toast.error("Blog yazısı güncellenirken bir hata oluştu: " + error.message);
     }
   };
-
-  if (isLoading) {
-    return <div className="text-center">Yükleniyor...</div>;
-  }
 
   return (
     <div className="space-y-6">
