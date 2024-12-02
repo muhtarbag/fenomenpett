@@ -4,6 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import PostDialogContent from "./PostDialogContent";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { useInterval } from "@/hooks/use-interval";
 
 interface Story {
   id: number;
@@ -15,6 +23,8 @@ interface Story {
 
 const Stories: React.FC = () => {
   const [shuffledStories, setShuffledStories] = useState<Story[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [autoPlay, setAutoPlay] = useState(true);
 
   const { data: stories = [] } = useQuery({
     queryKey: ["top-stories"],
@@ -42,31 +52,57 @@ const Stories: React.FC = () => {
     shuffleStories();
   }, [stories]);
 
+  // Auto-advance stories every 5 seconds
+  useInterval(
+    () => {
+      if (autoPlay && shuffledStories.length > 0) {
+        setCurrentIndex((prevIndex) =>
+          prevIndex === shuffledStories.length - 1 ? 0 : prevIndex + 1
+        );
+      }
+    },
+    5000 // 5 seconds interval
+  );
+
   if (!shuffledStories.length) return null;
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 mb-8">
-      <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-        {shuffledStories.map((story) => (
-          <Dialog key={story.id}>
-            <DialogTrigger asChild>
-              <div className="flex flex-col items-center gap-1 cursor-pointer min-w-[72px]">
-                <div className="rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 to-fuchsia-600">
-                  <Avatar className="w-16 h-16 border-2 border-white">
-                    <AvatarImage src={story.image_url} alt={story.username} />
-                  </Avatar>
-                </div>
-                <span className="text-xs text-gray-600 truncate max-w-[72px]">
-                  @{story.username}
-                </span>
-              </div>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px]">
-              <PostDialogContent post={story} />
-            </DialogContent>
-          </Dialog>
-        ))}
-      </div>
+      <Carousel
+        className="w-full"
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        onMouseEnter={() => setAutoPlay(false)}
+        onMouseLeave={() => setAutoPlay(true)}
+        value={currentIndex}
+        onValueChange={setCurrentIndex}
+      >
+        <CarouselContent className="flex gap-4">
+          {shuffledStories.map((story) => (
+            <CarouselItem key={story.id} className="basis-auto">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <div className="flex flex-col items-center gap-1 cursor-pointer min-w-[72px]">
+                    <div className="rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 to-fuchsia-600">
+                      <Avatar className="w-16 h-16 border-2 border-white">
+                        <AvatarImage src={story.image_url} alt={story.username} />
+                      </Avatar>
+                    </div>
+                    <span className="text-xs text-gray-600 truncate max-w-[72px]">
+                      @{story.username}
+                    </span>
+                  </div>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px]">
+                  <PostDialogContent post={story} />
+                </DialogContent>
+              </Dialog>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
     </div>
   );
 };
