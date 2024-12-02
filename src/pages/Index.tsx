@@ -23,8 +23,7 @@ const Index = () => {
         {
           event: '*',
           schema: 'public',
-          table: 'submissions',
-          filter: 'status=eq.approved'
+          table: 'submissions'
         },
         (payload) => {
           console.log('📡 Realtime update received:', payload);
@@ -52,7 +51,7 @@ const Index = () => {
         const { data, error } = await supabase
           .from('submissions')
           .select('id, username, image_url, comment, likes')
-          .eq('status', 'approved')
+          .eq('status', 'pending')
           .order('created_at', { ascending: false })
           .range(from, to);
         
@@ -61,7 +60,7 @@ const Index = () => {
           throw error;
         }
         
-        console.log("✅ Fetched approved posts:", data?.length);
+        console.log("✅ Fetched pending posts:", data?.length);
         return data || [];
       } catch (err) {
         console.error("❌ Failed to fetch posts:", err);
