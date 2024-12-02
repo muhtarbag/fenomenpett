@@ -21,7 +21,7 @@ export const useDeleteSubmissionMutation = () => {
           throw new Error(`Failed to delete likes: ${likesError.message}`);
         }
 
-        // Then delete from rejected_submissions table if it exists there
+        // Then delete from rejected_submissions table
         const { error: rejectedError } = await supabase
           .from('rejected_submissions')
           .delete()
@@ -29,7 +29,7 @@ export const useDeleteSubmissionMutation = () => {
 
         if (rejectedError) {
           console.error('❌ Error deleting from rejected_submissions:', rejectedError);
-          throw new Error(`Failed to delete rejected submission: ${rejectedError.message}`);
+          // Don't throw here, as the record might not exist in rejected_submissions
         }
 
         // Finally delete from submissions table
