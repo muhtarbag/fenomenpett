@@ -25,9 +25,10 @@ export const DeleteButton = ({ submissionId, mutation, className = "flex-1" }: D
       console.log('🗑️ DeleteButton: Starting deletion for submission:', submissionId);
       await mutation.mutateAsync(submissionId);
       console.log('✅ DeleteButton: Deletion completed successfully');
-    } catch (error) {
+      toast.success("Gönderi başarıyla silindi");
+    } catch (error: any) {
       console.error('❌ DeleteButton: Error during deletion:', error);
-      toast.error('Gönderi silinirken bir hata oluştu');
+      toast.error(error.message || 'Gönderi silinirken bir hata oluştu');
     }
   };
 
@@ -35,6 +36,7 @@ export const DeleteButton = ({ submissionId, mutation, className = "flex-1" }: D
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <button
+          type="button"
           disabled={mutation.isPending}
           className={`flex items-center justify-center gap-2 py-2 px-4 bg-danger text-white rounded-md hover:bg-danger/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
         >

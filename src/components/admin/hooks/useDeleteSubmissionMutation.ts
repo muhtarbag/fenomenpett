@@ -70,8 +70,7 @@ export const useDeleteSubmissionMutation = () => {
 
       // Then invalidate to ensure fresh data
       queryClient.invalidateQueries({
-        queryKey: ['submissions'],
-        exact: true
+        queryKey: ['submissions']
       });
       
       toast.success("Gönderi başarıyla silindi");
