@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import Banner from "@/components/Banner";
 import PostGrid from "@/components/PostGrid";
+import Stories from "@/components/Stories";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 
@@ -123,6 +124,7 @@ const Index = () => {
                 </a>
               </div>
               
+              <Stories />
               <PostGrid posts={posts} />
 
               {posts.length === POSTS_PER_PAGE && (
