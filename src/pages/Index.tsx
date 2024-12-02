@@ -2,7 +2,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import Banner from "@/components/Banner";
 import PostGrid from "@/components/PostGrid";
-import LikeNotifications from "@/components/LikeNotifications";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 
@@ -112,8 +111,8 @@ const Index = () => {
       
       <div className="py-8">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <div className="lg:col-span-3">
+          <div className="grid grid-cols-1 gap-8">
+            <div>
               <div className="text-center mb-8">
                 <a href="https://linkany.pro/fenomenbet" target="_blank" rel="noopener noreferrer">
                   <img 
@@ -150,12 +149,6 @@ const Index = () => {
                   </div>
                 </div>
               )}
-            </div>
-            
-            <div className="lg:col-span-1">
-              <div className="sticky top-4">
-                <LikeNotifications />
-              </div>
             </div>
           </div>
         </div>

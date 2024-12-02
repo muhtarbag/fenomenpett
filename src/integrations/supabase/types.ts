@@ -48,38 +48,6 @@ export type Database = {
         }
         Relationships: []
       }
-      like_notifications: {
-        Row: {
-          created_at: string
-          id: number
-          is_read: boolean
-          submission_id: number
-          username: string
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          is_read?: boolean
-          submission_id: number
-          username: string
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          is_read?: boolean
-          submission_id?: number
-          username?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "like_notifications_submission_id_fkey"
-            columns: ["submission_id"]
-            isOneToOne: false
-            referencedRelation: "submissions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       newsletter_subscriptions: {
         Row: {
           created_at: string
