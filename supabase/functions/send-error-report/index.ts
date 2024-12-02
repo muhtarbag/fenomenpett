@@ -15,12 +15,24 @@ interface ErrorReport {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Check if RESEND_API_KEY is configured
+    if (!RESEND_API_KEY) {
+      console.error("RESEND_API_KEY is not configured");
+      throw new Error("Email service is not configured properly");
+    }
+
     const report: ErrorReport = await req.json();
+    
+    // Validate required fields
+    if (!report.username || !report.email || !report.contact || !report.errorMessage) {
+      throw new Error("All fields are required");
+    }
     
     const emailContent = `
       <h2>Yeni Hata Bildirimi</h2>
@@ -47,7 +59,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (!res.ok) {
       const error = await res.text();
-      throw new Error(error);
+      console.error("Resend API Error:", error);
+      throw new Error("Failed to send email");
     }
 
     const data = await res.json();
@@ -56,8 +69,11 @@ const handler = async (req: Request): Promise<Response> => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error sending email:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error("Error in send-error-report function:", error);
+    return new Response(
+      JSON.stringify({ 
+        error: error.message || "An unexpected error occurred"
+      }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
