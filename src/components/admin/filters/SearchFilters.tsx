@@ -11,19 +11,20 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useState } from "react";
+import { DateRange } from "react-day-picker";
 
 interface SearchFiltersProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
-  dateFilter: Date | undefined;
-  onDateChange: (date: Date | undefined) => void;
+  dateRange: DateRange | undefined;
+  onDateRangeChange: (range: DateRange | undefined) => void;
 }
 
 export const SearchFilters = ({ 
   searchQuery, 
   onSearchChange,
-  dateFilter,
-  onDateChange
+  dateRange,
+  onDateRangeChange
 }: SearchFiltersProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
@@ -47,31 +48,42 @@ export const SearchFilters = ({
             className="min-w-[240px] justify-start text-left font-normal"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {dateFilter ? (
-              format(dateFilter, "d MMMM yyyy", { locale: tr })
+            {dateRange?.from ? (
+              dateRange.to ? (
+                <>
+                  {format(dateRange.from, "d MMMM", { locale: tr })} -{" "}
+                  {format(dateRange.to, "d MMMM yyyy", { locale: tr })}
+                </>
+              ) : (
+                format(dateRange.from, "d MMMM yyyy", { locale: tr })
+              )
             ) : (
-              "Tarihe göre filtrele"
+              "Tarih aralığı seç"
             )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="end">
           <Calendar
-            mode="single"
-            selected={dateFilter}
-            onSelect={(date) => {
-              onDateChange(date);
-              setIsCalendarOpen(false);
-            }}
             initialFocus
+            mode="range"
+            defaultMonth={dateRange?.from}
+            selected={dateRange}
+            onSelect={(range) => {
+              onDateRangeChange(range);
+              if (range?.from && range?.to) {
+                setIsCalendarOpen(false);
+              }
+            }}
+            numberOfMonths={2}
             locale={tr}
           />
-          {dateFilter && (
+          {dateRange && (
             <div className="p-2 border-t border-gray-100">
               <Button
                 variant="ghost"
                 className="w-full"
                 onClick={() => {
-                  onDateChange(undefined);
+                  onDateRangeChange(undefined);
                   setIsCalendarOpen(false);
                 }}
               >

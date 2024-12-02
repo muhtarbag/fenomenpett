@@ -18,11 +18,12 @@ import { DownloadButtons } from "@/components/admin/DownloadButtons";
 import { SearchFilters } from "@/components/admin/filters/SearchFilters";
 import { TransactionSummary } from "@/components/admin/TransactionSummary";
 import { useState } from "react";
-import { startOfDay, isSameDay } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { isWithinInterval, startOfDay, endOfDay, parseISO } from "date-fns";
 
 const Admin = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [dateFilter, setDateFilter] = useState<Date>();
+  const [dateRange, setDateRange] = useState<DateRange>();
   
   const { 
     pendingSubmissions, 
@@ -36,10 +37,14 @@ const Admin = () => {
       const matchesSearch = !searchQuery || 
         submission.username.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesDate = !dateFilter || 
-        isSameDay(new Date(submission.created_at), dateFilter);
+      const submissionDate = parseISO(submission.created_at);
+      const matchesDateRange = !dateRange?.from || !dateRange?.to || 
+        isWithinInterval(submissionDate, {
+          start: startOfDay(dateRange.from),
+          end: endOfDay(dateRange.to)
+        });
       
-      return matchesSearch && matchesDate;
+      return matchesSearch && matchesDateRange;
     });
   };
 
@@ -93,8 +98,8 @@ const Admin = () => {
             <SearchFilters
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
-              dateFilter={dateFilter}
-              onDateChange={setDateFilter}
+              dateRange={dateRange}
+              onDateRangeChange={setDateRange}
             />
 
             <Tabs defaultValue="pending" className="w-full">
