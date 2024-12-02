@@ -1,19 +1,25 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LogOut, Upload, FileText, Search, Menu } from "lucide-react";
+import { LogOut, Upload, FileText, Search, Menu, Home } from "lucide-react";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetClose,
 } from "@/components/ui/sheet";
 
 export const Navigation = () => {
   const { user, logout } = useAuth();
 
   const navigationItems = [
+    {
+      to: "/",
+      icon: <Home size={20} />,
+      label: "Ana Sayfa",
+    },
     {
       to: "/submit",
       icon: <Upload size={20} />,
@@ -38,35 +44,41 @@ export const Navigation = () => {
           <Menu size={24} />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="overflow-y-auto">
+      <SheetContent side="right" className="w-[85vw] sm:w-[400px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Menu</SheetTitle>
+          <SheetTitle className="text-left">Menü</SheetTitle>
         </SheetHeader>
         <div className="flex flex-col gap-4 mt-6">
           {navigationItems.map((item) => (
-            <Link key={item.to} to={item.to}>
-              <Button variant="ghost" className="w-full justify-start gap-2">
-                {item.icon}
-                {item.label}
-              </Button>
-            </Link>
+            <SheetClose asChild key={item.to}>
+              <Link to={item.to}>
+                <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base">
+                  {item.icon}
+                  {item.label}
+                </Button>
+              </Link>
+            </SheetClose>
           ))}
           {user?.email === "admin@fenomenpet.com" && (
-            <Link to="/admin">
-              <Button variant="ghost" className="w-full justify-start">
-                Yönetim
-              </Button>
-            </Link>
+            <SheetClose asChild>
+              <Link to="/admin">
+                <Button variant="ghost" className="w-full justify-start h-12 text-base">
+                  Yönetim
+                </Button>
+              </Link>
+            </SheetClose>
           )}
           {user && (
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2"
-              onClick={() => logout()}
-            >
-              <LogOut size={20} />
-              Çıkış Yap
-            </Button>
+            <SheetClose asChild>
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-3 h-12 text-base"
+                onClick={() => logout()}
+              >
+                <LogOut size={20} />
+                Çıkış Yap
+              </Button>
+            </SheetClose>
           )}
         </div>
       </SheetContent>

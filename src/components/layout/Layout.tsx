@@ -29,7 +29,7 @@ export const Layout = ({ children }: LayoutProps) => {
           </div>
         </div>
       </nav>
-      <main className="flex-grow pt-16">
+      <main className="flex-grow pt-16 w-full max-w-[100vw] overflow-x-hidden">
         {children}
       </main>
       <Footer />
