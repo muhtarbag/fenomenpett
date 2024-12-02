@@ -14,11 +14,12 @@ export const useDeleteSubmissionMutation = () => {
         const { data: rejectedData, error: findError } = await supabase
           .from('rejected_submissions')
           .select('id')
-          .eq('original_submission_id', id);
+          .eq('original_submission_id', id)
+          .single();
 
         console.log('🔍 Checking rejected submissions:', { rejectedData, findError });
 
-        if (rejectedData && rejectedData.length > 0) {
+        if (rejectedData) {
           console.log('📝 Found rejected submission record, deleting it first');
           const { error: rejectedError } = await supabase
             .from('rejected_submissions')
@@ -65,13 +66,9 @@ export const useDeleteSubmissionMutation = () => {
     onSuccess: (deletedId) => {
       console.log('✨ Delete mutation success:', deletedId);
       
-      // Force a complete cache clear and refetch
-      queryClient.removeQueries({ queryKey: ['submissions'] });
-      queryClient.invalidateQueries({
-        queryKey: ['submissions'],
-        refetchType: 'all'
-      });
-
+      // Force a complete cache invalidation
+      queryClient.invalidateQueries({ queryKey: ['submissions'] });
+      
       toast.success("İçerik başarıyla silindi");
     },
     onError: (error: Error) => {
