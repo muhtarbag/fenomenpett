@@ -10,7 +10,27 @@ export const useDeleteSubmissionMutation = () => {
       console.log('🗑️ Starting deletion process for submission:', id);
 
       try {
-        // First delete from submission_likes table
+        // First check if the submission exists in rejected_submissions
+        const { data: rejectedData } = await supabase
+          .from('rejected_submissions')
+          .select('id')
+          .eq('original_submission_id', id)
+          .single();
+
+        if (rejectedData) {
+          console.log('📝 Found rejected submission record, deleting it first');
+          const { error: rejectedError } = await supabase
+            .from('rejected_submissions')
+            .delete()
+            .eq('original_submission_id', id);
+
+          if (rejectedError) {
+            console.error('❌ Error deleting from rejected_submissions:', rejectedError);
+            throw new Error(`Failed to delete rejected submission: ${rejectedError.message}`);
+          }
+        }
+
+        // Then delete from submission_likes table
         const { error: likesError } = await supabase
           .from('submission_likes')
           .delete()
@@ -19,17 +39,6 @@ export const useDeleteSubmissionMutation = () => {
         if (likesError) {
           console.error('❌ Error deleting from submission_likes:', likesError);
           throw new Error(`Failed to delete likes: ${likesError.message}`);
-        }
-
-        // Then delete from rejected_submissions table
-        const { error: rejectedError } = await supabase
-          .from('rejected_submissions')
-          .delete()
-          .eq('original_submission_id', id);
-
-        if (rejectedError) {
-          console.error('❌ Error deleting from rejected_submissions:', rejectedError);
-          // Don't throw here, as the record might not exist in rejected_submissions
         }
 
         // Finally delete from submissions table
