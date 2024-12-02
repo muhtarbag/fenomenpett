@@ -50,10 +50,16 @@ export const useDeleteSubmissionMutation = () => {
         throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: (deletedId) => {
+      console.log('✨ Delete mutation success, invalidating queries');
       toast.success("İçerik başarıyla silindi");
-      // Invalidate and refetch relevant queries
+      // Immediately invalidate the submissions query to trigger a refetch
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
+      // Also remove the deleted submission from the cache
+      queryClient.setQueryData(['submissions'], (oldData: any) => {
+        if (!oldData) return oldData;
+        return oldData.filter((submission: any) => submission.id !== deletedId);
+      });
     },
     onError: (error: Error) => {
       console.error('❌ Mutation error:', error);
