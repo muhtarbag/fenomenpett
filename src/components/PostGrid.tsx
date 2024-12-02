@@ -41,6 +41,7 @@ const PostGrid = ({ posts }: PostGridProps) => {
     }
   ];
 
+  // Only show placeholder posts if there are no real posts
   const allPosts = [...posts, ...(posts.length === 0 ? placeholderPosts : [])];
 
   return (
