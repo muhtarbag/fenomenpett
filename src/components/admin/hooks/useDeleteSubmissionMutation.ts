@@ -14,12 +14,17 @@ export const useDeleteSubmissionMutation = () => {
         .from('submissions')
         .select('id')
         .eq('id', submissionId)
-        .single();
+        .maybeSingle(); // Changed from single() to maybeSingle()
 
       console.log('Checking submission existence:', { existingSubmission, checkError });
 
       if (checkError) {
         console.error('❌ Error checking submission:', checkError);
+        throw new Error('Gönderi kontrol edilirken bir hata oluştu');
+      }
+
+      if (!existingSubmission) {
+        console.error('❌ Submission not found:', submissionId);
         throw new Error('Gönderi bulunamadı veya zaten silinmiş');
       }
 
