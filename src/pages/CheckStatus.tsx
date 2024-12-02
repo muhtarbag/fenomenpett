@@ -139,9 +139,9 @@ export default function CheckStatus() {
                       </Badge>
                     </TableCell>
                     <TableCell className="max-w-xs">
-                      {submission.status === 'rejected' && submission.rejection_reason ? (
+                      {submission.status === 'rejected' ? (
                         <p className="text-sm text-red-600">
-                          {rejectionReasonTranslations[submission.rejection_reason] || 'Reddedildi'}
+                          {rejectionReasonTranslations[submission.rejection_reason || ''] || 'Reddedildi'}
                         </p>
                       ) : (
                         <p className="text-sm text-gray-600">
