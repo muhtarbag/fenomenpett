@@ -13,6 +13,7 @@ interface LikeButtonProps {
 const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = false }: LikeButtonProps) => {
   const [likeCount, setLikeCount] = useState(initialLikes || 0);
   const [isLiked, setIsLiked] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const checkLikeStatus = async () => {
@@ -21,30 +22,23 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
       try {
         const { data: session } = await supabase.auth.getSession();
         if (session?.session?.user?.id) {
-          // First verify if the submission exists
-          const { data: submission, error: submissionError } = await supabase
-            .from('submissions')
-            .select('id')
-            .eq('id', postId)
-            .single();
-          
-          if (submissionError || !submission) {
-            console.error('Submission not found:', submissionError);
-            return;
-          }
-
           const { data, error } = await supabase
             .from('submission_likes')
             .select('*')
             .eq('submission_id', postId)
-            .eq('user_id', session.session.user.id);
+            .eq('user_id', session.session.user.id)
+            .single();
           
-          if (error) {
+          if (error && error.code !== 'PGRST116') {
             console.error('Error checking like status:', error);
             return;
           }
           
-          setIsLiked(Boolean(data?.length));
+          setIsLiked(Boolean(data));
+        } else {
+          // Check local storage for anonymous likes
+          const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
+          setIsLiked(likedPosts.includes(postId));
         }
       } catch (error) {
         console.error('Error checking like status:', error);
@@ -61,76 +55,95 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
       toast.error("Bu bir örnek gönderidir, beğeni yapılamaz.");
       return;
     }
+
+    if (isProcessing) {
+      return;
+    }
+
+    setIsProcessing(true);
     
     try {
-      // First verify if the submission exists
-      const { data: submission, error: submissionError } = await supabase
-        .from('submissions')
-        .select('id, likes')
-        .eq('id', postId)
-        .single();
-      
-      if (submissionError || !submission) {
-        toast.error("Bu gönderi artık mevcut değil.");
-        return;
-      }
-
       const { data: session } = await supabase.auth.getSession();
       
+      // Handle anonymous likes with local storage
       if (!session?.session?.user) {
-        // Anonymous like - increment the count and update the database
-        const newLikeCount = (submission.likes || 0) + 1;
-        const { error } = await supabase
+        const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
+        
+        if (likedPosts.includes(postId)) {
+          toast.error("Bu gönderiyi zaten beğenmişsiniz.");
+          setIsProcessing(false);
+          return;
+        }
+
+        // Limit anonymous likes to 5 per session
+        if (likedPosts.length >= 5) {
+          toast.error("Daha fazla beğeni yapmak için giriş yapmalısınız.");
+          setIsProcessing(false);
+          return;
+        }
+
+        // Update likes count in the database
+        const { data: submission, error: submissionError } = await supabase
           .from('submissions')
-          .update({ likes: newLikeCount })
-          .eq('id', postId);
-
-        if (error) throw error;
-        
-        setLikeCount(newLikeCount);
-        toast.success("Beğeni kaydedildi!");
-        return;
-      }
-
-      // Authenticated like - record in submission_likes table
-      if (isLiked) {
-        const { error } = await supabase
-          .from('submission_likes')
-          .delete()
-          .eq('submission_id', postId)
-          .eq('user_id', session.session.user.id);
-
-        if (error) throw error;
-        
-        setIsLiked(false);
-        setLikeCount(prev => Math.max(0, prev - 1));
-        toast.success("Beğeni kaldırıldı");
-      } else {
-        const { error } = await supabase
-          .from('submission_likes')
-          .insert([
-            { 
-              submission_id: postId,
-              user_id: session.session.user.id
-            }
-          ])
-          .select()
+          .select('likes')
+          .eq('id', postId)
           .single();
 
-        if (error) {
-          // If we get a duplicate key error, it means the user has already liked this submission
-          if (error.code === '23505') {
-            toast.error("Bu gönderiyi zaten beğenmişsiniz.");
-            // Refresh the like status
-            setIsLiked(true);
-            return;
-          }
-          throw error;
+        if (submissionError) {
+          toast.error("Bu gönderi artık mevcut değil.");
+          setIsProcessing(false);
+          return;
         }
-        
+
+        const { error: updateError } = await supabase
+          .from('submissions')
+          .update({ likes: (submission.likes || 0) + 1 })
+          .eq('id', postId);
+
+        if (updateError) throw updateError;
+
+        // Update local storage and state
+        likedPosts.push(postId);
+        localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
         setIsLiked(true);
         setLikeCount(prev => prev + 1);
         toast.success("Beğeni kaydedildi!");
+      } else {
+        // Handle authenticated likes
+        if (isLiked) {
+          const { error } = await supabase
+            .from('submission_likes')
+            .delete()
+            .eq('submission_id', postId)
+            .eq('user_id', session.session.user.id);
+
+          if (error) throw error;
+          
+          setIsLiked(false);
+          setLikeCount(prev => Math.max(0, prev - 1));
+          toast.success("Beğeni kaldırıldı");
+        } else {
+          const { error } = await supabase
+            .from('submission_likes')
+            .insert([{ 
+              submission_id: postId,
+              user_id: session.session.user.id
+            }])
+            .single();
+
+          if (error) {
+            if (error.code === '23505') {
+              toast.error("Bu gönderiyi zaten beğenmişsiniz.");
+              setIsLiked(true);
+              return;
+            }
+            throw error;
+          }
+          
+          setIsLiked(true);
+          setLikeCount(prev => prev + 1);
+          toast.success("Beğeni kaydedildi!");
+        }
       }
     } catch (error: any) {
       console.error('Like error:', error);
@@ -144,13 +157,18 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
         setLikeCount(prev => Math.max(0, prev - 1));
         setIsLiked(false);
       }
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   return (
     <button
       onClick={handleLike}
-      className={`flex items-center gap-1 text-gray-600 hover:text-primary transition-colors ${className}`}
+      disabled={isProcessing}
+      className={`flex items-center gap-1 text-gray-600 hover:text-primary transition-colors ${
+        isProcessing ? 'opacity-50' : ''
+      } ${className}`}
     >
       <Heart
         size={20}
