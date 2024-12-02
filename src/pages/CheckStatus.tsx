@@ -35,6 +35,12 @@ const statusTranslations = {
   rejected: "Reddedildi",
 };
 
+const statusDescriptions = {
+  pending: "Gönderiniz inceleme aşamasındadır. Lütfen sabırla bekleyiniz.",
+  approved: "Tebrikler! Gönderiniz onaylanmıştır.",
+  rejected: "Gönderiniz reddedilmiştir. Red sebebi aşağıda belirtilmiştir.",
+};
+
 const rejectionReasonTranslations: Record<string, string> = {
   duplicate_photo: "Tekrarlanan (Mükerrer) Fotoğraf: Gönderilen görsel, başka bir kullanıcı tarafından daha önce başvuruda kullanılmıştır.",
   inappropriate_photo: "Uygun Olmayan Fotoğraf: Fotoğraf, sokak hayvanlarını besleme faaliyetini net bir şekilde göstermiyor veya başvuru koşullarına uygun değildir.",
@@ -118,41 +124,42 @@ export default function CheckStatus() {
         )}
 
         {submissions.length > 0 && (
-          <div className="overflow-x-auto bg-white rounded-lg shadow">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Tarih</TableHead>
-                  <TableHead>Durum</TableHead>
-                  <TableHead>Açıklama</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {submissions.map((submission) => (
-                  <TableRow key={submission.id}>
-                    <TableCell>
-                      {new Date(submission.created_at).toLocaleDateString("tr-TR")}
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={statusColors[submission.status || 'pending']}>
-                        {statusTranslations[submission.status || 'pending']}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="max-w-xs">
-                      {submission.status === 'rejected' ? (
-                        <p className="text-sm text-red-600">
-                          {rejectionReasonTranslations[submission.rejection_reason || ''] || 'Reddedildi'}
-                        </p>
-                      ) : (
-                        <p className="text-sm text-gray-600">
-                          {submission.comment || '-'}
-                        </p>
-                      )}
-                    </TableCell>
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Tarih</TableHead>
+                    <TableHead>Durum</TableHead>
+                    <TableHead>Detay</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {submissions.map((submission) => (
+                    <TableRow key={submission.id}>
+                      <TableCell>
+                        {new Date(submission.created_at).toLocaleDateString("tr-TR")}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={statusColors[submission.status || 'pending']}>
+                          {statusTranslations[submission.status || 'pending']}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="max-w-xs">
+                        <p className="text-sm font-medium mb-1">
+                          {statusDescriptions[submission.status || 'pending']}
+                        </p>
+                        {submission.status === 'rejected' && (
+                          <p className="text-sm text-red-600">
+                            {rejectionReasonTranslations[submission.rejection_reason || ''] || 'Belirtilmemiş red sebebi'}
+                          </p>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         )}
       </div>
