@@ -19,18 +19,13 @@ export const SubmissionsList = () => {
     error 
   } = useSubmissions();
 
-  console.log('Submissions counts:', {
-    pending: pendingSubmissions?.length,
-    approved: approvedSubmissions?.length,
-    rejected: rejectedSubmissions?.length
+  console.log('Submissions data:', {
+    pending: pendingSubmissions?.length || 0,
+    approved: approvedSubmissions?.length || 0,
+    rejected: rejectedSubmissions?.length || 0,
+    isLoading,
+    hasError: !!error
   });
-
-  const filterSubmissionsByUsername = (submissions: any[]) => {
-    if (!searchQuery) return submissions;
-    return submissions.filter(submission => 
-      submission.username.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  };
 
   if (error) {
     console.error('❌ Error loading submissions:', error);
@@ -43,12 +38,20 @@ export const SubmissionsList = () => {
     );
   }
 
+  const filterSubmissionsByUsername = (submissions: any[] = []) => {
+    if (!searchQuery) return submissions;
+    return submissions.filter(submission => 
+      submission.username.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
   const hasNoSubmissions = 
     (!pendingSubmissions || pendingSubmissions.length === 0) && 
     (!approvedSubmissions || approvedSubmissions.length === 0) && 
     (!rejectedSubmissions || rejectedSubmissions.length === 0);
 
   if (hasNoSubmissions && !isLoading) {
+    console.log('ℹ️ No submissions found');
     return (
       <div className="text-center text-gray-500 p-4">
         Henüz gönderi bulunmuyor.
@@ -56,9 +59,9 @@ export const SubmissionsList = () => {
     );
   }
 
-  const filteredPendingSubmissions = filterSubmissionsByUsername(pendingSubmissions || []);
-  const filteredApprovedSubmissions = filterSubmissionsByUsername(approvedSubmissions || []);
-  const filteredRejectedSubmissions = filterSubmissionsByUsername(rejectedSubmissions || []);
+  const filteredPendingSubmissions = filterSubmissionsByUsername(pendingSubmissions);
+  const filteredApprovedSubmissions = filterSubmissionsByUsername(approvedSubmissions);
+  const filteredRejectedSubmissions = filterSubmissionsByUsername(rejectedSubmissions);
 
   return (
     <div className="space-y-6">

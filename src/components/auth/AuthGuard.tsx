@@ -13,17 +13,27 @@ export const AuthGuard = ({ children, requireAdmin = false }: AuthGuardProps) =>
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('🔒 AuthGuard: Checking authentication...', {
+      isAuthenticated,
+      userEmail: user?.email,
+      requireAdmin
+    });
+
     if (!isAuthenticated) {
+      console.log('❌ AuthGuard: User not authenticated, redirecting to login');
       toast.error("Bu sayfaya erişmek için giriş yapmalısınız");
       navigate("/login");
       return;
     }
 
     if (requireAdmin && user?.email !== "admin@fenomenpet.com") {
+      console.log('❌ AuthGuard: User not admin, redirecting to home');
       toast.error("Bu sayfaya erişim yetkiniz yok");
       navigate("/");
       return;
     }
+
+    console.log('✅ AuthGuard: Authentication check passed');
   }, [isAuthenticated, user, navigate, requireAdmin]);
 
   if (!isAuthenticated || (requireAdmin && user?.email !== "admin@fenomenpet.com")) {

@@ -24,6 +24,7 @@ export const DeleteButton = ({ submissionId, mutation, className = "flex-1" }: D
     try {
       console.log('🗑️ DeleteButton: Starting deletion for submission:', submissionId);
       await mutation.mutateAsync(submissionId);
+      console.log('✅ DeleteButton: Successfully deleted submission:', submissionId);
     } catch (error: any) {
       console.error('❌ DeleteButton: Error during deletion:', error);
       toast.error(error.message || 'Gönderi silinirken bir hata oluştu');
