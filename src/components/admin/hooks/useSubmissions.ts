@@ -34,25 +34,22 @@ export const useSubmissions = () => {
           console.log('📡 Realtime update received:', payload);
           
           if (payload.eventType === 'DELETE') {
-            console.log('🗑️ Submission deleted:', payload.old.id);
+            console.log('🗑️ Realtime delete event:', payload.old.id);
             queryClient.setQueryData(['submissions'], (oldData: any) => {
               if (!oldData) return [];
-              return oldData.filter((submission: any) => submission.id !== payload.old.id);
+              console.log('🔄 Updating cache after realtime delete');
+              const newData = oldData.filter((submission: any) => submission.id !== payload.old.id);
+              console.log('📊 Cache size after delete:', newData.length);
+              return newData;
             });
           } else {
+            console.log('🔄 Non-delete event, invalidating queries');
             queryClient.invalidateQueries({ queryKey: ['submissions'] });
           }
           
           if (payload.eventType === 'UPDATE' && payload.new.status !== payload.old.status) {
             const status = payload.new.status === 'approved' ? 'onaylandı' : 'reddedildi';
             toast.success(`Gönderi ${status}`);
-            
-            console.log(`📊 Post status changed:`, {
-              id: payload.new.id,
-              oldStatus: payload.old.status,
-              newStatus: payload.new.status,
-              timestamp: new Date().toISOString()
-            });
           }
         }
       )
@@ -80,8 +77,7 @@ export const useSubmissions = () => {
         throw error;
       }
       
-      console.log('✅ Fetched submissions:', data);
-      
+      console.log('✅ Fetched submissions:', data?.length);
       return (data || []) as Submission[];
     }
   });
