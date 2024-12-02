@@ -78,7 +78,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
       const { data: session } = await supabase.auth.getSession();
       
       if (!session?.session?.user) {
-        // Anonymous like - just increment the count
+        // Anonymous like - just increment the count without any checks
         const { error } = await supabase
           .from('submissions')
           .update({ likes: likeCount + 1 })
