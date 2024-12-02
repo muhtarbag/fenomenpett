@@ -35,7 +35,9 @@ export const useSubmissions = () => {
         },
         (payload) => {
           console.log('📡 Realtime update received:', payload);
+          // Immediately invalidate and refetch
           queryClient.invalidateQueries({ queryKey: ['submissions'] });
+          queryClient.refetchQueries({ queryKey: ['submissions'] });
         }
       )
       .subscribe((status) => {
@@ -72,7 +74,9 @@ export const useSubmissions = () => {
       
       return (data || []) as Submission[];
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 0, // Always fetch fresh data
+    refetchOnWindowFocus: true,
+    refetchInterval: 5000, // Refetch every 5 seconds
   });
 
   if (isError) {

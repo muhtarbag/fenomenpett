@@ -14,7 +14,7 @@ export const useDeleteSubmissionMutation = () => {
         .from('submissions')
         .select('id')
         .eq('id', submissionId)
-        .maybeSingle(); // Changed from single() to maybeSingle()
+        .maybeSingle();
 
       console.log('Checking submission existence:', { existingSubmission, checkError });
 
@@ -70,41 +70,18 @@ export const useDeleteSubmissionMutation = () => {
       console.log('✅ Successfully deleted submission:', submissionId);
       return submissionId;
     },
-    onMutate: async (submissionId) => {
-      console.log('🔄 Starting optimistic update for deletion:', submissionId);
-      // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['submissions'] });
-
-      // Snapshot the previous value
-      const previousSubmissions = queryClient.getQueryData(['submissions']);
-
-      // Optimistically update to the new value
-      queryClient.setQueryData(['submissions'], (old: any[] | undefined) => {
-        if (!old) return [];
-        return old.filter(submission => submission.id !== submissionId);
-      });
-
-      return { previousSubmissions };
-    },
-    onError: (err, _, context) => {
-      console.error('❌ Delete mutation error:', err);
-      // Rollback to the previous value if there's an error
-      if (context?.previousSubmissions) {
-        queryClient.setQueryData(['submissions'], context.previousSubmissions);
-      }
-      toast.error(err instanceof Error ? err.message : 'Gönderi silinirken bir hata oluştu');
-    },
     onSuccess: (submissionId) => {
       console.log('✅ Successfully deleted submission:', submissionId);
       toast.success('Gönderi başarıyla silindi');
       
-      // Force a complete cache refresh
+      // Force a complete cache refresh and refetch
       queryClient.removeQueries({ queryKey: ['submissions'] });
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
-    },
-    onSettled: () => {
-      // Always refetch after error or success to ensure cache consistency
       queryClient.refetchQueries({ queryKey: ['submissions'] });
+    },
+    onError: (err) => {
+      console.error('❌ Delete mutation error:', err);
+      toast.error(err instanceof Error ? err.message : 'Gönderi silinirken bir hata oluştu');
     }
   });
 };
