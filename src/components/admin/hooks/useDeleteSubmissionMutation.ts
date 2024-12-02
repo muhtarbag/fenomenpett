@@ -35,7 +35,8 @@ export const useDeleteSubmissionMutation = () => {
       const { error: submissionError } = await supabase
         .from('submissions')
         .delete()
-        .eq('id', submissionId);
+        .eq('id', submissionId)
+        .single();
 
       if (submissionError) {
         console.error('❌ Error deleting submission:', submissionError);
