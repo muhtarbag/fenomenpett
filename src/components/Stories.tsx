@@ -36,7 +36,91 @@ const Stories: React.FC = () => {
         .limit(10);
 
       if (error) throw error;
-      return data || [];
+
+      // Add placeholder stories if there are no real stories
+      if (!data || data.length === 0) {
+        return [
+          {
+            id: -1,
+            username: "patidostu",
+            image_url: "https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd",
+            comment: "Sokak hayvanlarına mama dağıtımı #Fenomenpet",
+            likes: 45
+          },
+          {
+            id: -2,
+            username: "hayvansever",
+            image_url: "https://images.unsplash.com/photo-1548767797-d8c844163c4c",
+            comment: "Minik dostlarımızı besledik #Fenomenbet",
+            likes: 38
+          },
+          {
+            id: -3,
+            username: "fenomenpet",
+            image_url: "https://images.unsplash.com/photo-1611611158876-41699b77a059",
+            comment: "Sokak kedilerimize mama verirken #Fenomenpet",
+            likes: 32
+          },
+          {
+            id: -4,
+            username: "patisever",
+            image_url: "https://images.unsplash.com/photo-1574158622682-e40e69881006",
+            comment: "Köpek dostlarımıza yemek dağıttık #Fenomenbet",
+            likes: 29
+          },
+          {
+            id: -5,
+            username: "hayvankoruma",
+            image_url: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e",
+            comment: "Kedi dostlarımızı unutmadık #Fenomenpet",
+            likes: 27
+          },
+          {
+            id: -6,
+            username: "sokakhayvanlari",
+            image_url: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba",
+            comment: "Mama dağıtımı devam ediyor #Fenomenbet",
+            likes: 25
+          },
+          {
+            id: -7,
+            username: "patidostlari",
+            image_url: "https://images.unsplash.com/photo-1573865526739-10659fec78a5",
+            comment: "Sokak hayvanlarına yardım #Fenomenpet",
+            likes: 23
+          },
+          {
+            id: -8,
+            username: "kedisever",
+            image_url: "https://images.unsplash.com/photo-1519052537078-e6302a4968d4",
+            comment: "Kedilerimize mama dağıtımı #Fenomenbet",
+            likes: 21
+          },
+          {
+            id: -9,
+            username: "kopeksever",
+            image_url: "https://images.unsplash.com/photo-1544568100-847a948585b9",
+            comment: "Köpeklerimize mama dağıtımı #Fenomenpet",
+            likes: 19
+          },
+          {
+            id: -10,
+            username: "hayvandostu",
+            image_url: "https://images.unsplash.com/photo-1533743983669-94fa5c4338ec",
+            comment: "Sokak hayvanlarına yardım #Fenomenbet",
+            likes: 17
+          },
+          {
+            id: -11,
+            username: "patiyardim",
+            image_url: "https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13",
+            comment: "Minik dostlarımıza yardım #Fenomenpet",
+            likes: 15
+          }
+        ];
+      }
+
+      return data;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
