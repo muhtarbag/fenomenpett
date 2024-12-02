@@ -42,7 +42,7 @@ export const SubmissionRules = () => {
 
         <div>
           <p className="font-semibold">7. Katılım Sıklığı</p>
-          <p>Her üye bu kampanyadan 30 günde 1 kez, yılda en fazla 12 kez faydalanabilir.</p>
+          <p>Her üye bu kampanyadan 30 günde 1 kez faydalanabilir.</p>
         </div>
 
         <div>
@@ -51,7 +51,6 @@ export const SubmissionRules = () => {
             <li>İlk katılımda yatırım şartı aranmamaktadır.</li>
             <li>Sonraki katılımlarda, iki bonus arasında en az 250 TL yatırım yapılması gereklidir.</li>
             <li>Kampanya her katılım arası 30 gün ile sınırlıdır.</li>
-            <li>30 günde 1 kez, yılda en fazla 12 kez bu kampanyadan faydalanabilirsiniz.</li>
           </ul>
         </div>
 
