@@ -66,7 +66,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
       // First verify if the submission exists
       const { data: submission, error: submissionError } = await supabase
         .from('submissions')
-        .select('id')
+        .select('id, likes')
         .eq('id', postId)
         .single();
       
@@ -78,15 +78,16 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
       const { data: session } = await supabase.auth.getSession();
       
       if (!session?.session?.user) {
-        // Anonymous like - just increment the count without any checks
+        // Anonymous like - increment the count and update the database
+        const newLikeCount = (submission.likes || 0) + 1;
         const { error } = await supabase
           .from('submissions')
-          .update({ likes: likeCount + 1 })
+          .update({ likes: newLikeCount })
           .eq('id', postId);
 
         if (error) throw error;
         
-        setLikeCount(prev => prev + 1);
+        setLikeCount(newLikeCount);
         toast.success("Beğeni kaydedildi!");
         return;
       }
