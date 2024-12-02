@@ -1,16 +1,46 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import Banner from "@/components/Banner";
 import PostGrid from "@/components/PostGrid";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const POSTS_PER_PAGE = 55;
 const MAX_POSTS = 110;
 
 const Index = () => {
   const [page, setPage] = useState(1);
+  const queryClient = useQueryClient();
   
+  // Set up realtime subscription
+  useEffect(() => {
+    console.log('🔄 Setting up realtime subscription for approved posts');
+    
+    const channel = supabase
+      .channel('public:submissions')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'submissions',
+          filter: 'status=eq.approved'
+        },
+        (payload) => {
+          console.log('📡 Realtime update received:', payload);
+          queryClient.invalidateQueries({ queryKey: ["approved-posts"] });
+        }
+      )
+      .subscribe((status) => {
+        console.log('📡 Subscription status:', status);
+      });
+
+    return () => {
+      console.log('🔄 Cleaning up realtime subscription');
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   const { data: posts = [], isLoading, error, isFetching } = useQuery({
     queryKey: ["approved-posts", page],
     queryFn: async () => {
@@ -38,10 +68,8 @@ const Index = () => {
         throw err;
       }
     },
-    retry: 2,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: true,
-    refetchInterval: 1000 * 60 * 2, // Refetch every 2 minutes
   });
 
   if (isLoading) {
