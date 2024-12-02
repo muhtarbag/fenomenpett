@@ -80,9 +80,7 @@ export const useDeleteSubmissionMutation = () => {
       // Optimistically update the cache
       queryClient.setQueryData(['submissions'], (old: any[] | undefined) => {
         if (!old) return [];
-        const filtered = old.filter(submission => submission.id !== submissionId);
-        console.log('📊 Optimistically removed submission from cache. New count:', filtered.length);
-        return filtered;
+        return old.filter(submission => submission.id !== submissionId);
       });
 
       return { previousSubmissions };
@@ -96,12 +94,11 @@ export const useDeleteSubmissionMutation = () => {
       }
       toast.error(err instanceof Error ? err.message : 'Gönderi silinirken bir hata oluştu');
     },
-    onSuccess: (deletedId) => {
-      console.log('✅ Delete mutation successful:', deletedId);
-      toast.success("Gönderi başarıyla silindi");
-      
-      // Force a cache invalidation to ensure fresh data
+    onSettled: () => {
+      console.log('🔄 Invalidating and refetching submissions query');
+      // Force a cache invalidation and refetch
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
+      queryClient.refetchQueries({ queryKey: ['submissions'] });
     }
   });
 };
