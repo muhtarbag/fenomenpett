@@ -5,7 +5,7 @@ const Banner = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4">
+    <div className="w-full mx-auto px-2 sm:px-4">
       {isMobile ? (
         <Carousel className="w-full">
           <CarouselContent>

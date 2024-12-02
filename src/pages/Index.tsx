@@ -84,7 +84,6 @@ const Index = () => {
   }
 
   if (error) {
-    console.error('Error in Index component:', error);
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -111,7 +110,7 @@ const Index = () => {
       </div>
       
       <div className="py-8">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-2 sm:px-4">
           <div className="grid grid-cols-1 gap-8">
             <div>
               <div className="text-center mb-8">
