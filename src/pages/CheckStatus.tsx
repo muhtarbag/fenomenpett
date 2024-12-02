@@ -29,7 +29,10 @@ interface RejectedSubmission {
   reason: string;
   created_at: string;
   comment: string;
+  original_submission_id: number | null;
 }
+
+type CombinedSubmission = Submission | (RejectedSubmission & { status: 'rejected' });
 
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -84,9 +87,15 @@ export default function CheckStatus() {
         throw rejectedError;
       }
 
-      return [...(submissionsData || []), ...(rejectedData || [])].sort(
+      // Transform rejected submissions to include status
+      const transformedRejectedData = (rejectedData || []).map(rejected => ({
+        ...rejected,
+        status: 'rejected' as const
+      }));
+
+      return [...(submissionsData || []), ...transformedRejectedData].sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
+      ) as CombinedSubmission[];
     },
     enabled: !!(searchedUsername || searchedTransactionId),
   });
@@ -99,6 +108,21 @@ export default function CheckStatus() {
     }
     setSearchedUsername(username.trim());
     setSearchedTransactionId(transactionId.trim());
+  };
+
+  const getSubmissionInfo = (submission: CombinedSubmission) => {
+    if ('reason' in submission) {
+      return {
+        transactionId: '-',
+        status: 'rejected' as const,
+        description: submission.reason
+      };
+    }
+    return {
+      transactionId: submission.transaction_id,
+      status: submission.status,
+      description: '-'
+    };
   };
 
   return (
@@ -166,32 +190,27 @@ export default function CheckStatus() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {submissions.map((submission) => (
-                  <TableRow key={submission.id}>
-                    <TableCell className="font-mono text-sm">
-                      {submission.transaction_id || '-'}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(submission.created_at).toLocaleDateString("tr-TR")}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        className={
-                          "reason" in submission
-                            ? statusColors.rejected
-                            : statusColors[submission.status || 'pending']
-                        }
-                      >
-                        {"reason" in submission
-                          ? statusTranslations.rejected
-                          : statusTranslations[submission.status || 'pending']}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="max-w-xs">
-                      {"reason" in submission ? submission.reason : "-"}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {submissions.map((submission) => {
+                  const info = getSubmissionInfo(submission);
+                  return (
+                    <TableRow key={submission.id}>
+                      <TableCell className="font-mono text-sm">
+                        {info.transactionId}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(submission.created_at).toLocaleDateString("tr-TR")}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={statusColors[info.status]}>
+                          {statusTranslations[info.status]}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="max-w-xs">
+                        {info.description}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
