@@ -1,59 +1,41 @@
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { format, addDays } from "date-fns";
 
-export const validateSubmission = (username: string, image: File | null, comment: string) => {
-  if (!username.trim()) {
-    toast.error("Lütfen kullanıcı adınızı girin");
-    return false;
+export const checkSubmissionCooldown = async (username: string): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .rpc('check_submission_cooldown', {
+        p_username: username
+      });
+
+    if (error) {
+      console.error('Error checking submission cooldown:', error);
+      throw error;
+    }
+
+    return data || false;
+  } catch (error) {
+    console.error('Error in checkSubmissionCooldown:', error);
+    throw error;
   }
-
-  if (!image) {
-    toast.error("Lütfen bir fotoğraf yükleyin");
-    return false;
-  }
-
-  if (!comment.trim()) {
-    toast.error("Lütfen bir yorum yazın");
-    return false;
-  }
-
-  return true;
 };
 
-export const checkExistingSubmission = async (username: string): Promise<boolean> => {
-  const { data: existingSubmission } = await supabase
-    .from('submissions')
-    .select('created_at')
-    .eq('username', username)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single();
+export const validateSubmission = async (username: string): Promise<{ isValid: boolean; message?: string }> => {
+  try {
+    const hasCooldown = await checkSubmissionCooldown(username);
 
-  if (existingSubmission) {
-    const submissionDate = new Date(existingSubmission.created_at);
-    const nextAllowedDate = addDays(submissionDate, 30);
-    const today = new Date();
-    const remainingDays = Math.ceil((nextAllowedDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (remainingDays > 0) {
-      toast.error(
-        `Bu kullanıcı adı ile yeni bir gönderi yapamazsınız.\n\n` +
-        `Son gönderiniz: ${format(submissionDate, 'dd.MM.yyyy')}\n` +
-        `Yeni gönderi yapabileceğiniz tarih: ${format(nextAllowedDate, 'dd.MM.yyyy')}\n` +
-        `Kalan süre: ${remainingDays} gün`,
-        {
-          duration: 6000,
-          style: {
-            background: '#fee2e2',
-            border: '1px solid #ef4444',
-            whiteSpace: 'pre-line'
-          }
-        }
-      );
-      return true;
+    if (hasCooldown) {
+      return {
+        isValid: false,
+        message: "Aynı kullanıcı adı ile 30 gün içinde tekrar gönderi yapamazsınız."
+      };
     }
-  }
 
-  return false;
+    return { isValid: true };
+  } catch (error) {
+    console.error('Validation error:', error);
+    return {
+      isValid: false,
+      message: "Doğrulama sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyin."
+    };
+  }
 };
