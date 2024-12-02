@@ -21,7 +21,7 @@ const Index = () => {
       try {
         const { data, error } = await supabase
           .from('submissions')
-          .select('id, username, image_url, comment, likes, created_at')
+          .select('id, username, image_url, comment, likes')
           .eq('status', 'approved')
           .order('created_at', { ascending: false })
           .range(from, to);
@@ -31,10 +31,7 @@ const Index = () => {
           throw error;
         }
         
-        console.log("✅ Approved posts fetched:", {
-          count: data?.length || 0,
-          posts: data?.map(p => ({ id: p.id, created_at: p.created_at }))
-        });
+        console.log("✅ Fetched approved posts:", data?.length);
         return data || [];
       } catch (err) {
         console.error("❌ Failed to fetch posts:", err);
