@@ -45,14 +45,14 @@ export const useDeleteSubmissionMutation = () => {
 
         if (submissionError) {
           console.error('❌ Error deleting submission:', submissionError);
-          throw new Error(`Failed to delete submission: ${submissionError.message}`);
+          throw submissionError;
         }
 
         console.log('✅ Successfully deleted submission and all related records');
         return id;
       } catch (error: any) {
         console.error('❌ Delete operation failed:', error);
-        throw error;
+        throw new Error(error.message || 'Silme işlemi başarısız oldu');
       }
     },
     onSuccess: (deletedId) => {
