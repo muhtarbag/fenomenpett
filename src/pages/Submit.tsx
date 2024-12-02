@@ -11,7 +11,7 @@ const Submit = () => {
         {!isSubmitted && (
           <>
             <h1 className="text-4xl font-bold text-center mb-8 text-gray-900">
-              Sokak Hayvanı Yardım Fotoğrafı Gönder
+              Patili Dostlarımıza Destek Oluyoruz. FenomenPet Kazandırır !
             </h1>
             <SubmissionRules />
           </>
