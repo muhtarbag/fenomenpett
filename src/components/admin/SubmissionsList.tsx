@@ -19,6 +19,12 @@ export const SubmissionsList = () => {
     error 
   } = useSubmissions();
 
+  console.log('Submissions counts:', {
+    pending: pendingSubmissions?.length,
+    approved: approvedSubmissions?.length,
+    rejected: rejectedSubmissions?.length
+  });
+
   const filterSubmissionsByUsername = (submissions: any[]) => {
     if (!searchQuery) return submissions;
     return submissions.filter(submission => 
@@ -37,20 +43,10 @@ export const SubmissionsList = () => {
     );
   }
 
-  if (!pendingSubmissions || !approvedSubmissions || !rejectedSubmissions) {
-    console.error('❌ Missing submission data');
-    return (
-      <div className="text-center text-red-600 p-4 bg-red-50 rounded-lg">
-        <p>Veri yüklenirken bir hata oluştu.</p>
-        <p className="text-sm mt-2">Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.</p>
-      </div>
-    );
-  }
-
   const hasNoSubmissions = 
-    pendingSubmissions.length === 0 && 
-    approvedSubmissions.length === 0 && 
-    rejectedSubmissions.length === 0;
+    (!pendingSubmissions || pendingSubmissions.length === 0) && 
+    (!approvedSubmissions || approvedSubmissions.length === 0) && 
+    (!rejectedSubmissions || rejectedSubmissions.length === 0);
 
   if (hasNoSubmissions && !isLoading) {
     return (
@@ -60,9 +56,9 @@ export const SubmissionsList = () => {
     );
   }
 
-  const filteredPendingSubmissions = filterSubmissionsByUsername(pendingSubmissions);
-  const filteredApprovedSubmissions = filterSubmissionsByUsername(approvedSubmissions);
-  const filteredRejectedSubmissions = filterSubmissionsByUsername(rejectedSubmissions);
+  const filteredPendingSubmissions = filterSubmissionsByUsername(pendingSubmissions || []);
+  const filteredApprovedSubmissions = filterSubmissionsByUsername(approvedSubmissions || []);
+  const filteredRejectedSubmissions = filterSubmissionsByUsername(rejectedSubmissions || []);
 
   return (
     <div className="space-y-6">

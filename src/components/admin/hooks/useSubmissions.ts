@@ -15,6 +15,7 @@ export interface Submission {
   likes: number | null;
   image_hash: string | null;
   transaction_id: string;
+  rejection_reason?: string;
 }
 
 export const useSubmissions = () => {
@@ -34,24 +35,7 @@ export const useSubmissions = () => {
         },
         (payload) => {
           console.log('📡 Realtime update received:', payload);
-          
-          if (payload.eventType === 'DELETE') {
-            console.log('🗑️ Realtime delete event:', payload.old.id);
-            queryClient.setQueryData(['submissions'], (oldData: Submission[] | undefined) => {
-              if (!oldData) return [];
-              const filtered = oldData.filter(submission => submission.id !== payload.old.id);
-              console.log('📊 Updated cache after realtime delete. New count:', filtered.length);
-              return filtered;
-            });
-          }
-          
-          // Always invalidate queries to ensure fresh data
           queryClient.invalidateQueries({ queryKey: ['submissions'] });
-          
-          if (payload.eventType === 'UPDATE' && payload.new.status !== payload.old.status) {
-            const status = payload.new.status === 'approved' ? 'onaylandı' : 'reddedildi';
-            toast.success(`Gönderi ${status}`);
-          }
         }
       )
       .subscribe((status) => {
