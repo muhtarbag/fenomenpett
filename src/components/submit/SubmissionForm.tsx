@@ -135,6 +135,21 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
 
       if (submissionError) {
         console.error('Gönderi kayıt hatası:', submissionError);
+        
+        // Check if the error is due to the 30-day cooldown
+        if (submissionError.message.includes('30 gün içinde')) {
+          toast.error("Aynı kullanıcı adı ile 30 gün içinde tekrar gönderi yapamazsınız.", {
+            style: {
+              fontSize: '1.2rem',
+              fontWeight: 'bold',
+              color: '#FF0000',
+              backgroundColor: '#FFF',
+              border: '2px solid #FF0000'
+            },
+          });
+          return;
+        }
+        
         throw submissionError;
       }
 

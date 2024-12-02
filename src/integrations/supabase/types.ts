@@ -162,7 +162,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_submission_cooldown: {
+        Args: {
+          p_username: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
