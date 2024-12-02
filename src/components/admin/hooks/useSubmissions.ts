@@ -35,15 +35,15 @@ export const useSubmissions = () => {
           
           if (payload.eventType === 'DELETE') {
             console.log('🗑️ Realtime delete event:', payload.old.id);
-            queryClient.setQueryData(['submissions'], (oldData: any) => {
+            // Immediately remove the deleted submission from the cache
+            queryClient.setQueryData(['submissions'], (oldData: Submission[] | undefined) => {
               if (!oldData) return [];
-              console.log('🔄 Updating cache after realtime delete');
-              const newData = oldData.filter((submission: any) => submission.id !== payload.old.id);
+              const newData = oldData.filter(submission => submission.id !== payload.old.id);
               console.log('📊 Cache size after delete:', newData.length);
               return newData;
             });
           } else {
-            console.log('🔄 Non-delete event, invalidating queries');
+            // For other changes (INSERT, UPDATE), invalidate the query to refetch
             queryClient.invalidateQueries({ queryKey: ['submissions'] });
           }
           
