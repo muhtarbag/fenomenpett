@@ -16,7 +16,8 @@ export const checkForDuplicates = async (imageHash: string): Promise<DuplicateCh
   const { data: existingSubmissions, error } = await supabase
     .from('submissions')
     .select('id, username, image_hash')
-    .or('status.eq.approved,status.eq.pending');
+    .or('status.eq.approved,status.eq.pending')
+    .not('image_hash', 'is', null);
 
   if (error) {
     console.error('Error checking for duplicates:', error);
@@ -27,11 +28,13 @@ export const checkForDuplicates = async (imageHash: string): Promise<DuplicateCh
     return { isDuplicate: false, originalSubmission: null };
   }
 
-  // Increased threshold significantly to be much more lenient
-  const SIMILARITY_THRESHOLD = 45; // Was 15 before, now much higher to allow more variation
+  // Much higher threshold to reduce false positives
+  const SIMILARITY_THRESHOLD = 128; // Increased from 45 to 128 (half of 256 bits)
   
   const duplicate = existingSubmissions.find(submission => {
-    if (!submission.image_hash) return false;
+    if (!submission.image_hash || submission.image_hash.length !== imageHash.length) {
+      return false;
+    }
     
     const distance = calculateHammingDistance(imageHash, submission.image_hash);
     console.log(`Checking submission ${submission.id} - Hash: ${submission.image_hash} - Distance: ${distance}`);

@@ -34,7 +34,7 @@ export const convertToWebP = async (file: File): Promise<File> => {
   });
 };
 
-const getImageData = (img: ImageBitmap, size: number = 64): ImageData => { // Increased size from 32 to 64
+const getImageData = (img: ImageBitmap, size: number = 32): ImageData => {
   const canvas = new OffscreenCanvas(size, size);
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Could not get canvas context');
@@ -45,26 +45,6 @@ const getImageData = (img: ImageBitmap, size: number = 64): ImageData => { // In
 
 const rgb2Gray = (r: number, g: number, b: number): number => {
   return Math.floor(0.299 * r + 0.587 * g + 0.114 * b);
-};
-
-const calculateDCT = (pixels: number[]): number[] => {
-  const size = Math.sqrt(pixels.length);
-  const dct: number[] = new Array(pixels.length).fill(0);
-
-  for (let u = 0; u < size; u++) {
-    for (let v = 0; v < size; v++) {
-      let sum = 0;
-      for (let i = 0; i < size; i++) {
-        for (let j = 0; j < size; j++) {
-          sum += pixels[i * size + j] *
-            Math.cos((2 * i + 1) * u * Math.PI / (2 * size)) *
-            Math.cos((2 * j + 1) * v * Math.PI / (2 * size));
-        }
-      }
-      dct[u * size + v] = sum;
-    }
-  }
-  return dct;
 };
 
 export const calculateImageHash = async (file: File): Promise<string> => {
@@ -80,10 +60,10 @@ export const calculateImageHash = async (file: File): Promise<string> => {
 
     const loadedImg = await loadImagePromise;
     const bitmap = await createImageBitmap(loadedImg);
-    const imageData = getImageData(bitmap, 64); // Increased size for more detail
+    const imageData = getImageData(bitmap, 32); // Reduced size for consistent hashing
     const pixels: number[] = [];
     
-    // Convert to grayscale with improved precision
+    // Convert to grayscale
     for (let i = 0; i < imageData.data.length; i += 4) {
       pixels.push(rgb2Gray(
         imageData.data[i],
@@ -92,17 +72,12 @@ export const calculateImageHash = async (file: File): Promise<string> => {
       ));
     }
 
-    // Calculate DCT
-    const dct = calculateDCT(pixels);
-    
-    // Use more coefficients for the hash
-    const dctValues = dct.slice(0, 256); // Increased from 64 to 256
-    const median = dctValues.sort((a, b) => a - b)[128]; // Adjusted median index
-    
-    // Generate hash with more bits
+    // Generate a simpler hash based on pixel brightness
     let hash = '';
-    for (let i = 0; i < 256; i++) { // Increased from 64 to 256
-      hash += dctValues[i] > median ? '1' : '0';
+    const average = pixels.reduce((a, b) => a + b, 0) / pixels.length;
+    
+    for (let i = 0; i < pixels.length; i++) {
+      hash += pixels[i] > average ? '1' : '0';
     }
     
     console.log('Generated image hash:', hash);
@@ -116,7 +91,7 @@ export const calculateImageHash = async (file: File): Promise<string> => {
 export const calculateHammingDistance = (hash1: string, hash2: string): number => {
   if (hash1.length !== hash2.length) {
     console.error('Hash length mismatch:', hash1.length, hash2.length);
-    return Number.MAX_SAFE_INTEGER; // Return max distance if hashes are different lengths
+    return Number.MAX_SAFE_INTEGER;
   }
   
   let distance = 0;
