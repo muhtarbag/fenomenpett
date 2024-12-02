@@ -26,28 +26,24 @@ interface RejectButtonProps {
   >;
 }
 
-const rejectionReasons = [
-  { 
-    value: "duplicate_photo", 
+export const rejectionReasons = {
+  duplicate_photo: {
     label: "Tekrarlanan (Mükerrer) Fotoğraf",
     description: "Gönderilen görsel, başka bir kullanıcı tarafından daha önce başvuruda kullanılmıştır."
   },
-  { 
-    value: "inappropriate_photo", 
+  inappropriate_photo: {
     label: "Uygun Olmayan Fotoğraf",
     description: "Fotoğraf, sokak hayvanlarını besleme faaliyetini net bir şekilde göstermiyor veya başvuru koşullarına uygun değildir."
   },
-  { 
-    value: "invalid_username", 
+  invalid_username: {
     label: "Hatalı Kullanıcı Adı",
     description: "Başvuru sırasında belirtilen kullanıcı adı eksik ya da yanlış girilmiştir."
   },
-  { 
-    value: "copied_photo", 
+  copied_photo: {
     label: "Kopya (Replika) Fotoğraf",
     description: "Gönderilen fotoğraf, internet üzerinden alınmış bir görsel olarak tespit edilmiştir."
   }
-];
+};
 
 export const RejectButton = ({ submissionId, mutation }: RejectButtonProps) => {
   const [selectedReason, setSelectedReason] = useState<string>("");
@@ -65,7 +61,7 @@ export const RejectButton = ({ submissionId, mutation }: RejectButtonProps) => {
       { 
         id: submissionId, 
         status: 'rejected',
-        reason: selectedReason // Doğrudan seçilen nedeni gönderiyoruz
+        reason: selectedReason
       },
       {
         onSuccess: (data) => {
@@ -111,11 +107,11 @@ export const RejectButton = ({ submissionId, mutation }: RejectButtonProps) => {
             onValueChange={setSelectedReason}
             className="flex flex-col space-y-4"
           >
-            {rejectionReasons.map((reason) => (
-              <div key={reason.value} className="flex items-start space-x-2">
-                <RadioGroupItem value={reason.value} id={reason.value} className="mt-1" />
+            {Object.entries(rejectionReasons).map(([value, reason]) => (
+              <div key={value} className="flex items-start space-x-2">
+                <RadioGroupItem value={value} id={value} className="mt-1" />
                 <div className="grid gap-1.5">
-                  <Label htmlFor={reason.value} className="font-medium">
+                  <Label htmlFor={value} className="font-medium">
                     {reason.label}
                   </Label>
                   <p className="text-sm text-muted-foreground">

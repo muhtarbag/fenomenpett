@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { rejectionReasons } from "@/components/admin/SubmissionActions/RejectButton";
 
 interface Submission {
   id: number;
@@ -39,13 +40,6 @@ const statusDescriptions = {
   pending: "Gönderiniz inceleme aşamasındadır. Lütfen sabırla bekleyiniz.",
   approved: "Tebrikler! Gönderiniz onaylanmıştır.",
   rejected: "Gönderiniz reddedilmiştir. Red sebebi aşağıda belirtilmiştir.",
-};
-
-const rejectionReasonTranslations: Record<string, string> = {
-  duplicate_photo: "Tekrarlanan (Mükerrer) Fotoğraf: Gönderilen görsel, başka bir kullanıcı tarafından daha önce başvuruda kullanılmıştır.",
-  inappropriate_photo: "Uygun Olmayan Fotoğraf: Fotoğraf, sokak hayvanlarını besleme faaliyetini net bir şekilde göstermiyor veya başvuru koşullarına uygun değildir.",
-  invalid_username: "Hatalı Kullanıcı Adı: Başvuru sırasında belirtilen kullanıcı adı eksik ya da yanlış girilmiştir.",
-  copied_photo: "Kopya (Replika) Fotoğraf: Gönderilen fotoğraf, internet üzerinden alınmış bir görsel olarak tespit edilmiştir."
 };
 
 export default function CheckStatus() {
@@ -84,6 +78,11 @@ export default function CheckStatus() {
       return;
     }
     setSearchedUsername(username.trim());
+  };
+
+  const getRejectionReason = (reason: string | null) => {
+    if (!reason) return 'Red sebebi belirtilmemiş';
+    return rejectionReasons[reason as keyof typeof rejectionReasons]?.description || 'Red sebebi belirtilmemiş';
   };
 
   return (
@@ -151,7 +150,7 @@ export default function CheckStatus() {
                         </p>
                         {submission.status === 'rejected' && (
                           <p className="text-sm text-red-600">
-                            {rejectionReasonTranslations[submission.rejection_reason || ''] || 'Red sebebi belirtilmemiş'}
+                            {getRejectionReason(submission.rejection_reason)}
                           </p>
                         )}
                       </TableCell>
