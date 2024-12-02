@@ -26,15 +26,14 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
             .from('submission_likes')
             .select('*')
             .eq('submission_id', postId)
-            .eq('user_id', session.session.user.id)
-            .single();
+            .eq('user_id', session.session.user.id);
           
-          if (error && error.code !== 'PGRST116') {
+          if (error) {
             console.error('Error checking like status:', error);
             return;
           }
           
-          setIsLiked(Boolean(data));
+          setIsLiked(Boolean(data && data.length > 0));
         } else {
           // Check local storage for anonymous likes
           const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
@@ -128,8 +127,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
             .insert([{ 
               submission_id: postId,
               user_id: session.session.user.id
-            }])
-            .single();
+            }]);
 
           if (error) {
             if (error.code === '23505') {
