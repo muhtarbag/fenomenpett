@@ -27,7 +27,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
             .select('*')
             .eq('submission_id', postId)
             .eq('user_id', session.session.user.id)
-            .maybeSingle(); // Changed from .single() to .maybeSingle()
+            .maybeSingle();
           
           if (error) {
             console.error('Error checking like status:', error);
@@ -71,13 +71,6 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
         
         if (likedPosts.includes(postId)) {
           toast.error("Bu gönderiyi zaten beğenmişsiniz.");
-          setIsProcessing(false);
-          return;
-        }
-
-        // Limit anonymous likes to 5 per session
-        if (likedPosts.length >= 5) {
-          toast.error("Daha fazla beğeni yapmak için giriş yapmalısınız.");
           setIsProcessing(false);
           return;
         }
