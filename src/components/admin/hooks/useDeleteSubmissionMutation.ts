@@ -53,18 +53,14 @@ export const useDeleteSubmissionMutation = () => {
     onSuccess: (deletedId) => {
       console.log('✨ Delete mutation success:', deletedId);
       
-      // Update the cache to remove the deleted item
-      queryClient.setQueryData(['submissions'], (oldData: any[] | undefined) => {
-        if (!oldData) return [];
-        console.log('🔄 Removing submission from cache:', deletedId);
-        return oldData.filter(submission => submission.id !== deletedId);
-      });
-
-      // Force a complete cache invalidation and refetch
+      // Completely remove all submission data from cache
+      queryClient.removeQueries({ queryKey: ['submissions'] });
+      
+      // Force a complete refetch
       queryClient.invalidateQueries({
         queryKey: ['submissions'],
-        exact: true,
-        refetchType: 'all'
+        refetchType: 'all',
+        exact: true
       });
 
       toast.success("İçerik başarıyla silindi");
