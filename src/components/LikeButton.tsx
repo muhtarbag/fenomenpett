@@ -1,9 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useLikeSubscription } from "@/hooks/useLikeSubscription";
-import { useLikeStatus } from "@/hooks/useLikeStatus";
 
 interface LikeButtonProps {
   postId: number;
@@ -13,9 +11,42 @@ interface LikeButtonProps {
 }
 
 const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = false }: LikeButtonProps) => {
-  const { likeCount, setLikeCount } = useLikeSubscription(postId, isPlaceholder);
-  const { isLiked, setIsLiked } = useLikeStatus(postId, isPlaceholder);
+  const [likeCount, setLikeCount] = useState(initialLikes || 0);
+  const [isLiked, setIsLiked] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    const checkLikeStatus = async () => {
+      if (isPlaceholder) return;
+      
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        if (session?.session?.user?.id) {
+          const { data, error } = await supabase
+            .from('submission_likes')
+            .select('*')
+            .eq('submission_id', postId)
+            .eq('user_id', session.session.user.id)
+            .maybeSingle();
+          
+          if (error) {
+            console.error('Error checking like status:', error);
+            return;
+          }
+          
+          setIsLiked(!!data);
+        } else {
+          // Check local storage for anonymous likes
+          const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
+          setIsLiked(likedPosts.includes(postId));
+        }
+      } catch (error) {
+        console.error('Error checking like status:', error);
+      }
+    };
+
+    checkLikeStatus();
+  }, [postId, isPlaceholder]);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -110,6 +141,15 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
     } catch (error: any) {
       console.error('Like error:', error);
       toast.error("Bir hata oluştu. Lütfen tekrar deneyin.");
+      
+      // Revert optimistic update
+      if (isLiked) {
+        setLikeCount(prev => prev + 1);
+        setIsLiked(true);
+      } else {
+        setLikeCount(prev => Math.max(0, prev - 1));
+        setIsLiked(false);
+      }
     } finally {
       setIsProcessing(false);
     }
@@ -125,9 +165,9 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
     >
       <Heart
         size={20}
-        className={`${isLiked ? 'fill-red-500 text-red-500' : ''}`}
+        className={`${isLiked ? 'fill-red-500 text-red-500' : 'fill-red-500'}`}
       />
-      <span className="text-red-500">{likeCount || initialLikes}</span>
+      <span className="text-red-500">{likeCount}</span>
     </button>
   );
 };
