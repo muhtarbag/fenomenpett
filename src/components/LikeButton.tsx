@@ -26,14 +26,15 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
             .from('submission_likes')
             .select('*')
             .eq('submission_id', postId)
-            .eq('user_id', session.session.user.id);
+            .eq('user_id', session.session.user.id)
+            .single();
           
-          if (error) {
+          if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned" error
             console.error('Error checking like status:', error);
             return;
           }
           
-          setIsLiked(Boolean(data && data.length > 0));
+          setIsLiked(!!data);
         } else {
           // Check local storage for anonymous likes
           const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
@@ -81,7 +82,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
           return;
         }
 
-        // Update likes count in the database
+        // First get current likes count
         const { data: submission, error: submissionError } = await supabase
           .from('submissions')
           .select('likes')
@@ -94,6 +95,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
           return;
         }
 
+        // Update likes count in the database
         const { error: updateError } = await supabase
           .from('submissions')
           .update({ likes: (submission.likes || 0) + 1 })
@@ -170,7 +172,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
     >
       <Heart
         size={20}
-        className="fill-red-500 text-red-500"
+        className={`${isLiked ? 'fill-red-500 text-red-500' : ''}`}
       />
       <span>{likeCount}</span>
     </button>
