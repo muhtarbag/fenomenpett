@@ -83,5 +83,33 @@ export const PLACEHOLDER_STORIES: Story[] = [
     image_url: "https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13",
     comment: "Minik dostlarımıza yardım #Fenomenpet",
     likes: 15
+  },
+  {
+    id: -12,
+    username: "hayvankoruyucu",
+    image_url: "https://images.unsplash.com/photo-1495360010541-f48722b34f7d",
+    comment: "Sokaktaki dostlarımıza mama #Fenomenbet",
+    likes: 14
+  },
+  {
+    id: -13,
+    username: "patiseverler",
+    image_url: "https://images.unsplash.com/photo-1518791841217-8f162f1e1131",
+    comment: "Kedi ve köpeklerimize yardım #Fenomenpet",
+    likes: 13
+  },
+  {
+    id: -14,
+    username: "sokakdostlari",
+    image_url: "https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8",
+    comment: "Mama dağıtımımız sürüyor #Fenomenbet",
+    likes: 12
+  },
+  {
+    id: -15,
+    username: "hayvanlaricin",
+    image_url: "https://images.unsplash.com/photo-1513245543132-31f507417b26",
+    comment: "Minik dostlarımız için buradayız #Fenomenpet",
+    likes: 11
   }
 ];
