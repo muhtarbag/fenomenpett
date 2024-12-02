@@ -63,7 +63,13 @@ export const useSubmissions = () => {
         throw error;
       }
       
-      console.log('✅ Fetched submissions:', data?.length);
+      console.log('✅ Fetched submissions:', {
+        total: data?.length,
+        pending: data?.filter(s => s.status === 'pending' || !s.status).length,
+        approved: data?.filter(s => s.status === 'approved').length,
+        rejected: data?.filter(s => s.status === 'rejected').length
+      });
+      
       return (data || []) as Submission[];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -71,6 +77,7 @@ export const useSubmissions = () => {
 
   if (isError) {
     console.error('❌ Error in submissions hook:', error);
+    toast.error("Gönderiler yüklenirken bir hata oluştu");
   }
 
   const pendingSubmissions = submissions.filter(s => s.status === 'pending' || !s.status);

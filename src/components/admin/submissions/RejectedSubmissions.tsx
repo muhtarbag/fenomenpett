@@ -7,6 +7,11 @@ interface RejectedSubmissionsProps {
 }
 
 export const RejectedSubmissions = ({ submissions, isLoading }: RejectedSubmissionsProps) => {
+  console.log('🔴 Rendering RejectedSubmissions:', {
+    count: submissions.length,
+    submissions
+  });
+
   if (isLoading) {
     return <div className="text-center">Yükleniyor...</div>;
   }
