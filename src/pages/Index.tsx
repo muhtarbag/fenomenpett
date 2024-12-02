@@ -110,7 +110,7 @@ const Index = () => {
         <Banner />
         
         <div className="bg-primary text-white py-3 px-4 text-center">
-          <p className="text-sm md:text-base animate-fade-in">
+          <p className="text-sm md:text-base animate-fade-in text-secondary">
             Fark yaratmamıza yardım edin! Sokak hayvanlarına yardım hikayelerinizi paylaşın. 🐾
           </p>
         </div>
