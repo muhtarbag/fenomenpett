@@ -10,20 +10,7 @@ export const useDeleteSubmissionMutation = () => {
       console.log('🗑️ Starting deletion process for submission:', id);
 
       try {
-        // First delete from rejected_submissions
-        console.log('🔍 Deleting from rejected_submissions:', id);
-        const { error: rejectedError } = await supabase
-          .from('rejected_submissions')
-          .delete()
-          .eq('original_submission_id', id);
-
-        if (rejectedError) {
-          console.error('❌ Error deleting rejected submissions:', rejectedError);
-          throw new Error(`Failed to delete rejected submissions: ${rejectedError.message}`);
-        }
-        console.log('✅ Deleted rejected submissions');
-
-        // Delete from submission_likes
+        // First delete from submission_likes
         console.log('🔍 Deleting from submission_likes:', id);
         const { error: likesError } = await supabase
           .from('submission_likes')
@@ -35,6 +22,19 @@ export const useDeleteSubmissionMutation = () => {
           throw new Error(`Failed to delete likes: ${likesError.message}`);
         }
         console.log('✅ Deleted submission likes');
+
+        // Delete from rejected_submissions
+        console.log('🔍 Deleting from rejected_submissions:', id);
+        const { error: rejectedError } = await supabase
+          .from('rejected_submissions')
+          .delete()
+          .eq('original_submission_id', id);
+
+        if (rejectedError) {
+          console.error('❌ Error deleting rejected submissions:', rejectedError);
+          throw new Error(`Failed to delete rejected submissions: ${rejectedError.message}`);
+        }
+        console.log('✅ Deleted rejected submissions');
 
         // Finally delete the submission itself
         console.log('🔍 Deleting submission:', id);
@@ -58,7 +58,7 @@ export const useDeleteSubmissionMutation = () => {
     onSuccess: (deletedId) => {
       console.log('✨ Delete mutation success:', deletedId);
       
-      // Update cache immediately
+      // Immediately update cache to remove the deleted submission
       queryClient.setQueryData(['submissions'], (oldData: any) => {
         if (!oldData) return [];
         console.log('🔄 Updating cache, removing submission:', deletedId);
@@ -72,7 +72,7 @@ export const useDeleteSubmissionMutation = () => {
         queryKey: ['submissions']
       });
       
-      toast.success("İçerik başarıyla silindi");
+      toast.success("Gönderi başarıyla silindi");
     },
     onError: (error: Error) => {
       console.error('❌ Delete mutation error:', error);
