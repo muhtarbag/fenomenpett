@@ -20,15 +20,16 @@ const CheckStatus = () => {
         .select("*")
         .eq("username", username)
         .order("created_at", { ascending: false })
-        .limit(1)
-        .single();
+        .limit(1);
 
-      if (error && error.code !== "PGRST116") {
+      if (error) {
+        console.error("Error fetching submission:", error);
         toast.error("Sorgulama sırasında bir hata oluştu");
         throw error;
       }
 
-      return data;
+      // Return the first submission or null if none found
+      return data && data.length > 0 ? data[0] : null;
     },
     enabled: searchInitiated && !!username,
   });
