@@ -18,6 +18,18 @@ const LikeButton = ({ postId, initialLikes, className = "" }: LikeButtonProps) =
       try {
         const { data: session } = await supabase.auth.getSession();
         if (session?.session?.user?.id) {
+          // First verify if the submission exists
+          const { data: submission, error: submissionError } = await supabase
+            .from('submissions')
+            .select('id')
+            .eq('id', postId)
+            .single();
+          
+          if (submissionError || !submission) {
+            console.error('Submission not found:', submissionError);
+            return;
+          }
+
           const { data, error } = await supabase
             .from('submission_likes')
             .select('*')
@@ -43,6 +55,18 @@ const LikeButton = ({ postId, initialLikes, className = "" }: LikeButtonProps) =
     e.stopPropagation();
     
     try {
+      // First verify if the submission exists
+      const { data: submission, error: submissionError } = await supabase
+        .from('submissions')
+        .select('id')
+        .eq('id', postId)
+        .single();
+      
+      if (submissionError || !submission) {
+        toast.error("Bu gönderi artık mevcut değil.");
+        return;
+      }
+
       const { data: session } = await supabase.auth.getSession();
       
       if (!session?.session?.user) {
