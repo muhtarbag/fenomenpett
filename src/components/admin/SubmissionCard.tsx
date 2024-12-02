@@ -72,6 +72,7 @@ export const SubmissionCard = memo(({
             <SubmissionStatusBadge 
               status={status} 
               rejectionReason={rejection_reason}
+              created_at={created_at}
             />
           )}
         </div>
