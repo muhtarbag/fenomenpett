@@ -167,7 +167,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
         size={20}
         className={`${isLiked ? 'fill-red-500 text-red-500' : 'fill-red-500'}`}
       />
-      <span>{likeCount}</span>
+      <span className="text-red-500">{likeCount}</span>
     </button>
   );
 };
