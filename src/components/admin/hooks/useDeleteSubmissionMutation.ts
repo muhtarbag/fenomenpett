@@ -31,13 +31,11 @@ export const useDeleteSubmissionMutation = () => {
         throw new Error('Reddedilen gönderi silinirken bir hata oluştu');
       }
 
-      // Finally, delete the submission itself
+      // Finally, delete the submission itself - removed .select() and .single()
       const { error: submissionError } = await supabase
         .from('submissions')
         .delete()
-        .eq('id', submissionId)
-        .select()
-        .single();
+        .eq('id', submissionId);
 
       if (submissionError) {
         console.error('❌ Error deleting submission:', submissionError);
