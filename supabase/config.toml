@@ -1,1 +1,4 @@
 project_id = "dwzevlymqzpstliaxxgo"
+
+[functions.cleanup-rejected-submissions]
+verify_jwt = false
