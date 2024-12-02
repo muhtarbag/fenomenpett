@@ -32,7 +32,7 @@ export const useLikeSubscription = (postId: number, isPlaceholder: boolean = fal
         },
         (payload: SubmissionChangesPayload) => {
           console.log('📡 Realtime like update received:', payload);
-          if (payload.new && typeof payload.new.likes === 'number') {
+          if ('new' in payload && payload.new && typeof payload.new.likes === 'number') {
             setLikeCount(payload.new.likes);
           }
         }
