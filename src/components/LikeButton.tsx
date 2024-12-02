@@ -154,9 +154,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
     >
       <Heart
         size={20}
-        className={`transition-colors ${
-          isLiked ? "fill-red-500 text-red-500" : ""
-        }`}
+        className="fill-red-500 text-red-500"
       />
       <span>{likeCount}</span>
     </button>
