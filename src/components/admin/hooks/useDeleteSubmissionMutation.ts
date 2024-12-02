@@ -57,19 +57,17 @@ export const useDeleteSubmissionMutation = () => {
 
         // Finally delete from submissions table
         console.log('🗑️ Attempting to delete from submissions table...');
-        const { error: submissionError, data: deletedData } = await supabase
+        const { error: submissionError } = await supabase
           .from('submissions')
           .delete()
-          .eq('id', id)
-          .select()
-          .single();
+          .eq('id', id);
 
         if (submissionError) {
           console.error('❌ Error deleting from submissions:', submissionError);
           throw new Error(`Failed to delete submission: ${submissionError.message}`);
         }
 
-        console.log('✅ Successfully deleted submission and all related records', deletedData);
+        console.log('✅ Successfully deleted submission and all related records');
         return id;
       } catch (error: any) {
         console.error('❌ Delete operation failed:', error);
