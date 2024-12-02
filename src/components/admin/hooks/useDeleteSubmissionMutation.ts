@@ -9,6 +9,18 @@ export const useDeleteSubmissionMutation = () => {
     mutationFn: async (submissionId: number) => {
       console.log('🗑️ Starting deletion process for submission:', submissionId);
 
+      // First check if submission exists
+      const { data: existingSubmission, error: checkError } = await supabase
+        .from('submissions')
+        .select('id')
+        .eq('id', submissionId)
+        .single();
+
+      if (checkError || !existingSubmission) {
+        console.error('❌ Submission not found:', submissionId);
+        throw new Error('Gönderi bulunamadı veya zaten silinmiş');
+      }
+
       // First delete associated likes
       const { error: likesError } = await supabase
         .from('submission_likes')
@@ -35,8 +47,7 @@ export const useDeleteSubmissionMutation = () => {
       const { error: submissionError } = await supabase
         .from('submissions')
         .delete()
-        .eq('id', submissionId)
-        .single();
+        .eq('id', submissionId);
 
       if (submissionError) {
         console.error('❌ Error deleting submission:', submissionError);
