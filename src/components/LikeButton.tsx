@@ -7,14 +7,17 @@ interface LikeButtonProps {
   postId: number;
   initialLikes: number;
   className?: string;
+  isPlaceholder?: boolean;
 }
 
-const LikeButton = ({ postId, initialLikes, className = "" }: LikeButtonProps) => {
+const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = false }: LikeButtonProps) => {
   const [likeCount, setLikeCount] = useState(initialLikes || 0);
   const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     const checkLikeStatus = async () => {
+      if (isPlaceholder) return;
+      
       try {
         const { data: session } = await supabase.auth.getSession();
         if (session?.session?.user?.id) {
@@ -49,10 +52,15 @@ const LikeButton = ({ postId, initialLikes, className = "" }: LikeButtonProps) =
     };
 
     checkLikeStatus();
-  }, [postId]);
+  }, [postId, isPlaceholder]);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    if (isPlaceholder) {
+      toast.error("Bu bir örnek gönderidir, beğeni yapılamaz.");
+      return;
+    }
     
     try {
       // First verify if the submission exists
