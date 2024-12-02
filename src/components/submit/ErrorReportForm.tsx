@@ -17,12 +17,36 @@ export const ErrorReportForm = () => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
-    contact: "",
+    contact: "05",
     errorMessage: "",
   });
 
+  const handleContactChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    
+    // Ensure the value starts with 05
+    if (!value.startsWith('05')) {
+      value = '05';
+    }
+    
+    // Remove any non-digit characters
+    value = value.replace(/\D/g, '');
+    
+    // Limit to 11 digits (05 + 9 digits)
+    value = value.slice(0, 11);
+    
+    setFormData({ ...formData, contact: value });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate phone number length
+    if (formData.contact.length !== 11) {
+      toast.error("Telefon numarası 11 haneli olmalıdır (05 ile başlayıp 9 rakam)");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -38,7 +62,7 @@ export const ErrorReportForm = () => {
       setFormData({
         username: "",
         email: "",
-        contact: "",
+        contact: "05",
         errorMessage: "",
       });
       setIsOpen(false);
@@ -103,11 +127,14 @@ export const ErrorReportForm = () => {
               İletişim *
             </label>
             <Input
-              type="text"
+              type="tel"
               value={formData.contact}
-              onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+              onChange={handleContactChange}
               required
-              placeholder="İletişim bilgilerinizi girin"
+              pattern="05[0-9]{9}"
+              minLength={11}
+              maxLength={11}
+              placeholder="05__ ___ __ __"
             />
           </div>
 
