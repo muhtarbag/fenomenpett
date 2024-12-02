@@ -17,7 +17,7 @@ import { BlogPostList } from "@/components/admin/BlogPostList";
 import { DownloadButtons } from "@/components/admin/DownloadButtons";
 import { SearchFilters } from "@/components/admin/filters/SearchFilters";
 import { TransactionSummary } from "@/components/admin/TransactionSummary";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { DateRange } from "react-day-picker";
 import { isWithinInterval, startOfDay, endOfDay, parseISO } from "date-fns";
 
@@ -31,6 +31,13 @@ const Admin = () => {
     rejectedSubmissions,
     isLoading
   } = useSubmissions();
+
+  const allUsernames = useMemo(() => {
+    const usernames = new Set<string>();
+    [...pendingSubmissions, ...approvedSubmissions, ...rejectedSubmissions]
+      .forEach(submission => usernames.add(submission.username));
+    return Array.from(usernames);
+  }, [pendingSubmissions, approvedSubmissions, rejectedSubmissions]);
 
   const filterSubmissions = (submissions: any[]) => {
     return submissions.filter(submission => {
@@ -100,6 +107,7 @@ const Admin = () => {
               onSearchChange={setSearchQuery}
               dateRange={dateRange}
               onDateRangeChange={setDateRange}
+              usernames={allUsernames}
             />
 
             <Tabs defaultValue="pending" className="w-full">

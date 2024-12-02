@@ -1,5 +1,4 @@
 import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
@@ -12,33 +11,81 @@ import {
 } from "@/components/ui/popover";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 interface SearchFiltersProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
   dateRange: DateRange | undefined;
   onDateRangeChange: (range: DateRange | undefined) => void;
+  usernames?: string[];
 }
 
 export const SearchFilters = ({ 
   searchQuery, 
   onSearchChange,
   dateRange,
-  onDateRangeChange
+  onDateRangeChange,
+  usernames = []
 }: SearchFiltersProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 mb-6">
       <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-        <Input
-          type="text"
-          placeholder="Kullanıcı adı ile ara..."
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10 w-full"
-        />
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="w-full justify-start text-left font-normal"
+            >
+              <Search className="mr-2 h-4 w-4" />
+              {searchQuery || "Kullanıcı adı ara..."}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0" align="start">
+            <Command>
+              <CommandInput 
+                placeholder="Kullanıcı adı girin..." 
+                value={searchQuery}
+                onValueChange={onSearchChange}
+              />
+              <CommandList>
+                <CommandEmpty>Kullanıcı bulunamadı.</CommandEmpty>
+                <CommandGroup heading="Önerilen Kullanıcılar">
+                  {usernames
+                    .filter(username => 
+                      username.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    .slice(0, 5)
+                    .map(username => (
+                      <CommandItem
+                        key={username}
+                        value={username}
+                        onSelect={(value) => {
+                          onSearchChange(value);
+                          setOpen(false);
+                        }}
+                      >
+                        {username}
+                      </CommandItem>
+                    ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
       
       <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
