@@ -122,8 +122,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.removeItem('supabase.auth.token');
       sessionStorage.clear();
       
-      // Attempt to sign out from Supabase
-      await supabase.auth.signOut();
+      try {
+        // Attempt to sign out from Supabase
+        await supabase.auth.signOut();
+      } catch (error) {
+        console.error('Error during Supabase signOut:', error);
+        // Continue with the logout process even if Supabase signOut fails
+      }
       
       console.log('Logout successful');
       toast.success('Başarıyla çıkış yapıldı');
