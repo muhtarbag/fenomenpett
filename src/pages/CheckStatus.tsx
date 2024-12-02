@@ -41,7 +41,7 @@ const statusColors = {
 };
 
 const statusTranslations = {
-  pending: "Değerlendirme Sürecinde",
+  pending: "Beklemede",
   approved: "Onaylandı",
   rejected: "Reddedildi",
 };
@@ -76,26 +76,32 @@ export default function CheckStatus() {
         throw submissionsError;
       }
 
-      const { data: rejectedData, error: rejectedError } = await supabase
-        .from("rejected_submissions")
-        .select("*")
-        .eq("username", searchedUsername || '')
-        .order("created_at", { ascending: false });
+      // Only fetch rejected submissions if we're searching by username
+      if (searchedUsername) {
+        const { data: rejectedData, error: rejectedError } = await supabase
+          .from("rejected_submissions")
+          .select("*")
+          .eq("username", searchedUsername)
+          .order("created_at", { ascending: false });
 
-      if (rejectedError) {
-        toast.error("Reddedilen gönderiler yüklenirken bir hata oluştu");
-        throw rejectedError;
+        if (rejectedError) {
+          toast.error("Reddedilen gönderiler yüklenirken bir hata oluştu");
+          throw rejectedError;
+        }
+
+        // Transform rejected submissions to include status
+        const transformedRejectedData = (rejectedData || []).map(rejected => ({
+          ...rejected,
+          status: 'rejected' as const
+        }));
+
+        return [...(submissionsData || []), ...transformedRejectedData].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        ) as CombinedSubmission[];
       }
 
-      // Transform rejected submissions to include status
-      const transformedRejectedData = (rejectedData || []).map(rejected => ({
-        ...rejected,
-        status: 'rejected' as const
-      }));
-
-      return [...(submissionsData || []), ...transformedRejectedData].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      ) as CombinedSubmission[];
+      // If searching by transaction ID, only return submissions data
+      return (submissionsData || []) as CombinedSubmission[];
     },
     enabled: !!(searchedUsername || searchedTransactionId),
   });
@@ -120,7 +126,7 @@ export default function CheckStatus() {
     }
     return {
       transactionId: submission.transaction_id,
-      status: submission.status,
+      status: submission.status || 'pending', // Ensure pending is the default status
       description: '-'
     };
   };
