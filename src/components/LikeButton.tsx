@@ -112,9 +112,20 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
               submission_id: postId,
               user_id: session.session.user.id
             }
-          ]);
+          ])
+          .select()
+          .single();
 
-        if (error) throw error;
+        if (error) {
+          // If we get a duplicate key error, it means the user has already liked this submission
+          if (error.code === '23505') {
+            toast.error("Bu gönderiyi zaten beğenmişsiniz.");
+            // Refresh the like status
+            setIsLiked(true);
+            return;
+          }
+          throw error;
+        }
         
         setIsLiked(true);
         setLikeCount(prev => prev + 1);
