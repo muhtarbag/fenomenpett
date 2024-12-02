@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import Footer from "@/components/Footer";
+import { LiveChat } from "@/components/LiveChat";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -32,6 +33,7 @@ export const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
       <Footer />
+      <LiveChat />
     </div>
   );
 };
