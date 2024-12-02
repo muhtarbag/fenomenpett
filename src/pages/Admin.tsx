@@ -4,7 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { Check, X, Clock, FileText } from "lucide-react";
+import { Check, X, Clock, FileText, Search } from "lucide-react";
 import { VisitorChart } from "@/components/admin/VisitorChart";
 import { LocationMap } from "@/components/admin/LocationMap";
 import { Stats } from "@/components/admin/Stats";
@@ -15,6 +15,8 @@ import { SubmissionCard } from "@/components/admin/SubmissionCard";
 import { BlogPostForm } from "@/components/admin/BlogPostForm";
 import { BlogPostList } from "@/components/admin/BlogPostList";
 import { DownloadButtons } from "@/components/admin/DownloadButtons";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 const TransactionSummary = ({ 
   pendingCount, 
@@ -45,6 +47,7 @@ const TransactionSummary = ({
 );
 
 const Admin = () => {
+  const [searchQuery, setSearchQuery] = useState('');
   const { 
     pendingSubmissions, 
     approvedSubmissions, 
@@ -52,17 +55,24 @@ const Admin = () => {
     isLoading
   } = useSubmissions();
 
-  const sortedPendingSubmissions = [...pendingSubmissions].sort(
+  const filterSubmissionsByUsername = (submissions: any[]) => {
+    if (!searchQuery) return submissions;
+    return submissions.filter(submission => 
+      submission.username.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
+  const sortedPendingSubmissions = filterSubmissionsByUsername([...pendingSubmissions].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
+  ));
   
-  const sortedApprovedSubmissions = [...approvedSubmissions].sort(
+  const sortedApprovedSubmissions = filterSubmissionsByUsername([...approvedSubmissions].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
+  ));
   
-  const sortedRejectedSubmissions = [...rejectedSubmissions].sort(
+  const sortedRejectedSubmissions = filterSubmissionsByUsername([...rejectedSubmissions].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
+  ));
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -99,6 +109,17 @@ const Admin = () => {
           </TabsList>
 
           <TabsContent value="submissions">
+            <div className="relative mb-6">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Kullanıcı adı ile ara..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 w-full max-w-sm"
+              />
+            </div>
+
             <Tabs defaultValue="pending" className="w-full">
               <TabsList className="grid w-full grid-cols-3 mb-8">
                 <TabsTrigger value="pending" className="flex items-center gap-2">
