@@ -4,7 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { Check, X, Clock, FileText, Search } from "lucide-react";
+import { Check, X, Clock, FileText } from "lucide-react";
 import { VisitorChart } from "@/components/admin/VisitorChart";
 import { LocationMap } from "@/components/admin/LocationMap";
 import { Stats } from "@/components/admin/Stats";
@@ -15,39 +15,14 @@ import { SubmissionCard } from "@/components/admin/SubmissionCard";
 import { BlogPostForm } from "@/components/admin/BlogPostForm";
 import { BlogPostList } from "@/components/admin/BlogPostList";
 import { DownloadButtons } from "@/components/admin/DownloadButtons";
-import { Input } from "@/components/ui/input";
+import { SearchFilters } from "@/components/admin/filters/SearchFilters";
 import { useState } from "react";
-
-const TransactionSummary = ({ 
-  pendingCount, 
-  approvedCount, 
-  rejectedCount 
-}: { 
-  pendingCount: number;
-  approvedCount: number;
-  rejectedCount: number;
-}) => (
-  <div className="mt-12 p-6 bg-white rounded-lg shadow-md">
-    <h2 className="text-2xl font-bold mb-4 text-gray-900">İşlem Özeti</h2>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className="p-4 bg-yellow-50 rounded-lg">
-        <h3 className="font-semibold text-yellow-700">Bekleyen</h3>
-        <p className="text-2xl font-bold text-yellow-800">{pendingCount}</p>
-      </div>
-      <div className="p-4 bg-green-50 rounded-lg">
-        <h3 className="font-semibold text-green-700">Onaylanan</h3>
-        <p className="text-2xl font-bold text-green-800">{approvedCount}</p>
-      </div>
-      <div className="p-4 bg-red-50 rounded-lg">
-        <h3 className="font-semibold text-red-700">Reddedilen</h3>
-        <p className="text-2xl font-bold text-red-800">{rejectedCount}</p>
-      </div>
-    </div>
-  </div>
-);
+import { startOfDay, isSameDay } from "date-fns";
 
 const Admin = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [dateFilter, setDateFilter] = useState<Date>();
+  
   const { 
     pendingSubmissions, 
     approvedSubmissions, 
@@ -55,22 +30,27 @@ const Admin = () => {
     isLoading
   } = useSubmissions();
 
-  const filterSubmissionsByUsername = (submissions: any[]) => {
-    if (!searchQuery) return submissions;
-    return submissions.filter(submission => 
-      submission.username.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  const filterSubmissions = (submissions: any[]) => {
+    return submissions.filter(submission => {
+      const matchesSearch = !searchQuery || 
+        submission.username.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesDate = !dateFilter || 
+        isSameDay(new Date(submission.created_at), dateFilter);
+      
+      return matchesSearch && matchesDate;
+    });
   };
 
-  const sortedPendingSubmissions = filterSubmissionsByUsername([...pendingSubmissions].sort(
+  const sortedPendingSubmissions = filterSubmissions([...pendingSubmissions].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   ));
   
-  const sortedApprovedSubmissions = filterSubmissionsByUsername([...approvedSubmissions].sort(
+  const sortedApprovedSubmissions = filterSubmissions([...approvedSubmissions].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   ));
   
-  const sortedRejectedSubmissions = filterSubmissionsByUsername([...rejectedSubmissions].sort(
+  const sortedRejectedSubmissions = filterSubmissions([...rejectedSubmissions].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   ));
 
@@ -109,16 +89,12 @@ const Admin = () => {
           </TabsList>
 
           <TabsContent value="submissions">
-            <div className="relative mb-6">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-              <Input
-                type="text"
-                placeholder="Kullanıcı adı ile ara..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-full max-w-sm"
-              />
-            </div>
+            <SearchFilters
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              dateFilter={dateFilter}
+              onDateChange={setDateFilter}
+            />
 
             <Tabs defaultValue="pending" className="w-full">
               <TabsList className="grid w-full grid-cols-3 mb-8">
