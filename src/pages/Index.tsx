@@ -5,6 +5,7 @@ import PostGrid from "@/components/PostGrid";
 import Stories from "@/components/Stories";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet";
 
 const POSTS_PER_PAGE = 55;
 const MAX_POSTS = 110;
@@ -73,88 +74,94 @@ const Index = () => {
     refetchOnWindowFocus: true,
   });
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">Gönderiler yükleniyor...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600">Gönderiler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.</p>
-          <Button 
-            onClick={() => window.location.reload()} 
-            className="mt-4"
-          >
-            Sayfayı Yenile
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Banner />
-      
-      <div className="bg-primary text-white py-3 px-4 text-center">
-        <p className="text-sm md:text-base animate-fade-in">
-          Fark yaratmamıza yardım edin! Sokak hayvanlarına yardım hikayelerinizi paylaşın. 🐾
-        </p>
-      </div>
-      
-      <div className="py-8">
-        <div className="container mx-auto px-2 sm:px-4">
-          <div className="grid grid-cols-1 gap-8">
-            <div>
-              <div className="text-center mb-8">
-                <a href="https://linkany.pro/fenomenbet" target="_blank" rel="noopener noreferrer">
-                  <img 
-                    src="/lovable-uploads/317ada8f-0e1c-4d55-b53d-91630923accf.png" 
-                    alt="Fenomenbet Giriş" 
-                    className="h-12 mx-auto hover:opacity-90 transition-opacity"
-                  />
-                </a>
-              </div>
-              
-              <Stories />
-              <PostGrid posts={posts} />
+    <>
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "FenomenPet",
+            "url": "https://fenomenpet.com",
+            "description": "Sokak hayvanlarına yardım ederek bonus kazanın! FenomenPet ile sokak hayvanlarına mama ve su vererek fotoğraflarınızı paylaşın.",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://fenomenpet.com/check-status?username={search_term}",
+              "query-input": "required name=search_term"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "FenomenPet",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://fenomenpet.com/lovable-uploads/a06650c0-2ee1-42dd-9217-cef8bdd67039.png"
+              }
+            },
+            "sameAs": [
+              "https://twitter.com/fenomenpet",
+              "https://www.instagram.com/fenomenpet",
+              "https://www.facebook.com/fenomenpet"
+            ]
+          })}
+        </script>
+      </Helmet>
 
-              {posts.length === POSTS_PER_PAGE && (
-                <div className="space-y-8 mt-8">
-                  <div className="text-center">
-                    <Button 
-                      onClick={() => setPage(prev => prev + 1)} 
-                      variant="outline"
-                      disabled={isFetching || page * POSTS_PER_PAGE >= MAX_POSTS}
-                      className="animate-fade-in"
-                    >
-                      {isFetching ? "Yükleniyor..." : "Daha Fazla Göster"}
-                    </Button>
-                  </div>
-                  
-                  <div className="text-center">
-                    <a href="https://linkany.pro/fenomenbet" target="_blank" rel="noopener noreferrer">
-                      <img 
-                        src="/lovable-uploads/317ada8f-0e1c-4d55-b53d-91630923accf.png" 
-                        alt="Fenomenbet Giriş" 
-                        className="h-12 mx-auto hover:opacity-90 transition-opacity"
-                      />
-                    </a>
-                  </div>
+      <div className="min-h-screen bg-gray-50">
+        <Banner />
+        
+        <div className="bg-primary text-white py-3 px-4 text-center">
+          <p className="text-sm md:text-base animate-fade-in">
+            Fark yaratmamıza yardım edin! Sokak hayvanlarına yardım hikayelerinizi paylaşın. 🐾
+          </p>
+        </div>
+        
+        <div className="py-8">
+          <div className="container mx-auto px-2 sm:px-4">
+            <div className="grid grid-cols-1 gap-8">
+              <div>
+                <div className="text-center mb-8">
+                  <a href="https://linkany.pro/fenomenbet" target="_blank" rel="noopener noreferrer">
+                    <img 
+                      src="/lovable-uploads/317ada8f-0e1c-4d55-b53d-91630923accf.png" 
+                      alt="Fenomenbet Giriş" 
+                      className="h-12 mx-auto hover:opacity-90 transition-opacity"
+                    />
+                  </a>
                 </div>
-              )}
+                
+                <Stories />
+                <PostGrid posts={posts} />
+
+                {posts.length === POSTS_PER_PAGE && (
+                  <div className="space-y-8 mt-8">
+                    <div className="text-center">
+                      <Button 
+                        onClick={() => setPage(prev => prev + 1)} 
+                        variant="outline"
+                        disabled={isFetching || page * POSTS_PER_PAGE >= MAX_POSTS}
+                        className="animate-fade-in"
+                      >
+                        {isFetching ? "Yükleniyor..." : "Daha Fazla Göster"}
+                      </Button>
+                    </div>
+                    
+                    <div className="text-center">
+                      <a href="https://linkany.pro/fenomenbet" target="_blank" rel="noopener noreferrer">
+                        <img 
+                          src="/lovable-uploads/317ada8f-0e1c-4d55-b53d-91630923accf.png" 
+                          alt="Fenomenbet Giriş" 
+                          className="h-12 mx-auto hover:opacity-90 transition-opacity"
+                        />
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
