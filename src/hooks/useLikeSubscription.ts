@@ -12,6 +12,14 @@ type SubmissionChangesPayload = RealtimePostgresChangesPayload<{
   old: SubmissionPayload;
 }>;
 
+// Type guard to check if payload is a SubmissionChangesPayload
+function isSubmissionChangesPayload(payload: any): payload is SubmissionChangesPayload {
+  return 'new' in payload && 
+         payload.new !== null && 
+         typeof payload.new === 'object' && 
+         'likes' in payload.new;
+}
+
 export const useLikeSubscription = (postId: number, isPlaceholder: boolean = false) => {
   const [likeCount, setLikeCount] = useState<number>(0);
 
@@ -30,13 +38,9 @@ export const useLikeSubscription = (postId: number, isPlaceholder: boolean = fal
           table: 'submissions',
           filter: `id=eq.${postId}`
         },
-        (payload: SubmissionChangesPayload | {}) => {
+        (payload) => {
           console.log('📡 Realtime like update received:', payload);
-          if (
-            'new' in payload && 
-            payload.new && 
-            typeof payload.new.likes === 'number'
-          ) {
+          if (isSubmissionChangesPayload(payload)) {
             setLikeCount(payload.new.likes);
           }
         }
