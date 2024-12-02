@@ -57,7 +57,7 @@ export default function CheckStatus() {
         throw submissionsError;
       }
 
-      console.log('✅ Fetched submissions:', submissionsData?.length);
+      console.log('✅ Fetched submissions:', submissionsData);
       return submissionsData || [];
     },
     enabled: !!searchedUsername,
