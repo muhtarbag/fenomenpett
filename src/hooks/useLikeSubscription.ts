@@ -38,7 +38,7 @@ export const useLikeSubscription = (postId: number, isPlaceholder: boolean = fal
           table: 'submissions',
           filter: `id=eq.${postId}`
         },
-        (payload) => {
+        (payload: any) => {
           console.log('📡 Realtime like update received:', payload);
           if (isSubmissionChangesPayload(payload)) {
             setLikeCount(payload.new.likes);
