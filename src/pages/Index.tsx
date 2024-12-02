@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import Banner from "@/components/Banner";
 import PostGrid from "@/components/PostGrid";
-import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 
@@ -44,7 +43,7 @@ const Index = () => {
     },
     retry: 2,
     staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: true, // Automatically refetch when window gains focus
+    refetchOnWindowFocus: true,
     refetchInterval: 1000 * 60 * 2, // Refetch every 2 minutes
   });
 
