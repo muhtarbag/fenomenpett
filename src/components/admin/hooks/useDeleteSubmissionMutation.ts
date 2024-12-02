@@ -71,9 +71,10 @@ export const useDeleteSubmissionMutation = () => {
       console.log('✅ Successfully deleted submission:', submissionId);
       toast.success('Gönderi başarıyla silindi');
       
-      // Force a complete cache refresh
+      // Force a complete cache refresh and refetch
       queryClient.removeQueries({ queryKey: ['submissions'] });
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
+      queryClient.refetchQueries({ queryKey: ['submissions'] });
     }
   });
 };
