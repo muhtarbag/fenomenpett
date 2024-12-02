@@ -13,14 +13,18 @@ export const useDeleteSubmissionMutation = () => {
         // First check if the submission exists in rejected_submissions
         const { data: rejectedData, error: findError } = await supabase
           .from('rejected_submissions')
-          .select('id')
-          .eq('original_submission_id', id)
-          .single();
+          .select('*')
+          .eq('original_submission_id', id);
 
         console.log('🔍 Checking rejected submissions:', { rejectedData, findError });
 
-        if (rejectedData) {
-          console.log('📝 Found rejected submission record, deleting it first');
+        if (findError) {
+          console.error('❌ Error checking rejected submissions:', findError);
+          throw new Error(`Failed to check rejected submissions: ${findError.message}`);
+        }
+
+        if (rejectedData && rejectedData.length > 0) {
+          console.log('📝 Found rejected submission records, deleting them first');
           const { error: rejectedError } = await supabase
             .from('rejected_submissions')
             .delete()
@@ -66,14 +70,17 @@ export const useDeleteSubmissionMutation = () => {
     onSuccess: (deletedId) => {
       console.log('✨ Delete mutation success:', deletedId);
       
-      // Force a complete cache invalidation
-      queryClient.invalidateQueries({ queryKey: ['submissions'] });
+      // Force a complete cache invalidation and refetch
+      queryClient.invalidateQueries({ 
+        queryKey: ['submissions'],
+        refetchType: 'all'
+      });
       
       toast.success("İçerik başarıyla silindi");
     },
     onError: (error: Error) => {
       console.error('❌ Delete mutation error:', error);
-      toast.error(`Silme işlemi başarısız: ${error.message}`);
+      toast.error("Silme işlemi başarısız: " + error.message);
     }
   });
 };
