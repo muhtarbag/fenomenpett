@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useNavigate } from 'react-router-dom';
 
 interface User {
   id: string;
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log('Setting up auth state...');
@@ -110,27 +112,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     try {
-      // Clear local state first to ensure UI updates immediately
+      console.log('Starting logout process...');
+      
+      // First clear the local state
       setIsAuthenticated(false);
       setUser(null);
 
       // Clear any stored session data
       localStorage.removeItem('supabase.auth.token');
+      sessionStorage.clear();
       
-      // Attempt to sign out from Supabase, but don't wait for it
-      supabase.auth.signOut().catch(error => {
-        console.error('Error during Supabase signout:', error);
-      });
+      // Attempt to sign out from Supabase
+      await supabase.auth.signOut();
       
-      // Show success message
+      console.log('Logout successful');
       toast.success('Başarıyla çıkış yapıldı');
       
-      // Redirect to home page
-      window.location.replace('/');
+      // Navigate to home page
+      navigate('/', { replace: true });
     } catch (error) {
-      console.error('Error in logout process:', error);
-      // Ensure redirect happens even if there's an error
-      window.location.replace('/');
+      console.error('Error during logout:', error);
+      // Even if there's an error, we want to ensure the user is logged out locally
+      toast.success('Çıkış yapıldı');
+      navigate('/', { replace: true });
     }
   };
 
