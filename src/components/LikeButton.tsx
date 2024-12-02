@@ -54,6 +54,21 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
     checkLikeStatus();
   }, [postId, isPlaceholder]);
 
+  const createNotification = async (username: string) => {
+    const { error } = await supabase
+      .from('like_notifications')
+      .insert([
+        {
+          submission_id: postId,
+          username: username
+        }
+      ]);
+
+    if (error) {
+      console.error('Error creating notification:', error);
+    }
+  };
+
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
     
@@ -78,7 +93,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
       const { data: session } = await supabase.auth.getSession();
       
       if (!session?.session?.user) {
-        // Anonymous like - just increment the count
+        // Anonymous like - just increment the count and create notification
         const { error } = await supabase
           .from('submissions')
           .update({ likes: likeCount + 1 })
@@ -86,6 +101,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
 
         if (error) throw error;
         
+        await createNotification('Anonim');
         setLikeCount(prev => prev + 1);
         toast.success("Beğeni kaydedildi!");
         return;
@@ -127,6 +143,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
           throw error;
         }
         
+        await createNotification(session.session.user.email || 'Kullanıcı');
         setIsLiked(true);
         setLikeCount(prev => prev + 1);
         toast.success("Beğeni kaydedildi!");

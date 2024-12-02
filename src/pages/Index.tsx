@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import Banner from "@/components/Banner";
 import PostGrid from "@/components/PostGrid";
+import LikeNotifications from "@/components/LikeNotifications";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 
@@ -111,32 +112,9 @@ const Index = () => {
       
       <div className="py-8">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <a href="https://linkany.pro/fenomenbet" target="_blank" rel="noopener noreferrer">
-              <img 
-                src="/lovable-uploads/317ada8f-0e1c-4d55-b53d-91630923accf.png" 
-                alt="Fenomenbet Giriş" 
-                className="h-12 mx-auto hover:opacity-90 transition-opacity"
-              />
-            </a>
-          </div>
-          
-          <PostGrid posts={posts} />
-
-          {posts.length === POSTS_PER_PAGE && (
-            <div className="space-y-8 mt-8">
-              <div className="text-center">
-                <Button 
-                  onClick={() => setPage(prev => prev + 1)} 
-                  variant="outline"
-                  disabled={isFetching || page * POSTS_PER_PAGE >= MAX_POSTS}
-                  className="animate-fade-in"
-                >
-                  {isFetching ? "Yükleniyor..." : "Daha Fazla Göster"}
-                </Button>
-              </div>
-              
-              <div className="text-center">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-3">
+              <div className="text-center mb-8">
                 <a href="https://linkany.pro/fenomenbet" target="_blank" rel="noopener noreferrer">
                   <img 
                     src="/lovable-uploads/317ada8f-0e1c-4d55-b53d-91630923accf.png" 
@@ -145,8 +123,41 @@ const Index = () => {
                   />
                 </a>
               </div>
+              
+              <PostGrid posts={posts} />
+
+              {posts.length === POSTS_PER_PAGE && (
+                <div className="space-y-8 mt-8">
+                  <div className="text-center">
+                    <Button 
+                      onClick={() => setPage(prev => prev + 1)} 
+                      variant="outline"
+                      disabled={isFetching || page * POSTS_PER_PAGE >= MAX_POSTS}
+                      className="animate-fade-in"
+                    >
+                      {isFetching ? "Yükleniyor..." : "Daha Fazla Göster"}
+                    </Button>
+                  </div>
+                  
+                  <div className="text-center">
+                    <a href="https://linkany.pro/fenomenbet" target="_blank" rel="noopener noreferrer">
+                      <img 
+                        src="/lovable-uploads/317ada8f-0e1c-4d55-b53d-91630923accf.png" 
+                        alt="Fenomenbet Giriş" 
+                        className="h-12 mx-auto hover:opacity-90 transition-opacity"
+                      />
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+            
+            <div className="lg:col-span-1">
+              <div className="sticky top-4">
+                <LikeNotifications />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
