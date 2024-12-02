@@ -21,6 +21,7 @@ export const useSubmissions = () => {
 
   useEffect(() => {
     console.log('🔄 Setting up realtime subscription');
+    
     const channel = supabase
       .channel('submissions_changes')
       .on(
@@ -35,7 +36,6 @@ export const useSubmissions = () => {
           
           if (payload.eventType === 'DELETE') {
             console.log('🗑️ Realtime delete event:', payload.old.id);
-            // Immediately remove the deleted submission from the cache
             queryClient.setQueryData(['submissions'], (oldData: Submission[] | undefined) => {
               if (!oldData) return [];
               const newData = oldData.filter(submission => submission.id !== payload.old.id);
@@ -43,7 +43,6 @@ export const useSubmissions = () => {
               return newData;
             });
           } else {
-            // For other changes (INSERT, UPDATE), invalidate the query to refetch
             queryClient.invalidateQueries({ queryKey: ['submissions'] });
           }
           
@@ -67,6 +66,7 @@ export const useSubmissions = () => {
     queryKey: ['submissions'],
     queryFn: async () => {
       console.log('📡 Fetching submissions...');
+      
       const { data, error } = await supabase
         .from('submissions')
         .select('*')
@@ -84,7 +84,6 @@ export const useSubmissions = () => {
 
   if (isError) {
     console.error('❌ Error in submissions hook:', error);
-    toast.error("Gönderiler yüklenirken bir hata oluştu");
   }
 
   const pendingSubmissions = submissions.filter(s => s.status === 'pending' || !s.status);

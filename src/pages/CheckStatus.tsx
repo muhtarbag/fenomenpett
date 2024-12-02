@@ -43,6 +43,8 @@ export default function CheckStatus() {
     queryFn: async () => {
       if (!searchedUsername) return [];
       
+      console.log('🔍 Fetching submissions for username:', searchedUsername);
+      
       const { data: submissionsData, error: submissionsError } = await supabase
         .from("submissions")
         .select("*")
@@ -50,10 +52,12 @@ export default function CheckStatus() {
         .order("created_at", { ascending: false });
 
       if (submissionsError) {
+        console.error('❌ Error fetching submissions:', submissionsError);
         toast.error("Gönderiler yüklenirken bir hata oluştu");
         throw submissionsError;
       }
 
+      console.log('✅ Fetched submissions:', submissionsData?.length);
       return submissionsData || [];
     },
     enabled: !!searchedUsername,
@@ -105,7 +109,7 @@ export default function CheckStatus() {
           </div>
         )}
 
-        {submissions && submissions.length > 0 && (
+        {submissions.length > 0 && (
           <div className="overflow-x-auto bg-white rounded-lg shadow">
             <Table>
               <TableHeader>
@@ -126,7 +130,7 @@ export default function CheckStatus() {
                         {statusTranslations[submission.status || 'pending']}
                       </Badge>
                     </TableCell>
-                    <TableCell className="max-w-xs">
+                    <TableCell className="max-w-xs truncate">
                       {submission.comment || '-'}
                     </TableCell>
                   </TableRow>

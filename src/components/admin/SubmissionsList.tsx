@@ -20,7 +20,8 @@ export const SubmissionsList = () => {
     toast.error("Gönderiler yüklenirken bir hata oluştu");
     return (
       <div className="text-center text-red-600 p-4 bg-red-50 rounded-lg">
-        Gönderiler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
+        <p>Gönderiler yüklenirken bir hata oluştu.</p>
+        <p className="text-sm mt-2">Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.</p>
       </div>
     );
   }
@@ -29,7 +30,8 @@ export const SubmissionsList = () => {
     console.error('❌ Missing submission data');
     return (
       <div className="text-center text-red-600 p-4 bg-red-50 rounded-lg">
-        Veri yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
+        <p>Veri yüklenirken bir hata oluştu.</p>
+        <p className="text-sm mt-2">Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.</p>
       </div>
     );
   }
