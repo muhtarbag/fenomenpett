@@ -1,77 +1,53 @@
 import { Link } from "react-router-dom";
-import { LogOut, Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
 import { useAuth } from "@/contexts/AuthContext";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
+import { LogOut, Upload, FileText, Search } from "lucide-react";
 
-const NavItems = () => {
-  const isMobile = useIsMobile();
-  const { isAuthenticated, logout } = useAuth();
+export const Navigation = () => {
+  const { user, signOut } = useAuth();
 
   return (
-    <div className={`${isMobile ? 'flex flex-col space-y-4 p-4' : 'flex items-center gap-4'}`}>
-      <Button variant="ghost" asChild>
+    <div className="flex items-center gap-4">
+      <Link to="/submit" className="text-gray-600 hover:text-gray-900">
+        <Button variant="ghost" className="flex items-center gap-2">
+          <Upload size={20} />
+          <span className="hidden sm:inline">Fotoğraf Gönder</span>
+        </Button>
+      </Link>
+      
+      <Link to="/check-status" className="text-gray-600 hover:text-gray-900">
+        <Button variant="ghost" className="flex items-center gap-2">
+          <Search size={20} />
+          <span className="hidden sm:inline">Durum Sorgula</span>
+        </Button>
+      </Link>
+
+      <Link to="/blog" className="text-gray-600 hover:text-gray-900">
+        <Button variant="ghost" className="flex items-center gap-2">
+          <FileText size={20} />
+          <span className="hidden sm:inline">Blog</span>
+        </Button>
+      </Link>
+
+      {user?.email === "admin@fenomenpet.com" && (
         <Link
-          to="/submit"
-          className="text-gray-600 hover:text-primary transition-colors"
+          to="/admin"
+          className="text-gray-600 hover:text-gray-900 font-medium"
         >
-          Fotoğraf Gönder
+          Yönetim
         </Link>
-      </Button>
-      <Button variant="ghost" asChild>
-        <Link
-          to="/blog"
-          className="text-gray-600 hover:text-primary transition-colors"
+      )}
+
+      {user && (
+        <Button
+          variant="ghost"
+          className="flex items-center gap-2"
+          onClick={() => signOut()}
         >
-          Blog
-        </Link>
-      </Button>
-      {isAuthenticated && (
-        <>
-          <Button variant="ghost" asChild>
-            <Link
-              to="/admin"
-              className="text-gray-600 hover:text-primary transition-colors"
-            >
-              Yönetici
-            </Link>
-          </Button>
-          <Button 
-            variant="ghost" 
-            onClick={() => logout()}
-            className="text-gray-600 hover:text-primary transition-colors"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Çıkış Yap
-          </Button>
-        </>
+          <LogOut size={20} />
+          <span className="hidden sm:inline">Çıkış Yap</span>
+        </Button>
       )}
     </div>
   );
-};
-
-export const Navigation = () => {
-  const isMobile = useIsMobile();
-
-  if (isMobile) {
-    return (
-      <Drawer>
-        <DrawerTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Menu className="h-6 w-6" />
-          </Button>
-        </DrawerTrigger>
-        <DrawerContent>
-          <NavItems />
-        </DrawerContent>
-      </Drawer>
-    );
-  }
-
-  return <NavItems />;
 };
