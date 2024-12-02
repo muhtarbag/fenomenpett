@@ -151,9 +151,7 @@ export default function CheckStatus() {
                         </p>
                         {submission.status === 'rejected' && (
                           <p className="text-sm text-red-600">
-                            {submission.rejection_reason && rejectionReasonTranslations[submission.rejection_reason] 
-                              ? rejectionReasonTranslations[submission.rejection_reason]
-                              : 'Red sebebi belirtilmemiş'}
+                            {rejectionReasonTranslations[submission.rejection_reason || ''] || 'Red sebebi belirtilmemiş'}
                           </p>
                         )}
                       </TableCell>
