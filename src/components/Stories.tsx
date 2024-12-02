@@ -25,7 +25,7 @@ const Stories: React.FC = () => {
   if (!shuffledStories.length) return null;
 
   return (
-    <div className="w-full max-w-full mx-auto mb-6">
+    <div className="w-full max-w-full mx-auto mb-8 px-2 sm:px-4">
       <Carousel
         className="w-full"
         opts={{
@@ -36,7 +36,7 @@ const Stories: React.FC = () => {
         onMouseEnter={() => setAutoPlay(false)}
         onMouseLeave={() => setAutoPlay(true)}
       >
-        <CarouselContent className="-ml-1">
+        <CarouselContent className="-ml-2 sm:-ml-4">
           {shuffledStories.map((story) => (
             <StoryItem key={story.id} story={story} />
           ))}
