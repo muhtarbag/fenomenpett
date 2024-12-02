@@ -74,7 +74,7 @@ export const ErrorReportForm = () => {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Kullanıcı Adı
+              Kullanıcı Adı *
             </label>
             <Input
               type="text"
@@ -87,7 +87,7 @@ export const ErrorReportForm = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              E-posta
+              E-posta *
             </label>
             <Input
               type="email"
@@ -100,7 +100,7 @@ export const ErrorReportForm = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              İletişim
+              İletişim *
             </label>
             <Input
               type="text"
@@ -113,7 +113,7 @@ export const ErrorReportForm = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Hata Açıklaması
+              Hata Açıklaması *
             </label>
             <Textarea
               value={formData.errorMessage}
