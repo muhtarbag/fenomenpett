@@ -39,10 +39,13 @@ export const useSubmissions = () => {
             console.log('🗑️ Realtime delete event:', payload.old.id);
             queryClient.setQueryData(['submissions'], (oldData: Submission[] | undefined) => {
               if (!oldData) return [];
-              return oldData.filter(submission => submission.id !== payload.old.id);
+              const filtered = oldData.filter(submission => submission.id !== payload.old.id);
+              console.log('📊 Updated cache after realtime delete. New count:', filtered.length);
+              return filtered;
             });
           }
           
+          // Always invalidate queries to ensure fresh data
           queryClient.invalidateQueries({ queryKey: ['submissions'] });
           
           if (payload.eventType === 'UPDATE' && payload.new.status !== payload.old.status) {
