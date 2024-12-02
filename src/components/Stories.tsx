@@ -37,7 +37,7 @@ const Stories: React.FC = () => {
           onMouseEnter={() => setAutoPlay(false)}
           onMouseLeave={() => setAutoPlay(true)}
         >
-          <CarouselContent className="-ml-2">
+          <CarouselContent className="-ml-4">
             {shuffledStories.map((story) => (
               <StoryItem key={story.id} story={story} />
             ))}

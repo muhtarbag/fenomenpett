@@ -15,12 +15,12 @@ export const useStories = () => {
         .select('id, username, image_url, comment, likes')
         .eq('status', 'approved')
         .order('likes', { ascending: false })
-        .limit(10);
+        .limit(12);
 
       if (error) throw error;
 
       if (!data || data.length === 0) {
-        return PLACEHOLDER_STORIES;
+        return PLACEHOLDER_STORIES.slice(0, 12);
       }
 
       return data;
