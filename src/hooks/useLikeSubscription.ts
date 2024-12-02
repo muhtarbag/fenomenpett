@@ -14,7 +14,8 @@ type SubmissionChangesPayload = RealtimePostgresChangesPayload<{
 
 // Type guard to check if payload is a SubmissionChangesPayload
 function isSubmissionChangesPayload(payload: any): payload is SubmissionChangesPayload {
-  return 'new' in payload && 
+  return payload && 
+         'new' in payload && 
          payload.new !== null && 
          typeof payload.new === 'object' && 
          'likes' in payload.new;
