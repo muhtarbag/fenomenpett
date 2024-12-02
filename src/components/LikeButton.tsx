@@ -159,13 +159,13 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
     <button
       onClick={handleLike}
       disabled={isProcessing}
-      className={`flex items-center gap-1 text-gray-600 hover:text-primary transition-colors ${
+      className={`flex items-center gap-1 text-red-500 hover:text-red-600 transition-colors ${
         isProcessing ? 'opacity-50' : ''
       } ${className}`}
     >
       <Heart
         size={20}
-        className={`${isLiked ? 'fill-red-500 text-red-500' : ''}`}
+        className={`${isLiked ? 'fill-red-500 text-red-500' : 'fill-red-500'}`}
       />
       <span>{likeCount}</span>
     </button>
