@@ -9,17 +9,24 @@ export const useDeleteSubmissionMutation = () => {
     mutationFn: async (submissionId: number) => {
       console.log('🗑️ Starting deletion process for submission:', submissionId);
 
-      // First check if submission exists
-      const { data: existingSubmission } = await supabase
+      // First check if submission exists and get its transaction_id
+      const { data: existingSubmission, error: fetchError } = await supabase
         .from('submissions')
-        .select()
+        .select('transaction_id')
         .eq('id', submissionId)
         .maybeSingle();
+
+      if (fetchError) {
+        console.error('❌ Error fetching submission:', fetchError);
+        throw new Error('Gönderi bulunamadı');
+      }
 
       if (!existingSubmission) {
         console.error('❌ Submission not found:', submissionId);
         throw new Error('Gönderi bulunamadı');
       }
+
+      console.log('📝 Found submission with transaction ID:', existingSubmission.transaction_id);
 
       // Delete associated likes
       const { error: likesError } = await supabase
@@ -32,6 +39,8 @@ export const useDeleteSubmissionMutation = () => {
         throw new Error('Beğeniler silinirken bir hata oluştu');
       }
 
+      console.log('✅ Successfully deleted associated likes');
+
       // Delete associated rejected submissions
       const { error: rejectedError } = await supabase
         .from('rejected_submissions')
@@ -42,6 +51,8 @@ export const useDeleteSubmissionMutation = () => {
         console.error('❌ Error deleting rejected submission:', rejectedError);
         throw new Error('Reddedilen gönderi silinirken bir hata oluştu');
       }
+
+      console.log('✅ Successfully deleted associated rejected submissions');
 
       // Finally, delete the submission itself
       const { error: submissionError } = await supabase
