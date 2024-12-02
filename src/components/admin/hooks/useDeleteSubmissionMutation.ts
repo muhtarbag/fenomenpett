@@ -11,13 +11,14 @@ export const useDeleteSubmissionMutation = () => {
 
       try {
         // First check if the submission exists in rejected_submissions
-        const { data: rejectedData } = await supabase
+        const { data: rejectedData, error: findError } = await supabase
           .from('rejected_submissions')
           .select('id')
-          .eq('original_submission_id', id)
-          .single();
+          .eq('original_submission_id', id);
 
-        if (rejectedData) {
+        console.log('🔍 Checking rejected submissions:', { rejectedData, findError });
+
+        if (rejectedData && rejectedData.length > 0) {
           console.log('📝 Found rejected submission record, deleting it first');
           const { error: rejectedError } = await supabase
             .from('rejected_submissions')
@@ -31,6 +32,7 @@ export const useDeleteSubmissionMutation = () => {
         }
 
         // Then delete from submission_likes table
+        console.log('🗑️ Deleting from submission_likes');
         const { error: likesError } = await supabase
           .from('submission_likes')
           .delete()
@@ -42,6 +44,7 @@ export const useDeleteSubmissionMutation = () => {
         }
 
         // Finally delete from submissions table
+        console.log('🗑️ Deleting from submissions');
         const { error: submissionError } = await supabase
           .from('submissions')
           .delete()
@@ -62,14 +65,11 @@ export const useDeleteSubmissionMutation = () => {
     onSuccess: (deletedId) => {
       console.log('✨ Delete mutation success:', deletedId);
       
-      // Completely remove all submission data from cache
+      // Force a complete cache clear and refetch
       queryClient.removeQueries({ queryKey: ['submissions'] });
-      
-      // Force a complete refetch
       queryClient.invalidateQueries({
         queryKey: ['submissions'],
-        refetchType: 'all',
-        exact: true
+        refetchType: 'all'
       });
 
       toast.success("İçerik başarıyla silindi");
