@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import LikeButton from "./LikeButton";
+import SocialShare from "./SocialShare";
 
 interface Post {
   id: number;
@@ -27,11 +28,14 @@ const PostCard = ({ post }: PostCardProps) => {
       <div className="p-4">
         <div className="flex items-center justify-between mb-2">
           <span className="font-medium">@{post.username}</span>
-          <LikeButton 
-            postId={post.id} 
-            initialLikes={post.likes} 
-            isPlaceholder={post.isPlaceholder}
-          />
+          <div className="flex items-center gap-4">
+            <SocialShare url={window.location.href} />
+            <LikeButton 
+              postId={post.id} 
+              initialLikes={post.likes} 
+              isPlaceholder={post.isPlaceholder}
+            />
+          </div>
         </div>
         <p className="text-gray-600 text-sm">{post.comment}</p>
       </div>
