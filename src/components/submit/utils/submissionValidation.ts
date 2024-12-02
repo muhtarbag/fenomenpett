@@ -1,13 +1,6 @@
-import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-
-export const calculateRemainingDays = (lastSubmissionDate: string): number => {
-  const lastSubmission = new Date(lastSubmissionDate);
-  const thirtyDaysFromSubmission = new Date(lastSubmission.getTime() + (30 * 24 * 60 * 60 * 1000));
-  const now = new Date();
-  const remainingTime = thirtyDaysFromSubmission.getTime() - now.getTime();
-  return Math.ceil(remainingTime / (1000 * 60 * 60 * 24));
-};
+import { toast } from "sonner";
+import { format, addDays } from "date-fns";
 
 export const validateSubmission = (username: string, image: File | null, comment: string) => {
   if (!username.trim()) {
@@ -38,17 +31,26 @@ export const checkExistingSubmission = async (username: string): Promise<boolean
     .single();
 
   if (existingSubmission) {
-    const remainingDays = calculateRemainingDays(existingSubmission.created_at);
+    const submissionDate = new Date(existingSubmission.created_at);
+    const nextAllowedDate = addDays(submissionDate, 30);
+    const today = new Date();
+    const remainingDays = Math.ceil((nextAllowedDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
     if (remainingDays > 0) {
-      toast.error(`Bu kullanıcı adı ile yeni bir gönderi yapabilmeniz için ${remainingDays} gün beklemeniz gerekiyor.`, {
-        style: {
-          fontSize: '1.2rem',
-          fontWeight: 'bold',
-          color: '#FF0000',
-          backgroundColor: '#FFF',
-          border: '2px solid #FF0000'
-        },
-      });
+      toast.error(
+        `Bu kullanıcı adı ile yeni bir gönderi yapamazsınız.\n\n` +
+        `Son gönderiniz: ${format(submissionDate, 'dd.MM.yyyy')}\n` +
+        `Yeni gönderi yapabileceğiniz tarih: ${format(nextAllowedDate, 'dd.MM.yyyy')}\n` +
+        `Kalan süre: ${remainingDays} gün`,
+        {
+          duration: 6000,
+          style: {
+            background: '#fee2e2',
+            border: '1px solid #ef4444',
+            whiteSpace: 'pre-line'
+          }
+        }
+      );
       return true;
     }
   }
