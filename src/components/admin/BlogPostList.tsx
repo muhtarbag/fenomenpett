@@ -32,28 +32,41 @@ export const BlogPostList = () => {
   const { data: posts, refetch } = useQuery({
     queryKey: ["blog-posts"],
     queryFn: async () => {
+      console.log('🔄 Fetching blog posts...');
       const { data, error } = await supabase
         .from("blog_posts")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error fetching blog posts:', error);
+        throw error;
+      }
+      
+      console.log('✅ Fetched blog posts:', data);
       return data as BlogPost[];
     },
   });
 
   const handleDelete = async (id: number) => {
     try {
+      console.log('🗑️ Attempting to delete blog post:', id);
+      
       const { error } = await supabase
         .from("blog_posts")
         .delete()
         .eq("id", id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error deleting blog post:', error);
+        throw error;
+      }
 
+      console.log('✅ Successfully deleted blog post:', id);
       toast.success("Blog yazısı başarıyla silindi");
       refetch();
     } catch (error: any) {
+      console.error('❌ Error in handleDelete:', error);
       toast.error("Blog yazısı silinirken bir hata oluştu: " + error.message);
     }
   };
@@ -63,6 +76,8 @@ export const BlogPostList = () => {
     if (!editingPost) return;
 
     try {
+      console.log('📝 Updating blog post:', editingPost.id);
+      
       const { error } = await supabase
         .from("blog_posts")
         .update({
@@ -71,12 +86,17 @@ export const BlogPostList = () => {
         })
         .eq("id", editingPost.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error updating blog post:', error);
+        throw error;
+      }
 
+      console.log('✅ Successfully updated blog post:', editingPost.id);
       toast.success("Blog yazısı başarıyla güncellendi");
       setEditingPost(null);
       refetch();
     } catch (error: any) {
+      console.error('❌ Error in handleUpdate:', error);
       toast.error("Blog yazısı güncellenirken bir hata oluştu: " + error.message);
     }
   };
