@@ -63,7 +63,7 @@ export const useSubmissions = () => {
       console.log('📡 Fetching submissions...');
       const { data, error } = await supabase
         .from('submissions')
-        .select('*, status:status::text')
+        .select('*')
         .order('created_at', { ascending: false });
       
       if (error) {
@@ -71,7 +71,7 @@ export const useSubmissions = () => {
         throw error;
       }
       
-      console.log('✅ Raw submissions data:', data);
+      console.log('✅ Fetched submissions:', data);
       
       return (data || []) as Submission[];
     }
@@ -82,14 +82,15 @@ export const useSubmissions = () => {
     toast.error("Gönderiler yüklenirken bir hata oluştu");
   }
 
-  const pendingSubmissions = submissions.filter(s => !s.status || s.status === 'pending');
+  const pendingSubmissions = submissions.filter(s => s.status === 'pending' || !s.status);
   const approvedSubmissions = submissions.filter(s => s.status === 'approved');
   const rejectedSubmissions = submissions.filter(s => s.status === 'rejected');
 
   console.log('📊 Submissions by status:', {
-    pending: pendingSubmissions.map(s => ({ id: s.id, created_at: s.created_at })),
-    approved: approvedSubmissions.map(s => ({ id: s.id, created_at: s.created_at })),
-    rejected: rejectedSubmissions.map(s => ({ id: s.id, created_at: s.created_at }))
+    pending: pendingSubmissions.length,
+    approved: approvedSubmissions.length,
+    rejected: rejectedSubmissions.length,
+    total: submissions.length
   });
 
   return {
