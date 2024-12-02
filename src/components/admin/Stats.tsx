@@ -12,51 +12,51 @@ interface StatItem {
 const stats: StatItem[] = [
   {
     title: "Toplam Ziyaretçi",
-    value: "24,589",
+    value: "0",
     icon: Users,
-    change: "+12%",
+    change: "0%",
   },
   {
     title: "Aktif Kullanıcı",
-    value: "1,234",
+    value: "0",
     icon: Activity,
-    change: "+4%",
+    change: "0%",
   },
   {
     title: "Ort. Oturum Süresi",
-    value: "4d 32s",
+    value: "0s",
     icon: Clock,
-    change: "+8%",
+    change: "0%",
   },
   {
     title: "Hemen Çıkma Oranı",
-    value: "24%",
+    value: "0%",
     icon: Globe,
-    change: "-2%",
+    change: "0%",
   },
   {
     title: "Tıklama Oranı",
-    value: "3.2%",
+    value: "0%",
     icon: MousePointerClick,
-    change: "+1.5%",
+    change: "0%",
   },
   {
     title: "Dönüşüm Oranı",
-    value: "2.8%",
+    value: "0%",
     icon: ArrowUpRight,
-    change: "+0.5%",
+    change: "0%",
   },
   {
     title: "Sayfa Yüklenme Süresi",
-    value: "0.8s",
+    value: "0s",
     icon: Timer,
-    change: "-12%",
+    change: "0%",
   },
   {
     title: "Kullanıcı Etkileşimi",
-    value: "78%",
+    value: "0%",
     icon: Brain,
-    change: "+5%",
+    change: "0%",
   },
 ];
 
@@ -73,14 +73,12 @@ export const Stats = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stat.value}</div>
-            <p className={`text-xs ${
-              stat.change.startsWith('+') ? 'text-green-500' : 'text-red-500'
-            }`}>
+            <p className="text-xs text-muted-foreground">
               {stat.change} geçen aya göre
             </p>
           </CardContent>
         </Card>
-      ))}
+      </>
     </>
   );
 };

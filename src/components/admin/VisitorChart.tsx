@@ -3,20 +3,20 @@ import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { Line, LineChart, XAxis, YAxis, ResponsiveContainer, Legend } from "recharts";
 
 const data = [
-  { date: "Mon", visitors: 124, uniqueVisitors: 98 },
-  { date: "Tue", visitors: 186, uniqueVisitors: 145 },
-  { date: "Wed", visitors: 245, uniqueVisitors: 187 },
-  { date: "Thu", visitors: 203, uniqueVisitors: 156 },
-  { date: "Fri", visitors: 228, uniqueVisitors: 178 },
-  { date: "Sat", visitors: 312, uniqueVisitors: 234 },
-  { date: "Sun", visitors: 289, uniqueVisitors: 213 },
+  { date: "Pzt", visitors: 0, uniqueVisitors: 0 },
+  { date: "Sal", visitors: 0, uniqueVisitors: 0 },
+  { date: "Çar", visitors: 0, uniqueVisitors: 0 },
+  { date: "Per", visitors: 0, uniqueVisitors: 0 },
+  { date: "Cum", visitors: 0, uniqueVisitors: 0 },
+  { date: "Cmt", visitors: 0, uniqueVisitors: 0 },
+  { date: "Paz", visitors: 0, uniqueVisitors: 0 },
 ];
 
 export const VisitorChart = () => {
   return (
     <Card className="col-span-4">
       <CardHeader>
-        <CardTitle>Daily Visitors</CardTitle>
+        <CardTitle>Günlük Ziyaretçiler</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[200px]">
@@ -30,13 +30,13 @@ export const VisitorChart = () => {
                 type="monotone" 
                 dataKey="visitors" 
                 stroke="#8884d8" 
-                name="Total Visitors"
+                name="Toplam Ziyaretçi"
               />
               <Line 
                 type="monotone" 
                 dataKey="uniqueVisitors" 
                 stroke="#82ca9d" 
-                name="Unique Visitors"
+                name="Tekil Ziyaretçi"
               />
             </LineChart>
           </ResponsiveContainer>

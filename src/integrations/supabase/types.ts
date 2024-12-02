@@ -124,6 +124,7 @@ export type Database = {
           image_url: string
           likes: number | null
           status: string | null
+          transaction_id: string
           updated_at: string
           user_id: string | null
           username: string
@@ -136,6 +137,7 @@ export type Database = {
           image_url: string
           likes?: number | null
           status?: string | null
+          transaction_id: string
           updated_at?: string
           user_id?: string | null
           username: string
@@ -148,6 +150,7 @@ export type Database = {
           image_url?: string
           likes?: number | null
           status?: string | null
+          transaction_id?: string
           updated_at?: string
           user_id?: string | null
           username?: string

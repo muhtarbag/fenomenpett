@@ -3,31 +3,31 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 const performanceData = [
   {
-    page: "Homepage",
-    loadTime: "0.8s",
-    errorRate: "0.12%",
-    userSatisfaction: "95%",
+    page: "Ana Sayfa",
+    loadTime: "0s",
+    errorRate: "0%",
+    userSatisfaction: "0%",
     resourceUsage: "Low"
   },
   {
-    page: "Submit Page",
-    loadTime: "1.2s",
-    errorRate: "0.08%",
-    userSatisfaction: "92%",
-    resourceUsage: "Medium"
+    page: "Gönder Sayfası",
+    loadTime: "0s",
+    errorRate: "0%",
+    userSatisfaction: "0%",
+    resourceUsage: "Low"
   },
   {
-    page: "Admin Dashboard",
-    loadTime: "1.5s",
-    errorRate: "0.15%",
-    userSatisfaction: "90%",
-    resourceUsage: "High"
+    page: "Admin Paneli",
+    loadTime: "0s",
+    errorRate: "0%",
+    userSatisfaction: "0%",
+    resourceUsage: "Low"
   },
   {
-    page: "Login Page",
-    loadTime: "0.6s",
-    errorRate: "0.05%",
-    userSatisfaction: "97%",
+    page: "Giriş Sayfası",
+    loadTime: "0s",
+    errorRate: "0%",
+    userSatisfaction: "0%",
     resourceUsage: "Low"
   }
 ];
@@ -36,17 +36,17 @@ export const PerformanceMetrics = () => {
   return (
     <Card className="col-span-1">
       <CardHeader>
-        <CardTitle>Page Performance Metrics</CardTitle>
+        <CardTitle>Sayfa Performans Metrikleri</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Page</TableHead>
-              <TableHead>Load Time</TableHead>
-              <TableHead>Error Rate</TableHead>
-              <TableHead>User Satisfaction</TableHead>
-              <TableHead>Resource Usage</TableHead>
+              <TableHead>Sayfa</TableHead>
+              <TableHead>Yüklenme Süresi</TableHead>
+              <TableHead>Hata Oranı</TableHead>
+              <TableHead>Kullanıcı Memnuniyeti</TableHead>
+              <TableHead>Kaynak Kullanımı</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

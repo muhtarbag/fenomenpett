@@ -5,43 +5,27 @@ import { Monitor, Smartphone, Tablet } from "lucide-react";
 const deviceData = [
   { 
     device: "Desktop",
-    browser: "Chrome",
-    version: "121.0.0",
-    os: "Windows 11",
-    sessions: 2345,
+    browser: "-",
+    version: "-",
+    os: "-",
+    sessions: 0,
     icon: Monitor
   },
   {
     device: "Mobile",
-    browser: "Safari",
-    version: "17.3.1",
-    os: "iOS 17",
-    sessions: 1876,
+    browser: "-",
+    version: "-",
+    os: "-",
+    sessions: 0,
     icon: Smartphone
   },
   {
     device: "Tablet",
-    browser: "Chrome",
-    version: "121.0.0",
-    os: "iPadOS 17",
-    sessions: 654,
+    browser: "-",
+    version: "-",
+    os: "-",
+    sessions: 0,
     icon: Tablet
-  },
-  {
-    device: "Desktop",
-    browser: "Firefox",
-    version: "123.0",
-    os: "macOS 14",
-    sessions: 987,
-    icon: Monitor
-  },
-  {
-    device: "Mobile",
-    browser: "Chrome",
-    version: "121.0.0",
-    os: "Android 14",
-    sessions: 1234,
-    icon: Smartphone
   }
 ];
 
@@ -49,17 +33,17 @@ export const DeviceStats = () => {
   return (
     <Card className="col-span-1">
       <CardHeader>
-        <CardTitle>Device & Browser Analytics</CardTitle>
+        <CardTitle>Cihaz & Tarayıcı İstatistikleri</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Device</TableHead>
-              <TableHead>Browser</TableHead>
-              <TableHead>Version</TableHead>
+              <TableHead>Cihaz</TableHead>
+              <TableHead>Tarayıcı</TableHead>
+              <TableHead>Versiyon</TableHead>
               <TableHead>OS</TableHead>
-              <TableHead>Sessions</TableHead>
+              <TableHead>Oturum</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -72,7 +56,7 @@ export const DeviceStats = () => {
                 <TableCell>{item.browser}</TableCell>
                 <TableCell>{item.version}</TableCell>
                 <TableCell>{item.os}</TableCell>
-                <TableCell>{item.sessions.toLocaleString()}</TableCell>
+                <TableCell>{item.sessions}</TableCell>
               </TableRow>
             ))}
           </TableBody>
