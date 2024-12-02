@@ -110,26 +110,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     try {
-      // Clear local state first
+      // First clear the session from Supabase
+      await supabase.auth.signOut();
+      
+      // Then clear local state
       setIsAuthenticated(false);
       setUser(null);
-
-      // Attempt to sign out from Supabase
-      const { error } = await supabase.auth.signOut();
       
-      if (error) {
-        // If there's an error during signout, just log it but continue with local logout
-        console.error('Logout error:', error);
-      }
-
-      // Always show success message and redirect
+      // Show success message and redirect
       toast.success('Başarıyla çıkış yapıldı');
-      window.location.href = '/';
       
+      // Use window.location.replace instead of href for a clean redirect
+      window.location.replace('/');
     } catch (error) {
-      // If there's any other error, log it but ensure the user is still logged out locally
       console.error('Error in logout process:', error);
-      window.location.href = '/';
+      
+      // Even if there's an error, clear local state and redirect
+      setIsAuthenticated(false);
+      setUser(null);
+      window.location.replace('/');
     }
   };
 
