@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import { useLikeSubscription } from "@/hooks/useLikeSubscription";
+import { useLikeStatus } from "@/hooks/useLikeStatus";
 
 interface LikeButtonProps {
   postId: number;
@@ -11,81 +12,10 @@ interface LikeButtonProps {
   isPlaceholder?: boolean;
 }
 
-interface SubmissionPayload {
-  id: number;
-  likes: number;
-}
-
 const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = false }: LikeButtonProps) => {
-  const [likeCount, setLikeCount] = useState(initialLikes || 0);
-  const [isLiked, setIsLiked] = useState(false);
+  const { likeCount, setLikeCount } = useLikeSubscription(postId, isPlaceholder);
+  const { isLiked, setIsLiked } = useLikeStatus(postId, isPlaceholder);
   const [isProcessing, setIsProcessing] = useState(false);
-
-  // Set up realtime subscription for likes
-  useEffect(() => {
-    if (isPlaceholder) return;
-
-    console.log('🔄 Setting up realtime subscription for likes on post:', postId);
-    
-    const channel = supabase
-      .channel(`likes_${postId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'submissions',
-          filter: `id=eq.${postId}`
-        },
-        (payload: RealtimePostgresChangesPayload<SubmissionPayload>) => {
-          console.log('📡 Realtime like update received:', payload);
-          if (payload.new && typeof payload.new.likes === 'number') {
-            setLikeCount(payload.new.likes);
-          }
-        }
-      )
-      .subscribe((status) => {
-        console.log(`📡 Like subscription status for post ${postId}:`, status);
-      });
-
-    return () => {
-      console.log('🔄 Cleaning up likes subscription for post:', postId);
-      supabase.removeChannel(channel);
-    };
-  }, [postId, isPlaceholder]);
-
-  useEffect(() => {
-    const checkLikeStatus = async () => {
-      if (isPlaceholder) return;
-      
-      try {
-        const { data: session } = await supabase.auth.getSession();
-        if (session?.session?.user?.id) {
-          const { data, error } = await supabase
-            .from('submission_likes')
-            .select('*')
-            .eq('submission_id', postId)
-            .eq('user_id', session.session.user.id)
-            .maybeSingle();
-          
-          if (error) {
-            console.error('Error checking like status:', error);
-            return;
-          }
-          
-          setIsLiked(!!data);
-        } else {
-          // Check local storage for anonymous likes
-          const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
-          setIsLiked(likedPosts.includes(postId));
-        }
-      } catch (error) {
-        console.error('Error checking like status:', error);
-      }
-    };
-
-    checkLikeStatus();
-  }, [postId, isPlaceholder]);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -197,7 +127,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
         size={20}
         className={`${isLiked ? 'fill-red-500 text-red-500' : ''}`}
       />
-      <span className="text-red-500">{likeCount}</span>
+      <span className="text-red-500">{likeCount || initialLikes}</span>
     </button>
   );
 };
