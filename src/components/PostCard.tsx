@@ -1,6 +1,8 @@
 import { Card } from "@/components/ui/card";
 import LikeButton from "./LikeButton";
 import SocialShare from "./SocialShare";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import PostDialogContent from "./PostDialogContent";
 
 interface Post {
   id: number;
@@ -17,29 +19,36 @@ interface PostCardProps {
 
 const PostCard = ({ post }: PostCardProps) => {
   return (
-    <Card className="overflow-hidden">
-      <div className="aspect-square relative">
-        <img
-          src={post.image_url}
-          alt={`${post.username} tarafından paylaşılan fotoğraf`}
-          className="w-full h-full object-cover"
-        />
-      </div>
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="font-medium">@{post.username}</span>
-          <div className="flex items-center gap-4">
-            <SocialShare url={window.location.href} />
-            <LikeButton 
-              postId={post.id} 
-              initialLikes={post.likes} 
-              isPlaceholder={post.isPlaceholder}
+    <Dialog>
+      <DialogTrigger asChild>
+        <Card className="overflow-hidden cursor-pointer hover:opacity-95 transition-opacity">
+          <div className="aspect-square relative">
+            <img
+              src={post.image_url}
+              alt={`${post.username} tarafından paylaşılan fotoğraf`}
+              className="w-full h-full object-cover"
             />
           </div>
-        </div>
-        <p className="text-gray-600 text-sm">{post.comment}</p>
-      </div>
-    </Card>
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-medium">@{post.username}</span>
+              <div className="flex items-center gap-4">
+                <SocialShare url={window.location.href} />
+                <LikeButton 
+                  postId={post.id} 
+                  initialLikes={post.likes} 
+                  isPlaceholder={post.isPlaceholder}
+                />
+              </div>
+            </div>
+            <p className="text-gray-600 text-sm">{post.comment}</p>
+          </div>
+        </Card>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[600px]">
+        <PostDialogContent post={post} />
+      </DialogContent>
+    </Dialog>
   );
 };
 
