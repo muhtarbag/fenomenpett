@@ -20,6 +20,8 @@ export const Layout = ({ children }: LayoutProps) => {
                 src="/lovable-uploads/a06650c0-2ee1-42dd-9217-cef8bdd67039.png" 
                 alt="FenomenPet Logo" 
                 className="h-8 w-auto"
+                loading="eager"
+                decoding="async"
               />
             </Link>
             <Navigation />

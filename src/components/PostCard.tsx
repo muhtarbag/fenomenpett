@@ -27,11 +27,15 @@ const PostCard = ({ post }: PostCardProps) => {
               src={post.image_url}
               alt={`${post.username} tarafından paylaşılan fotoğraf`}
               className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
             />
             <img
               src="/lovable-uploads/a06650c0-2ee1-42dd-9217-cef8bdd67039.png"
               alt="FenomenPet Logo"
               className="absolute bottom-2 right-2 w-12 h-auto opacity-70"
+              loading="lazy"
+              decoding="async"
             />
           </div>
           <div className="p-4">

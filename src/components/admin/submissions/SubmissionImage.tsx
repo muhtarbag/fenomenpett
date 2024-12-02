@@ -11,6 +11,8 @@ export const SubmissionImage = ({ imageUrl, username, transactionId }: Submissio
         src={imageUrl}
         alt={`${username} tarafından gönderildi`}
         className="w-full h-64 object-cover"
+        loading="lazy"
+        decoding="async"
         onError={(e) => {
           console.error('❌ Image load error:', imageUrl);
           e.currentTarget.src = '/placeholder.svg';
