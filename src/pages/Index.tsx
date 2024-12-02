@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { PawPrint } from "lucide-react";
 import Banner from "@/components/Banner";
 import PostGrid from "@/components/PostGrid";
 import Stories from "@/components/Stories";
@@ -110,8 +111,9 @@ const Index = () => {
         <Banner />
         
         <div className="bg-primary text-white py-3 px-4 text-center">
-          <p className="text-sm md:text-base animate-fade-in text-secondary">
-            Fark yaratmamıza yardım edin! Sokak hayvanlarına yardım hikayelerinizi paylaşın. 🐾
+          <p className="text-sm md:text-base animate-fade-in text-secondary flex items-center justify-center gap-2">
+            Fark yaratmamıza yardım edin! Sokak hayvanlarına yardım hikayelerinizi paylaşın. 
+            <PawPrint size={24} color="#ffc700" className="inline-block" />
           </p>
         </div>
         
