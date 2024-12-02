@@ -4,10 +4,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -18,6 +20,8 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+
     try {
       const success = await login(email, password);
       if (success) {
@@ -28,46 +32,69 @@ const Login = () => {
       }
     } catch (error) {
       toast.error("Giriş yapılırken bir hata oluştu!");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+      <Card className="w-full max-w-md p-8">
+        <div className="text-center mb-8">
+          <img 
+            src="/lovable-uploads/a06650c0-2ee1-42dd-9217-cef8bdd67039.png" 
+            alt="FenomenPet Logo" 
+            className="mx-auto h-12 w-auto mb-4"
+          />
+          <h2 className="text-2xl font-bold text-gray-900">
             Yönetici Girişi
           </h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
+        
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div className="space-y-4">
             <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email Adresi
+              </label>
               <Input
+                id="email"
                 type="email"
                 required
-                placeholder="Email Adresi"
+                placeholder="admin@fenomenpet.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="w-full"
+                disabled={isLoading}
               />
             </div>
+            
             <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                Şifre
+              </label>
               <Input
+                id="password"
                 type="password"
                 required
-                placeholder="Şifre"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="w-full"
+                disabled={isLoading}
               />
             </div>
           </div>
 
-          <div>
-            <Button type="submit" className="w-full">
-              Giriş Yap
-            </Button>
-          </div>
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={isLoading}
+          >
+            {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
+          </Button>
         </form>
-      </div>
+      </Card>
     </div>
   );
 };

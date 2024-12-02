@@ -11,7 +11,7 @@ interface User {
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
-  login: (username: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
 }
 
@@ -90,6 +90,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (data.user) {
         console.log('Login successful:', data.user);
+        
+        // Check if the user is admin
+        if (data.user.email !== 'admin@fenomenpet.com') {
+          toast.error('Bu sayfaya erişim yetkiniz yok');
+          await supabase.auth.signOut();
+          return false;
+        }
+        
         setIsAuthenticated(true);
         setUser({ 
           id: data.user.id,
