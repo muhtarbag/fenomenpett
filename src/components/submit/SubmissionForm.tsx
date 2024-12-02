@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { validateSubmission, checkExistingSubmission } from "./utils/submissionValidation";
+import { validateSubmission } from "./utils/submissionValidation";
 import { handleSubmission } from "./utils/submissionHandler";
 import { SubmissionSuccess } from "./SubmissionSuccess";
 import { SubmissionFormFields } from "./SubmissionFormFields";
@@ -19,7 +19,18 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateSubmission(username, image, comment)) {
+    if (!username.trim()) {
+      toast.error("Lütfen kullanıcı adınızı girin");
+      return;
+    }
+
+    if (!image) {
+      toast.error("Lütfen bir fotoğraf yükleyin");
+      return;
+    }
+
+    if (!comment.trim()) {
+      toast.error("Lütfen bir yorum yazın");
       return;
     }
 
@@ -27,8 +38,9 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
       setIsSubmitting(true);
       console.log('Fotoğraf optimizasyonu başlatılıyor...');
 
-      const hasExistingSubmission = await checkExistingSubmission(username);
-      if (hasExistingSubmission) {
+      const validationResult = await validateSubmission(username);
+      if (!validationResult.isValid) {
+        toast.error(validationResult.message);
         return;
       }
 
