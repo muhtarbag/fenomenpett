@@ -19,7 +19,7 @@ export const useDeleteSubmissionMutation = () => {
 
         if (likesError) {
           console.error('❌ Error deleting submission likes:', likesError);
-          throw new Error(`Failed to delete likes: ${likesError.message}`);
+          throw new Error('Beğeniler silinirken bir hata oluştu');
         }
         console.log('✅ Deleted submission likes');
 
@@ -32,7 +32,7 @@ export const useDeleteSubmissionMutation = () => {
 
         if (rejectedError) {
           console.error('❌ Error deleting rejected submissions:', rejectedError);
-          throw new Error(`Failed to delete rejected submissions: ${rejectedError.message}`);
+          throw new Error('Reddedilen gönderiler silinirken bir hata oluştu');
         }
         console.log('✅ Deleted rejected submissions');
 
@@ -45,7 +45,7 @@ export const useDeleteSubmissionMutation = () => {
 
         if (submissionError) {
           console.error('❌ Error deleting submission:', submissionError);
-          throw submissionError;
+          throw new Error('Gönderi silinirken bir hata oluştu');
         }
 
         console.log('✅ Successfully deleted submission and all related records');
