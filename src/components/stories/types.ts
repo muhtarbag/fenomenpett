@@ -120,17 +120,17 @@ export const PLACEHOLDER_STORIES: Story[] = [
     likes: 10
   },
   {
-    id: -17,
-    username: "hayvandostum",
-    image_url: "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e",
-    comment: "Minik dostlarımıza mama yardımı #Fenomenbet",
-    likes: 9
+    id: -19,
+    username: "patidostlarimiz",
+    image_url: "https://images.unsplash.com/photo-1582562124811-c09040d0a901",
+    comment: "Sokak hayvanlarına yardım elimizi uzatıyoruz #Fenomenpet",
+    likes: 7
   },
   {
-    id: -18,
-    username: "patiyardimcisi",
-    image_url: "https://images.unsplash.com/photo-1415369629372-26f2fe60c467",
-    comment: "Sokaktaki canlarımıza yardım #Fenomenpet",
-    likes: 8
+    id: -20,
+    username: "hayvankoruyucular",
+    image_url: "https://images.unsplash.com/photo-1535268647677-300dbf3d78d1",
+    comment: "Minik dostlarımıza mama yardımı #Fenomenbet",
+    likes: 6
   }
 ];
