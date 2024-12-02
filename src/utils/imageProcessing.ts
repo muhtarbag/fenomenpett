@@ -1,33 +1,61 @@
-export const convertToWebP = async (file: File): Promise<File> => {
+export const optimizeImage = async (file: File): Promise<File> => {
+  console.log('Optimizing image:', file.name);
+  
+  // Maximum dimensions
+  const MAX_WIDTH = 1920;
+  const MAX_HEIGHT = 1080;
+  
   return new Promise((resolve, reject) => {
     const img = new Image();
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
     img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx?.drawImage(img, 0, 0);
+      // Calculate new dimensions while maintaining aspect ratio
+      let width = img.width;
+      let height = img.height;
+      
+      if (width > MAX_WIDTH) {
+        height = (MAX_WIDTH * height) / width;
+        width = MAX_WIDTH;
+      }
+      
+      if (height > MAX_HEIGHT) {
+        width = (MAX_HEIGHT * width) / height;
+        height = MAX_HEIGHT;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      ctx?.drawImage(img, 0, 0, width, height);
+      
+      // Convert to WebP with quality setting
       canvas.toBlob(
         (blob) => {
           if (blob) {
-            const webpFile = new File(
+            const optimizedFile = new File(
               [blob],
               file.name.replace(/\.[^/.]+$/, "") + ".webp",
               { type: "image/webp" }
             );
-            resolve(webpFile);
+            console.log('Image optimized:', {
+              originalSize: file.size,
+              optimizedSize: optimizedFile.size,
+              width,
+              height
+            });
+            resolve(optimizedFile);
           } else {
-            reject(new Error("Failed to convert image to WebP"));
+            reject(new Error("Failed to optimize image"));
           }
         },
         "image/webp",
-        0.8
+        0.85 // 85% quality - good balance between quality and file size
       );
     };
 
     img.onerror = () => {
-      reject(new Error("Failed to load image"));
+      reject(new Error("Failed to load image for optimization"));
     };
 
     img.src = URL.createObjectURL(file);

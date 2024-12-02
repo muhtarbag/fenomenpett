@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { checkForDuplicates } from "./utils/duplicateCheck";
-import { calculateImageHash } from "@/utils/imageProcessing";
+import { calculateImageHash, optimizeImage } from "@/utils/imageProcessing";
 import { SubmissionSuccess } from "./SubmissionSuccess";
 import { SubmissionFormFields } from "./SubmissionFormFields";
 
@@ -37,10 +37,17 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
 
     try {
       setIsSubmitting(true);
-      console.log('Gönderim işlemi başlatılıyor...');
+      console.log('Fotoğraf optimizasyonu başlatılıyor...');
 
-      // Calculate image hash
-      const imageHash = await calculateImageHash(image);
+      // Optimize the image
+      const optimizedImage = await optimizeImage(image);
+      console.log('Fotoğraf optimize edildi:', {
+        originalSize: image.size,
+        optimizedSize: optimizedImage.size
+      });
+
+      // Calculate image hash from optimized image
+      const imageHash = await calculateImageHash(optimizedImage);
       console.log('Image hash calculated:', imageHash);
 
       // Check for duplicates using perceptual hash
@@ -48,13 +55,13 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
       
       if (isDuplicate && originalSubmission) {
         // Upload image for reference but mark as rejected
-        const fileExt = image.name.split('.').pop();
+        const fileExt = 'webp'; // Always using WebP format
         const fileName = `${Math.random()}.${fileExt}`;
         const filePath = `${fileName}`;
 
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('submissions')
-          .upload(filePath, image);
+          .upload(filePath, optimizedImage);
 
         if (uploadError) {
           console.error('Storage yükleme hatası:', uploadError);
@@ -72,7 +79,8 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
             image_url: publicUrl,
             comment,
             reason: `Duplicate image detected (Hamming distance within threshold). Original submission by user: ${originalSubmission.username}`,
-            original_submission_id: originalSubmission.id
+            original_submission_id: originalSubmission.id,
+            image_hash: imageHash
           }]);
 
         if (rejectionError) {
@@ -93,13 +101,13 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
       }
 
       // If not a duplicate, proceed with submission
-      const fileExt = image.name.split('.').pop();
+      const fileExt = 'webp'; // Always using WebP format
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('submissions')
-        .upload(filePath, image);
+        .upload(filePath, optimizedImage);
 
       if (uploadError) {
         console.error('Storage yükleme hatası:', uploadError);
@@ -122,7 +130,7 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
           status: 'pending',
           likes: 0,
           image_hash: imageHash,
-          transaction_id: tempTransactionId // Add the transaction_id field
+          transaction_id: tempTransactionId
         });
 
       if (submissionError) {
