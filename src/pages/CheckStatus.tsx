@@ -48,26 +48,18 @@ const statusTranslations = {
 
 export default function CheckStatus() {
   const [username, setUsername] = useState("");
-  const [transactionId, setTransactionId] = useState("");
   const [searchedUsername, setSearchedUsername] = useState<string | null>(null);
-  const [searchedTransactionId, setSearchedTransactionId] = useState<string | null>(null);
 
   const { data: submissions, isLoading: isLoadingSubmissions } = useQuery({
-    queryKey: ["submissions", searchedUsername, searchedTransactionId],
+    queryKey: ["submissions", searchedUsername],
     queryFn: async () => {
-      if (!searchedUsername && !searchedTransactionId) return [];
+      if (!searchedUsername) return [];
       
       let query = supabase
         .from("submissions")
         .select("*")
+        .eq("username", searchedUsername)
         .order("created_at", { ascending: false });
-
-      if (searchedUsername) {
-        query = query.eq("username", searchedUsername);
-      }
-      if (searchedTransactionId) {
-        query = query.eq("transaction_id", searchedTransactionId);
-      }
 
       const { data: submissionsData, error: submissionsError } = await query;
 
@@ -76,57 +68,47 @@ export default function CheckStatus() {
         throw submissionsError;
       }
 
-      // Only fetch rejected submissions if we're searching by username
-      if (searchedUsername) {
-        const { data: rejectedData, error: rejectedError } = await supabase
-          .from("rejected_submissions")
-          .select("*")
-          .eq("username", searchedUsername)
-          .order("created_at", { ascending: false });
+      const { data: rejectedData, error: rejectedError } = await supabase
+        .from("rejected_submissions")
+        .select("*")
+        .eq("username", searchedUsername)
+        .order("created_at", { ascending: false });
 
-        if (rejectedError) {
-          toast.error("Reddedilen gönderiler yüklenirken bir hata oluştu");
-          throw rejectedError;
-        }
-
-        // Transform rejected submissions to include status
-        const transformedRejectedData = (rejectedData || []).map(rejected => ({
-          ...rejected,
-          status: 'rejected' as const
-        }));
-
-        return [...(submissionsData || []), ...transformedRejectedData].sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        ) as CombinedSubmission[];
+      if (rejectedError) {
+        toast.error("Reddedilen gönderiler yüklenirken bir hata oluştu");
+        throw rejectedError;
       }
 
-      // If searching by transaction ID, only return submissions data
-      return (submissionsData || []) as CombinedSubmission[];
+      const transformedRejectedData = (rejectedData || []).map(rejected => ({
+        ...rejected,
+        status: 'rejected' as const
+      }));
+
+      return [...(submissionsData || []), ...transformedRejectedData].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ) as CombinedSubmission[];
     },
-    enabled: !!(searchedUsername || searchedTransactionId),
+    enabled: !!searchedUsername,
   });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username.trim() && !transactionId.trim()) {
-      toast.error("Lütfen kullanıcı adı veya işlem numarası girin");
+    if (!username.trim()) {
+      toast.error("Lütfen kullanıcı adı girin");
       return;
     }
     setSearchedUsername(username.trim());
-    setSearchedTransactionId(transactionId.trim());
   };
 
   const getSubmissionInfo = (submission: CombinedSubmission) => {
     if ('reason' in submission) {
       return {
-        transactionId: '-',
         status: 'rejected' as const,
         description: submission.reason
       };
     }
     return {
-      transactionId: submission.transaction_id,
-      status: submission.status || 'pending', // Ensure pending is the default status
+      status: submission.status || 'pending',
       description: '-'
     };
   };
@@ -137,34 +119,18 @@ export default function CheckStatus() {
         <h1 className="text-2xl font-bold mb-6 text-center">Gönderi Durumu Sorgula</h1>
         
         <form onSubmit={handleSearch} className="space-y-4 mb-8">
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-                Kullanıcı Adı
-              </label>
-              <Input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Kullanıcı adınızı girin"
-                className="w-full"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="transactionId" className="block text-sm font-medium text-gray-700 mb-1">
-                İşlem Numarası
-              </label>
-              <Input
-                id="transactionId"
-                type="text"
-                value={transactionId}
-                onChange={(e) => setTransactionId(e.target.value)}
-                placeholder="TRX-XXXXXXXXXXXXXX"
-                className="w-full"
-              />
-            </div>
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              Kullanıcı Adı
+            </label>
+            <Input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Kullanıcı adınızı girin"
+              className="w-full"
+            />
           </div>
 
           <Button type="submit" className="w-full">Sorgula</Button>
@@ -177,7 +143,7 @@ export default function CheckStatus() {
           </div>
         )}
 
-        {(searchedUsername || searchedTransactionId) && submissions?.length === 0 && !isLoadingSubmissions && (
+        {searchedUsername && submissions?.length === 0 && !isLoadingSubmissions && (
           <div className="text-center text-gray-500 bg-gray-50 rounded-lg p-8">
             <p className="text-lg">Gönderi bulunamadı</p>
             <p className="text-sm mt-2">Lütfen bilgilerinizi kontrol edip tekrar deneyin</p>
@@ -189,7 +155,6 @@ export default function CheckStatus() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>İşlem No</TableHead>
                   <TableHead>Tarih</TableHead>
                   <TableHead>Durum</TableHead>
                   <TableHead>Açıklama</TableHead>
@@ -200,9 +165,6 @@ export default function CheckStatus() {
                   const info = getSubmissionInfo(submission);
                   return (
                     <TableRow key={submission.id}>
-                      <TableCell className="font-mono text-sm">
-                        {info.transactionId}
-                      </TableCell>
                       <TableCell>
                         {new Date(submission.created_at).toLocaleDateString("tr-TR")}
                       </TableCell>
