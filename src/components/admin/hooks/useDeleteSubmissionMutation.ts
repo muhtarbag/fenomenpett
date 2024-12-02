@@ -31,7 +31,7 @@ export const useDeleteSubmissionMutation = () => {
         throw new Error('Reddedilen gönderi silinirken bir hata oluştu');
       }
 
-      // Finally, delete the submission itself - removed .select() and .single()
+      // Finally, delete the submission itself
       const { error: submissionError } = await supabase
         .from('submissions')
         .delete()
@@ -45,19 +45,18 @@ export const useDeleteSubmissionMutation = () => {
       return submissionId;
     },
     onMutate: async (submissionId) => {
-      // Cancel any outgoing refetches so they don't overwrite our optimistic update
+      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['submissions'] });
 
       // Snapshot the previous value
       const previousSubmissions = queryClient.getQueryData(['submissions']);
 
-      // Optimistically update to the new value
+      // Optimistically remove the submission from the cache
       queryClient.setQueryData(['submissions'], (old: any[] | undefined) => {
         if (!old) return [];
         return old.filter(submission => submission.id !== submissionId);
       });
 
-      // Return a context object with the snapshotted value
       return { previousSubmissions };
     },
     onError: (err, _, context) => {
@@ -72,12 +71,8 @@ export const useDeleteSubmissionMutation = () => {
       console.log('✅ Successfully deleted submission:', submissionId);
       toast.success('Gönderi başarıyla silindi');
       
-      // Immediately invalidate and refetch all related queries
-      queryClient.invalidateQueries({ queryKey: ['submissions'] });
-      queryClient.refetchQueries({ queryKey: ['submissions'] });
-    },
-    onSettled: () => {
-      // Always refetch after error or success to ensure cache consistency
+      // Force a complete cache refresh
+      queryClient.removeQueries({ queryKey: ['submissions'] });
       queryClient.invalidateQueries({ queryKey: ['submissions'] });
     }
   });
