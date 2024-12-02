@@ -24,7 +24,17 @@ export const SubmissionCard = memo(({
     return null;
   }
 
-  const { id, username, status, image_url, created_at, updated_at, comment, transaction_id } = submission;
+  const { 
+    id, 
+    username, 
+    status, 
+    image_url, 
+    created_at, 
+    updated_at, 
+    comment, 
+    transaction_id,
+    rejection_reason 
+  } = submission;
 
   console.log('🎴 Rendering SubmissionCard:', {
     id,
@@ -59,7 +69,10 @@ export const SubmissionCard = memo(({
             updatedAt={updated_at}
           />
           {status && status !== 'pending' && (
-            <SubmissionStatusBadge status={status} />
+            <SubmissionStatusBadge 
+              status={status} 
+              rejectionReason={rejection_reason}
+            />
           )}
         </div>
         <p className="text-gray-600 mb-4">{comment || 'Yorum yok'}</p>
