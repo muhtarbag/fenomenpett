@@ -44,6 +44,8 @@ const Index = () => {
     },
     retry: 2,
     staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: true, // Automatically refetch when window gains focus
+    refetchInterval: 1000 * 60 * 2, // Refetch every 2 minutes
   });
 
   if (isLoading) {
