@@ -33,7 +33,7 @@ const PostCard = ({ post }: PostCardProps) => {
             <img
               src="/lovable-uploads/a06650c0-2ee1-42dd-9217-cef8bdd67039.png"
               alt="FenomenPet Logo"
-              className="absolute bottom-2 right-2 w-12 h-auto opacity-70"
+              className="absolute bottom-3 right-3 w-20 h-auto opacity-70"
               loading="lazy"
               decoding="async"
             />
