@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { BlogPost } from "./blog/types";
@@ -8,6 +8,7 @@ import { EditBlogPostDialog } from "./blog/EditBlogPostDialog";
 
 export const BlogPostList = () => {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
+  const queryClient = useQueryClient();
 
   const { data: posts, refetch } = useQuery({
     queryKey: ["blog-posts"],
@@ -43,8 +44,17 @@ export const BlogPostList = () => {
       }
 
       console.log('✅ Successfully deleted blog post:', id);
+      
+      // Immediately update the cache to remove the deleted post
+      queryClient.setQueryData(["blog-posts"], (oldData: BlogPost[] | undefined) => {
+        if (!oldData) return [];
+        return oldData.filter(post => post.id !== id);
+      });
+
+      // Also invalidate the query to ensure fresh data
+      await queryClient.invalidateQueries({ queryKey: ["blog-posts"] });
+      
       toast.success("Blog yazısı başarıyla silindi");
-      refetch();
     } catch (error: any) {
       console.error('❌ Error in handleDelete:', error);
       toast.error("Blog yazısı silinirken bir hata oluştu: " + error.message);
