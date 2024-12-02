@@ -11,7 +11,7 @@ interface StoryItemProps {
 
 const StoryItem: React.FC<StoryItemProps> = ({ story }) => {
   return (
-    <CarouselItem className="pl-1 basis-[95px] md:basis-[105px]">
+    <CarouselItem className="pl-2 basis-[90px] md:basis-[100px]">
       <Dialog>
         <DialogTrigger asChild>
           <div className="flex flex-col items-center gap-2 cursor-pointer min-w-[85px] md:min-w-[95px]">
