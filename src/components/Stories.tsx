@@ -8,8 +8,7 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import { useInterval } from "@/hooks/use-interval";
 
@@ -23,7 +22,7 @@ interface Story {
 
 const Stories: React.FC = () => {
   const [shuffledStories, setShuffledStories] = useState<Story[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
   const [autoPlay, setAutoPlay] = useState(true);
 
   const { data: stories = [] } = useQuery({
@@ -55,10 +54,8 @@ const Stories: React.FC = () => {
   // Auto-advance stories every 5 seconds
   useInterval(
     () => {
-      if (autoPlay && shuffledStories.length > 0) {
-        setCurrentIndex((prevIndex) =>
-          prevIndex === shuffledStories.length - 1 ? 0 : prevIndex + 1
-        );
+      if (autoPlay && api) {
+        api.scrollNext();
       }
     },
     5000 // 5 seconds interval
@@ -74,10 +71,9 @@ const Stories: React.FC = () => {
           align: "start",
           loop: true,
         }}
+        setApi={setApi}
         onMouseEnter={() => setAutoPlay(false)}
         onMouseLeave={() => setAutoPlay(true)}
-        value={currentIndex}
-        onValueChange={setCurrentIndex}
       >
         <CarouselContent className="flex gap-4">
           {shuffledStories.map((story) => (
