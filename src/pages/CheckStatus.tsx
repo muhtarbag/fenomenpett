@@ -22,17 +22,6 @@ interface Submission {
   comment: string;
 }
 
-interface RejectedSubmission {
-  id: number;
-  username: string;
-  reason: string;
-  created_at: string;
-  comment: string;
-  original_submission_id: number | null;
-}
-
-type CombinedSubmission = Submission | (RejectedSubmission & { status: 'rejected' });
-
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-800",
   approved: "bg-green-100 text-green-800",
@@ -54,7 +43,6 @@ export default function CheckStatus() {
     queryFn: async () => {
       if (!searchedUsername) return [];
       
-      // Get regular submissions
       const { data: submissionsData, error: submissionsError } = await supabase
         .from("submissions")
         .select("*")
@@ -66,29 +54,7 @@ export default function CheckStatus() {
         throw submissionsError;
       }
 
-      // Get rejected submissions
-      const { data: rejectedData, error: rejectedError } = await supabase
-        .from("rejected_submissions")
-        .select("*")
-        .eq("username", searchedUsername)
-        .order("created_at", { ascending: false });
-
-      if (rejectedError) {
-        toast.error("Reddedilen gönderiler yüklenirken bir hata oluştu");
-        throw rejectedError;
-      }
-
-      // Transform rejected submissions to include status
-      const transformedRejectedData = (rejectedData || []).map(rejected => ({
-        ...rejected,
-        status: 'rejected' as const
-      }));
-
-      // Combine and sort all submissions by date
-      const allSubmissions = [...(submissionsData || []), ...transformedRejectedData]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-      return allSubmissions;
+      return submissionsData || [];
     },
     enabled: !!searchedUsername,
   });
