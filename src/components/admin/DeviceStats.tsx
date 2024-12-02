@@ -1,35 +1,76 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Monitor, Smartphone, Tablet } from "lucide-react";
 
-const deviceData = [
-  { 
-    device: "Desktop",
-    browser: "-",
-    version: "-",
-    os: "-",
-    sessions: 0,
-    icon: Monitor
-  },
-  {
-    device: "Mobile",
-    browser: "-",
-    version: "-",
-    os: "-",
-    sessions: 0,
-    icon: Smartphone
-  },
-  {
-    device: "Tablet",
-    browser: "-",
-    version: "-",
-    os: "-",
-    sessions: 0,
-    icon: Tablet
-  }
-];
+interface DeviceData {
+  device: string;
+  browser: string;
+  version: string;
+  os: string;
+  sessions: number;
+  icon: typeof Monitor | typeof Smartphone | typeof Tablet;
+}
 
 export const DeviceStats = () => {
+  const [deviceData, setDeviceData] = useState<DeviceData[]>([]);
+
+  useEffect(() => {
+    const detectDevice = () => {
+      const ua = navigator.userAgent;
+      const browserRegexes = [
+        { name: "Chrome", regex: /Chrome\/([0-9.]+)/ },
+        { name: "Firefox", regex: /Firefox\/([0-9.]+)/ },
+        { name: "Safari", regex: /Version\/([0-9.]+).*Safari/ },
+        { name: "Edge", regex: /Edg\/([0-9.]+)/ },
+      ];
+
+      let browser = "Unknown";
+      let version = "-";
+      
+      for (const { name, regex } of browserRegexes) {
+        const match = ua.match(regex);
+        if (match) {
+          browser = name;
+          version = match[1];
+          break;
+        }
+      }
+
+      const os = navigator.platform;
+      
+      // Cihaz tipini belirle
+      const isMobile = /Mobile|Android|iPhone|iPad|iPod/i.test(ua);
+      const isTablet = /Tablet|iPad/i.test(ua);
+      
+      let deviceType = "Desktop";
+      let deviceIcon = Monitor;
+      
+      if (isMobile) {
+        deviceType = "Mobile";
+        deviceIcon = Smartphone;
+      } else if (isTablet) {
+        deviceType = "Tablet";
+        deviceIcon = Tablet;
+      }
+
+      const newDeviceData: DeviceData[] = [
+        {
+          device: deviceType,
+          browser,
+          version,
+          os,
+          sessions: 1,
+          icon: deviceIcon
+        }
+      ];
+
+      setDeviceData(newDeviceData);
+    };
+
+    detectDevice();
+  }, []);
+
   return (
     <Card className="col-span-1">
       <CardHeader>

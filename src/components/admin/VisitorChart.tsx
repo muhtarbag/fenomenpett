@@ -1,18 +1,62 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { Line, LineChart, XAxis, YAxis, ResponsiveContainer, Legend } from "recharts";
 
-const data = [
-  { date: "Pzt", visitors: 0, uniqueVisitors: 0 },
-  { date: "Sal", visitors: 0, uniqueVisitors: 0 },
-  { date: "Çar", visitors: 0, uniqueVisitors: 0 },
-  { date: "Per", visitors: 0, uniqueVisitors: 0 },
-  { date: "Cum", visitors: 0, uniqueVisitors: 0 },
-  { date: "Cmt", visitors: 0, uniqueVisitors: 0 },
-  { date: "Paz", visitors: 0, uniqueVisitors: 0 },
-];
+interface VisitorData {
+  date: string;
+  visitors: number;
+  uniqueVisitors: number;
+}
 
 export const VisitorChart = () => {
+  const [data, setData] = useState<VisitorData[]>([]);
+
+  useEffect(() => {
+    const generateInitialData = () => {
+      const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+      const today = new Date().getDay();
+      
+      // Ziyaretçi verilerini simüle et
+      return days.map((day, index) => {
+        const isToday = (index + 1) % 7 === today;
+        const baseVisitors = isToday ? 1 : 0;
+        
+        return {
+          date: day,
+          visitors: baseVisitors,
+          uniqueVisitors: baseVisitors
+        };
+      });
+    };
+
+    const updateVisitorData = () => {
+      const visitCount = parseInt(sessionStorage.getItem('visitCount') || "1");
+      const today = new Date().getDay();
+      
+      setData(prevData => 
+        prevData.map((item, index) => {
+          if ((index + 1) % 7 === today) {
+            return {
+              ...item,
+              visitors: visitCount,
+              uniqueVisitors: 1 // Tek kullanıcı olduğu için
+            };
+          }
+          return item;
+        })
+      );
+    };
+
+    // İlk veriyi oluştur
+    setData(generateInitialData());
+
+    // Her 5 saniyede bir güncelle
+    const interval = setInterval(updateVisitorData, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <Card className="col-span-4">
       <CardHeader>
