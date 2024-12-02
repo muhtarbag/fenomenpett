@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -13,7 +13,7 @@ interface Story {
   likes: number;
 }
 
-const Stories = () => {
+const Stories: React.FC = () => {
   const [shuffledStories, setShuffledStories] = useState<Story[]>([]);
 
   const { data: stories = [] } = useQuery({
