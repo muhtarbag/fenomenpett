@@ -27,9 +27,9 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
             .select('*')
             .eq('submission_id', postId)
             .eq('user_id', session.session.user.id)
-            .single();
+            .maybeSingle(); // Changed from .single() to .maybeSingle()
           
-          if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned" error
+          if (error) {
             console.error('Error checking like status:', error);
             return;
           }
