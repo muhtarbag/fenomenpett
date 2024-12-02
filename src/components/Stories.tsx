@@ -25,7 +25,7 @@ const Stories: React.FC = () => {
   if (!shuffledStories.length) return null;
 
   return (
-    <div className="w-full max-w-full mx-auto mb-8 px-2 sm:px-4">
+    <div className="w-full max-w-[1200px] mx-auto mb-8 px-4 sm:px-8 lg:px-12">
       <Carousel
         className="w-full"
         opts={{
