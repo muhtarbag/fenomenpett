@@ -20,6 +20,7 @@ interface Submission {
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
   comment: string;
+  rejection_reason?: string;
 }
 
 const statusColors = {
@@ -32,6 +33,13 @@ const statusTranslations = {
   pending: "Beklemede",
   approved: "Onaylandı",
   rejected: "Reddedildi",
+};
+
+const rejectionReasonTranslations: Record<string, string> = {
+  duplicate_photo: "Tekrarlanan (Mükerrer) Fotoğraf: Gönderilen görsel, başka bir kullanıcı tarafından daha önce başvuruda kullanılmıştır.",
+  inappropriate_photo: "Uygun Olmayan Fotoğraf: Fotoğraf, sokak hayvanlarını besleme faaliyetini net bir şekilde göstermiyor veya başvuru koşullarına uygun değildir.",
+  invalid_username: "Hatalı Kullanıcı Adı: Başvuru sırasında belirtilen kullanıcı adı eksik ya da yanlış girilmiştir.",
+  copied_photo: "Kopya (Replika) Fotoğraf: Gönderilen fotoğraf, internet üzerinden alınmış bir görsel olarak tespit edilmiştir."
 };
 
 export default function CheckStatus() {
@@ -130,8 +138,16 @@ export default function CheckStatus() {
                         {statusTranslations[submission.status || 'pending']}
                       </Badge>
                     </TableCell>
-                    <TableCell className="max-w-xs truncate">
-                      {submission.comment || '-'}
+                    <TableCell className="max-w-xs">
+                      {submission.status === 'rejected' && submission.rejection_reason ? (
+                        <p className="text-sm text-red-600">
+                          {rejectionReasonTranslations[submission.rejection_reason] || 'Reddedildi'}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-gray-600">
+                          {submission.comment || '-'}
+                        </p>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

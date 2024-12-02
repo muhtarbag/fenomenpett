@@ -27,9 +27,26 @@ interface RejectButtonProps {
 }
 
 const rejectionReasons = [
-  { value: "duplicate", label: "Mükerrer Fotoğraf" },
-  { value: "inappropriate", label: "Uygun olmayan Fotoğraf veya içerik" },
-  { value: "invalid_username", label: "Kullanıcı Adı Bulunamadı" }
+  { 
+    value: "duplicate_photo", 
+    label: "Tekrarlanan (Mükerrer) Fotoğraf",
+    description: "Gönderilen görsel, başka bir kullanıcı tarafından daha önce başvuruda kullanılmıştır."
+  },
+  { 
+    value: "inappropriate_photo", 
+    label: "Uygun Olmayan Fotoğraf",
+    description: "Fotoğraf, sokak hayvanlarını besleme faaliyetini net bir şekilde göstermiyor veya başvuru koşullarına uygun değildir."
+  },
+  { 
+    value: "invalid_username", 
+    label: "Hatalı Kullanıcı Adı",
+    description: "Başvuru sırasında belirtilen kullanıcı adı eksik ya da yanlış girilmiştir."
+  },
+  { 
+    value: "copied_photo", 
+    label: "Kopya (Replika) Fotoğraf",
+    description: "Gönderilen fotoğraf, internet üzerinden alınmış bir görsel olarak tespit edilmiştir."
+  }
 ];
 
 export const RejectButton = ({ submissionId, mutation }: RejectButtonProps) => {
@@ -44,11 +61,13 @@ export const RejectButton = ({ submissionId, mutation }: RejectButtonProps) => {
       timestamp: new Date().toISOString()
     });
     
+    const selectedReasonData = rejectionReasons.find(r => r.value === selectedReason);
+    
     mutation.mutate(
       { 
         id: submissionId, 
         status: 'rejected',
-        reason: rejectionReasons.find(r => r.value === selectedReason)?.label
+        reason: selectedReasonData?.value
       },
       {
         onSuccess: (data) => {
@@ -92,12 +111,19 @@ export const RejectButton = ({ submissionId, mutation }: RejectButtonProps) => {
           <RadioGroup
             value={selectedReason}
             onValueChange={setSelectedReason}
-            className="flex flex-col space-y-3"
+            className="flex flex-col space-y-4"
           >
             {rejectionReasons.map((reason) => (
-              <div key={reason.value} className="flex items-center space-x-2">
-                <RadioGroupItem value={reason.value} id={reason.value} />
-                <Label htmlFor={reason.value}>{reason.label}</Label>
+              <div key={reason.value} className="flex items-start space-x-2">
+                <RadioGroupItem value={reason.value} id={reason.value} className="mt-1" />
+                <div className="grid gap-1.5">
+                  <Label htmlFor={reason.value} className="font-medium">
+                    {reason.label}
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    {reason.description}
+                  </p>
+                </div>
               </div>
             ))}
           </RadioGroup>

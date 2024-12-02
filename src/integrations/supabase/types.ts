@@ -144,6 +144,7 @@ export type Database = {
           image_hash: string | null
           image_url: string
           likes: number | null
+          rejection_reason: string | null
           status: string | null
           transaction_id: string
           updated_at: string
@@ -157,6 +158,7 @@ export type Database = {
           image_hash?: string | null
           image_url: string
           likes?: number | null
+          rejection_reason?: string | null
           status?: string | null
           transaction_id: string
           updated_at?: string
@@ -170,6 +172,7 @@ export type Database = {
           image_hash?: string | null
           image_url?: string
           likes?: number | null
+          rejection_reason?: string | null
           status?: string | null
           transaction_id?: string
           updated_at?: string
@@ -191,7 +194,11 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      rejection_reason_enum:
+        | "duplicate_photo"
+        | "inappropriate_photo"
+        | "invalid_username"
+        | "copied_photo"
     }
     CompositeTypes: {
       [_ in never]: never
