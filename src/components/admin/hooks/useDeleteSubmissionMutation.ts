@@ -57,27 +57,32 @@ export const useDeleteSubmissionMutation = () => {
       console.log('✅ Successfully deleted submission and related records:', submissionId);
       return submissionId;
     },
-    onSuccess: (deletedId) => {
-      console.log('✨ Delete mutation success:', deletedId);
-      
-      // Immediately update the cache to remove the deleted item
-      queryClient.setQueryData(['submissions'], (oldData: any[] | undefined) => {
-        if (!oldData) return [];
-        const newData = oldData.filter(submission => submission.id !== deletedId);
-        console.log('📊 Cache size after delete:', newData.length);
-        return newData;
+    onMutate: async (submissionId) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['submissions'] });
+
+      // Snapshot the previous value
+      const previousSubmissions = queryClient.getQueryData(['submissions']);
+
+      // Optimistically update the cache
+      queryClient.setQueryData(['submissions'], (old: any[] | undefined) => {
+        if (!old) return [];
+        return old.filter(submission => submission.id !== submissionId);
       });
 
-      // Then invalidate to ensure fresh data
-      queryClient.invalidateQueries({
-        queryKey: ['submissions']
-      });
-      
-      toast.success("Gönderi başarıyla silindi");
+      return { previousSubmissions };
     },
-    onError: (error: Error) => {
-      console.error('❌ Delete mutation error:', error);
-      toast.error(error.message || "Gönderi silinirken bir hata oluştu");
+    onError: (err, submissionId, context: any) => {
+      console.error('❌ Delete mutation error:', err);
+      // Rollback to the previous value
+      if (context?.previousSubmissions) {
+        queryClient.setQueryData(['submissions'], context.previousSubmissions);
+      }
+      toast.error(err instanceof Error ? err.message : 'Gönderi silinirken bir hata oluştu');
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure cache consistency
+      queryClient.invalidateQueries({ queryKey: ['submissions'] });
     }
   });
 };

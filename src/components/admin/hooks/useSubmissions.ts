@@ -39,13 +39,11 @@ export const useSubmissions = () => {
             console.log('🗑️ Realtime delete event:', payload.old.id);
             queryClient.setQueryData(['submissions'], (oldData: Submission[] | undefined) => {
               if (!oldData) return [];
-              const newData = oldData.filter(submission => submission.id !== payload.old.id);
-              console.log('📊 Cache size after delete:', newData.length);
-              return newData;
+              return oldData.filter(submission => submission.id !== payload.old.id);
             });
-          } else {
-            queryClient.invalidateQueries({ queryKey: ['submissions'] });
           }
+          
+          queryClient.invalidateQueries({ queryKey: ['submissions'] });
           
           if (payload.eventType === 'UPDATE' && payload.new.status !== payload.old.status) {
             const status = payload.new.status === 'approved' ? 'onaylandı' : 'reddedildi';
@@ -80,7 +78,8 @@ export const useSubmissions = () => {
       
       console.log('✅ Fetched submissions:', data?.length);
       return (data || []) as Submission[];
-    }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   if (isError) {
