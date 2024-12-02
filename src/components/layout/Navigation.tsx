@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LogOut, Upload, FileText, Search } from "lucide-react";
+import { LogOut, Upload, FileText, Search, LogIn } from "lucide-react";
 
 export const Navigation = () => {
   const { user, logout } = useAuth();
@@ -28,6 +28,15 @@ export const Navigation = () => {
           <span className="hidden sm:inline">Blog</span>
         </Button>
       </Link>
+
+      {!user && (
+        <Link to="/admin" className="text-gray-600 hover:text-gray-900">
+          <Button variant="ghost" className="flex items-center gap-2">
+            <LogIn size={20} />
+            <span className="hidden sm:inline">Yönetici Girişi</span>
+          </Button>
+        </Link>
+      )}
 
       {user?.email === "admin@fenomenpet.com" && (
         <Link

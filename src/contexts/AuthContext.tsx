@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Session } from '@supabase/supabase-js';
 
 interface User {
   id: string;
@@ -26,7 +25,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     
     const setupAuth = async () => {
       try {
-        // Get initial session
         const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -44,7 +42,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           });
         }
 
-        // Set up auth state change subscription
         const {
           data: { subscription },
         } = supabase.auth.onAuthStateChange(async (_event, currentSession) => {
@@ -91,7 +88,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (data.user) {
         console.log('Login successful:', data.user);
         
-        // Check if the user is admin
         if (data.user.email !== 'admin@fenomenpet.com') {
           toast.error('Bu sayfaya erişim yetkiniz yok');
           await supabase.auth.signOut();
@@ -114,11 +110,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     try {
-      // First clear the local state
       setIsAuthenticated(false);
       setUser(null);
 
-      // Then sign out from Supabase
       const { error } = await supabase.auth.signOut();
       
       if (error) {
@@ -128,9 +122,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       toast.success('Başarıyla çıkış yapıldı');
-      
-      // Force reload the page to clear any cached state
-      window.location.href = '/login';
+      window.location.href = '/';
       
     } catch (error) {
       console.error('Error in logout process:', error);

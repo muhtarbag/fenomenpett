@@ -10,10 +10,6 @@ interface LayoutProps {
 export const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
 
-  if (location.pathname === '/login') {
-    return <>{children}</>;
-  }
-
   return (
     <div className="flex flex-col min-h-screen">
       <nav className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
