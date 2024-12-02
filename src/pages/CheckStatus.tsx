@@ -39,7 +39,7 @@ const statusTranslations = {
 const statusDescriptions = {
   pending: "Gönderiniz inceleme aşamasındadır. Lütfen sabırla bekleyiniz.",
   approved: "Tebrikler! Gönderiniz onaylanmıştır.",
-  rejected: "Gönderiniz reddedilmiştir. Red sebebi aşağıda belirtilmiştir.",
+  rejected: "", // Removed the redundant message
 };
 
 export default function CheckStatus() {
