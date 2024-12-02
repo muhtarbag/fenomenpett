@@ -1,7 +1,53 @@
 import { Instagram, Twitter, Youtube, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const Footer = () => {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from('newsletter_subscriptions')
+        .insert([{ email }]);
+
+      if (error) {
+        if (error.code === '23505') {
+          toast({
+            title: "Bu e-posta adresi zaten kayıtlı",
+            description: "Farklı bir e-posta adresi deneyebilirsiniz.",
+            variant: "destructive",
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        toast({
+          title: "Başarıyla abone oldunuz!",
+          description: "E-posta bültenimize hoş geldiniz.",
+        });
+        setEmail("");
+      }
+    } catch (error) {
+      toast({
+        title: "Bir hata oluştu",
+        description: "Lütfen daha sonra tekrar deneyin.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <footer className="bg-primary text-white mt-16">
       <div className="container mx-auto px-4 py-12">
@@ -51,7 +97,7 @@ const Footer = () => {
           
           <div>
             <h3 className="font-semibold text-lg mb-4">Bizi Takip Edin</h3>
-            <div className="flex gap-4">
+            <div className="flex gap-4 mb-6">
               <a 
                 href="https://t.me/Fenomenbetofficial" 
                 target="_blank" 
@@ -85,6 +131,27 @@ const Footer = () => {
                 <Youtube size={24} />
               </a>
             </div>
+
+            <form onSubmit={handleSubscribe} className="space-y-2">
+              <h4 className="font-semibold text-sm">E-posta Bültenimize Abone Olun</h4>
+              <div className="flex gap-2">
+                <Input
+                  type="email"
+                  placeholder="E-posta adresiniz"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                />
+                <Button 
+                  type="submit" 
+                  variant="secondary"
+                  disabled={isLoading}
+                >
+                  Abone Ol
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
         
