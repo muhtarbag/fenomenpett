@@ -110,16 +110,20 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
         .from('submissions')
         .getPublicUrl(filePath);
 
+      // Generate a temporary transaction ID (will be replaced by the trigger)
+      const tempTransactionId = `TRX-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
       const { error: submissionError } = await supabase
         .from('submissions')
-        .insert([{
+        .insert({
           username,
           image_url: publicUrl,
           comment,
           status: 'pending',
           likes: 0,
-          image_hash: imageHash
-        }]);
+          image_hash: imageHash,
+          transaction_id: tempTransactionId // Add the transaction_id field
+        });
 
       if (submissionError) {
         console.error('Gönderi kayıt hatası:', submissionError);
