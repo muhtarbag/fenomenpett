@@ -130,14 +130,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.error('Error during Supabase signOut:', error);
       }
 
-      // Always show success message and navigate home
+      // Always show success message and refresh the page
       toast.success('Başarıyla çıkış yapıldı');
-      navigate('/', { replace: true });
+      window.location.href = '/';
     } catch (error) {
       console.error('Error during logout:', error);
-      // Even if there's an error, ensure the user is logged out locally
+      // Even if there's an error, ensure the user is logged out and page is refreshed
       toast.success('Çıkış yapıldı');
-      navigate('/', { replace: true });
+      window.location.href = '/';
     }
   };
 
