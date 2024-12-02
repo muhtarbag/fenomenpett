@@ -1,6 +1,5 @@
 import { SubmissionForm } from "@/components/submit/SubmissionForm";
 import { SubmissionRules } from "@/components/submit/SubmissionRules";
-import { ErrorReportForm } from "@/components/submit/ErrorReportForm";
 import { useState } from "react";
 
 const Submit = () => {
@@ -19,7 +18,6 @@ const Submit = () => {
         )}
         <div className="space-y-8">
           <SubmissionForm onSubmitSuccess={() => setIsSubmitted(true)} />
-          {!isSubmitted && <ErrorReportForm />}
         </div>
       </div>
     </div>

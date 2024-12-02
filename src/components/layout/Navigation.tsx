@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { LogOut, Upload, FileText, Search, Menu } from "lucide-react";
-import { ErrorReportForm } from "@/components/submit/ErrorReportForm";
 import {
   Sheet,
   SheetContent,
@@ -69,10 +68,6 @@ export const Navigation = () => {
               Çıkış Yap
             </Button>
           )}
-          
-          <div className="mt-4 border-t pt-4">
-            <ErrorReportForm />
-          </div>
         </div>
       </SheetContent>
     </Sheet>
