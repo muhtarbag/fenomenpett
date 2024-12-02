@@ -16,8 +16,10 @@ export const useDeleteSubmissionMutation = () => {
         .eq('id', submissionId)
         .single();
 
-      if (checkError || !existingSubmission) {
-        console.error('❌ Submission not found:', submissionId);
+      console.log('Checking submission existence:', { existingSubmission, checkError });
+
+      if (checkError) {
+        console.error('❌ Error checking submission:', checkError);
         throw new Error('Gönderi bulunamadı veya zaten silinmiş');
       }
 
@@ -26,6 +28,8 @@ export const useDeleteSubmissionMutation = () => {
         .from('submission_likes')
         .delete()
         .eq('submission_id', submissionId);
+
+      console.log('Deleting likes:', { likesError });
 
       if (likesError) {
         console.error('❌ Error deleting likes:', likesError);
@@ -38,6 +42,8 @@ export const useDeleteSubmissionMutation = () => {
         .delete()
         .eq('original_submission_id', submissionId);
 
+      console.log('Deleting rejected submissions:', { rejectedError });
+
       if (rejectedError) {
         console.error('❌ Error deleting rejected submission:', rejectedError);
         throw new Error('Reddedilen gönderi silinirken bir hata oluştu');
@@ -49,6 +55,8 @@ export const useDeleteSubmissionMutation = () => {
         .delete()
         .eq('id', submissionId);
 
+      console.log('Deleting submission:', { submissionError });
+
       if (submissionError) {
         console.error('❌ Error deleting submission:', submissionError);
         throw new Error('Gönderi silinirken bir hata oluştu');
@@ -58,6 +66,7 @@ export const useDeleteSubmissionMutation = () => {
       return submissionId;
     },
     onMutate: async (submissionId) => {
+      console.log('🔄 Starting optimistic update for deletion:', submissionId);
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['submissions'] });
 
