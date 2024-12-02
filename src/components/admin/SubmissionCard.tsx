@@ -24,7 +24,7 @@ export const SubmissionCard = memo(({
     return null;
   }
 
-  const { id, username, status, image_url, created_at, updated_at, comment } = submission;
+  const { id, username, status, image_url, created_at, updated_at, comment, transaction_id } = submission;
 
   console.log('🎴 Rendering SubmissionCard:', {
     id,
@@ -47,7 +47,8 @@ export const SubmissionCard = memo(({
         )}
         <SubmissionImage 
           imageUrl={image_url} 
-          username={username} 
+          username={username}
+          transactionId={transaction_id}
         />
       </div>
       <div className="p-4">
