@@ -58,7 +58,7 @@ const Login = () => {
                 id="email"
                 type="email"
                 required
-                placeholder="admin@fenomenpet.com"
+                placeholder=""
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full"
