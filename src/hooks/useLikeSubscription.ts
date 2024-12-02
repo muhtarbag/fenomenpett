@@ -7,6 +7,11 @@ interface SubmissionPayload {
   likes: number;
 }
 
+type SubmissionChangesPayload = RealtimePostgresChangesPayload<{
+  new: SubmissionPayload;
+  old: SubmissionPayload;
+}>;
+
 export const useLikeSubscription = (postId: number, isPlaceholder: boolean = false) => {
   const [likeCount, setLikeCount] = useState<number>(0);
 
@@ -25,7 +30,7 @@ export const useLikeSubscription = (postId: number, isPlaceholder: boolean = fal
           table: 'submissions',
           filter: `id=eq.${postId}`
         },
-        (payload: RealtimePostgresChangesPayload<{ new: SubmissionPayload }>) => {
+        (payload: SubmissionChangesPayload) => {
           console.log('📡 Realtime like update received:', payload);
           if (payload.new && typeof payload.new.likes === 'number') {
             setLikeCount(payload.new.likes);
