@@ -20,7 +20,7 @@ export const useDeleteSubmissionMutation = () => {
         throw new Error('Beğeniler silinirken bir hata oluştu');
       }
 
-      // Delete from rejected_submissions
+      // Delete from rejected_submissions if it exists
       const { error: rejectedError } = await supabase
         .from('rejected_submissions')
         .delete()
@@ -48,26 +48,20 @@ export const useDeleteSubmissionMutation = () => {
     onSuccess: (deletedId) => {
       console.log('✨ Delete mutation success:', deletedId);
       
-      // Immediately update the cache without waiting for refetch
+      // Immediately update the cache
       queryClient.setQueryData(['submissions'], (oldData: any) => {
         if (!oldData) return [];
-        const filteredData = oldData.filter((submission: any) => submission.id !== deletedId);
-        console.log('📊 Cache updated, removed submission:', deletedId);
-        return filteredData;
+        return oldData.filter((submission: any) => submission.id !== deletedId);
       });
       
       toast.success("Gönderi başarıyla silindi");
       
-      // Cancel any pending queries to prevent stale data from reappearing
-      queryClient.cancelQueries({ queryKey: ['submissions'] });
-      
-      // Optional: Refetch after a short delay to ensure consistency
-      setTimeout(() => {
-        queryClient.invalidateQueries({ 
-          queryKey: ['submissions'],
-          refetchType: 'none'
-        });
-      }, 100);
+      // Invalidate and refetch to ensure consistency
+      queryClient.invalidateQueries({ 
+        queryKey: ['submissions'],
+        exact: true,
+        refetchType: 'all'
+      });
     },
     onError: (error: Error) => {
       console.error('❌ Delete mutation error:', error);
