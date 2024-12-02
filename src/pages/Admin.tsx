@@ -16,6 +16,7 @@ import { BlogPostForm } from "@/components/admin/BlogPostForm";
 import { BlogPostList } from "@/components/admin/BlogPostList";
 import { DownloadButtons } from "@/components/admin/DownloadButtons";
 import { SearchFilters } from "@/components/admin/filters/SearchFilters";
+import { TransactionSummary } from "@/components/admin/TransactionSummary";
 import { useState } from "react";
 import { startOfDay, isSameDay } from "date-fns";
 
