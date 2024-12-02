@@ -25,23 +25,25 @@ const Stories: React.FC = () => {
   if (!shuffledStories.length) return null;
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto mb-8 px-4 sm:px-8 lg:px-12">
-      <Carousel
-        className="w-full"
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-        setApi={setApi}
-        onMouseEnter={() => setAutoPlay(false)}
-        onMouseLeave={() => setAutoPlay(true)}
-      >
-        <CarouselContent className="-ml-2 sm:-ml-4">
-          {shuffledStories.map((story) => (
-            <StoryItem key={story.id} story={story} />
-          ))}
-        </CarouselContent>
-      </Carousel>
+    <div className="w-full mb-8">
+      <div className="container mx-auto px-2 sm:px-4">
+        <Carousel
+          className="w-full"
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          setApi={setApi}
+          onMouseEnter={() => setAutoPlay(false)}
+          onMouseLeave={() => setAutoPlay(true)}
+        >
+          <CarouselContent className="-ml-2 sm:-ml-4">
+            {shuffledStories.map((story) => (
+              <StoryItem key={story.id} story={story} />
+            ))}
+          </CarouselContent>
+        </Carousel>
+      </div>
     </div>
   );
 };
