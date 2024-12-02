@@ -49,11 +49,12 @@ export default function CheckStatus() {
   const [username, setUsername] = useState("");
   const [searchedUsername, setSearchedUsername] = useState<string | null>(null);
 
-  const { data: submissions, isLoading: isLoadingSubmissions } = useQuery({
+  const { data: submissions = [], isLoading: isLoadingSubmissions } = useQuery({
     queryKey: ["submissions", searchedUsername],
     queryFn: async () => {
       if (!searchedUsername) return [];
       
+      // Get regular submissions
       const { data: submissionsData, error: submissionsError } = await supabase
         .from("submissions")
         .select("*")
@@ -65,6 +66,7 @@ export default function CheckStatus() {
         throw submissionsError;
       }
 
+      // Get rejected submissions
       const { data: rejectedData, error: rejectedError } = await supabase
         .from("rejected_submissions")
         .select("*")
@@ -76,14 +78,17 @@ export default function CheckStatus() {
         throw rejectedError;
       }
 
+      // Transform rejected submissions to include status
       const transformedRejectedData = (rejectedData || []).map(rejected => ({
         ...rejected,
         status: 'rejected' as const
       }));
 
-      return [...(submissionsData || []), ...transformedRejectedData].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
+      // Combine and sort all submissions by date
+      const allSubmissions = [...(submissionsData || []), ...transformedRejectedData]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      return allSubmissions;
     },
     enabled: !!searchedUsername,
   });
@@ -127,7 +132,7 @@ export default function CheckStatus() {
           </div>
         )}
 
-        {searchedUsername && submissions?.length === 0 && !isLoadingSubmissions && (
+        {searchedUsername && submissions.length === 0 && !isLoadingSubmissions && (
           <div className="text-center text-gray-500 bg-gray-50 rounded-lg p-8">
             <p className="text-lg">Gönderi bulunamadı</p>
             <p className="text-sm mt-2">Lütfen bilgilerinizi kontrol edip tekrar deneyin</p>
@@ -156,7 +161,7 @@ export default function CheckStatus() {
                       </Badge>
                     </TableCell>
                     <TableCell className="max-w-xs">
-                      {'reason' in submission ? submission.reason : submission.comment || '-'}
+                      {submission.comment || '-'}
                     </TableCell>
                   </TableRow>
                 ))}
