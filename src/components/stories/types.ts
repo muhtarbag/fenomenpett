@@ -111,5 +111,26 @@ export const PLACEHOLDER_STORIES: Story[] = [
     image_url: "https://images.unsplash.com/photo-1513245543132-31f507417b26",
     comment: "Minik dostlarımız için buradayız #Fenomenpet",
     likes: 11
+  },
+  {
+    id: -16,
+    username: "patisahibi",
+    image_url: "https://images.unsplash.com/photo-1533738363-b7f9aef128ce",
+    comment: "Sokak hayvanlarına yardım elimizi uzattık #Fenomenpet",
+    likes: 10
+  },
+  {
+    id: -17,
+    username: "hayvandostum",
+    image_url: "https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e",
+    comment: "Minik dostlarımıza mama yardımı #Fenomenbet",
+    likes: 9
+  },
+  {
+    id: -18,
+    username: "patiyardimcisi",
+    image_url: "https://images.unsplash.com/photo-1415369629372-26f2fe60c467",
+    comment: "Sokaktaki canlarımıza yardım #Fenomenpet",
+    likes: 8
   }
 ];
