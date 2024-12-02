@@ -17,6 +17,14 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const calculateRemainingDays = (lastSubmissionDate: string): number => {
+    const lastSubmission = new Date(lastSubmissionDate);
+    const thirtyDaysFromSubmission = new Date(lastSubmission.getTime() + (30 * 24 * 60 * 60 * 1000));
+    const now = new Date();
+    const remainingTime = thirtyDaysFromSubmission.getTime() - now.getTime();
+    return Math.ceil(remainingTime / (1000 * 60 * 60 * 24));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -39,6 +47,31 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
       setIsSubmitting(true);
       console.log('Fotoğraf optimizasyonu başlatılıyor...');
 
+      // Check for existing submission first
+      const { data: existingSubmission } = await supabase
+        .from('submissions')
+        .select('created_at')
+        .eq('username', username)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (existingSubmission) {
+        const remainingDays = calculateRemainingDays(existingSubmission.created_at);
+        if (remainingDays > 0) {
+          toast.error(`Bu kullanıcı adı ile yeni bir gönderi yapabilmeniz için ${remainingDays} gün beklemeniz gerekiyor.`, {
+            style: {
+              fontSize: '1.2rem',
+              fontWeight: 'bold',
+              color: '#FF0000',
+              backgroundColor: '#FFF',
+              border: '2px solid #FF0000'
+            },
+          });
+          return;
+        }
+      }
+
       // Optimize the image
       const optimizedImage = await optimizeImage(image);
       console.log('Fotoğraf optimize edildi:', {
@@ -55,7 +88,7 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
       
       if (isDuplicate && originalSubmission) {
         // Upload image for reference but mark as rejected
-        const fileExt = 'webp'; // Always using WebP format
+        const fileExt = 'webp';
         const fileName = `${Math.random()}.${fileExt}`;
         const filePath = `${fileName}`;
 
@@ -101,7 +134,7 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
       }
 
       // If not a duplicate, proceed with submission
-      const fileExt = 'webp'; // Always using WebP format
+      const fileExt = 'webp';
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
@@ -135,21 +168,6 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
 
       if (submissionError) {
         console.error('Gönderi kayıt hatası:', submissionError);
-        
-        // Check if the error is due to the 30-day cooldown
-        if (submissionError.message.includes('30 gün içinde')) {
-          toast.error("Aynı kullanıcı adı ile 30 gün içinde tekrar gönderi yapamazsınız.", {
-            style: {
-              fontSize: '1.2rem',
-              fontWeight: 'bold',
-              color: '#FF0000',
-              backgroundColor: '#FFF',
-              border: '2px solid #FF0000'
-            },
-          });
-          return;
-        }
-        
         throw submissionError;
       }
 
