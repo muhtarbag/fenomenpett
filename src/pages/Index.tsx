@@ -6,6 +6,7 @@ import Stories from "@/components/Stories";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
+import { Button } from "@/components/ui/button";
 
 const POSTS_PER_PAGE = 55;
 const MAX_POSTS = 110;
