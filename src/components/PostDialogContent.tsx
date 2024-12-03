@@ -54,10 +54,18 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
         {post.username} kullanıcısının paylaştığı fotoğraf ve detayları
       </DialogDescription>
       
-      <Carousel className="relative w-full" opts={{ startIndex: Math.max(0, currentIndex) }}>
-        <CarouselContent>
+      <Carousel 
+        className="relative w-full max-w-3xl mx-auto"
+        opts={{ 
+          startIndex: Math.max(0, currentIndex),
+          align: "start",
+          loop: true,
+          dragFree: false
+        }}
+      >
+        <CarouselContent className="-ml-1">
           {displayPosts.map((post) => (
-            <CarouselItem key={post.id}>
+            <CarouselItem key={post.id} className="pl-1 relative">
               <div className="space-y-6">
                 <div className="relative">
                   <img
@@ -93,8 +101,8 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
         </CarouselContent>
         {displayPosts.length > 1 && (
           <>
-            <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2" />
-            <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
+            <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10" />
+            <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10" />
           </>
         )}
       </Carousel>
