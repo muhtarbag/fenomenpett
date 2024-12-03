@@ -28,7 +28,7 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
       return null;
     }
 
-    return data?.[0] || null; // Return the first element of the array or null
+    return data?.[0] || null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,18 +60,14 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
           .toLocaleDateString('tr-TR', {
             day: '2-digit',
             month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+            year: 'numeric'
           });
 
         const nextSubmissionDate = new Date(cooldownInfo.next_submission_date)
           .toLocaleDateString('tr-TR', {
             day: '2-digit',
             month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+            year: 'numeric'
           });
 
         toast.error(
