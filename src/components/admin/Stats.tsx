@@ -21,6 +21,7 @@ interface AnalyticsMetrics {
 export const Stats = () => {
   const [stats, setStats] = useState<StatItem[]>([]);
   const [metrics, setMetrics] = useState<AnalyticsMetrics | null>(null);
+  const [visitorCount, setVisitorCount] = useState(0);
 
   // Fetch analytics metrics
   const fetchMetrics = useCallback(async () => {
@@ -30,6 +31,22 @@ export const Stats = () => {
       setMetrics(data[0]);
     } catch (error) {
       console.error('Error fetching metrics:', error);
+    }
+  }, []);
+
+  // Ziyaretçi sayısını hesapla
+  const calculateVisitorCount = useCallback(async () => {
+    try {
+      const { count, error } = await supabase
+        .from('analytics_events')
+        .select('session_id', { count: 'exact', head: true })
+        .eq('event_type', 'pageview')
+        .filter('created_at', 'gte', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+      
+      if (error) throw error;
+      setVisitorCount(count || 0);
+    } catch (error) {
+      console.error('Error calculating visitor count:', error);
     }
   }, []);
 
@@ -51,12 +68,10 @@ export const Stats = () => {
 
   // Stats array'ini memoize edelim
   const generateStats = useCallback((perfMetrics: ReturnType<typeof calculatePerformanceMetrics>) => {
-    const visitCount = parseInt(sessionStorage.getItem('visitCount') || "1");
-    
     return [
       {
         title: "Toplam Ziyaretçi",
-        value: visitCount.toString(),
+        value: visitorCount.toString(),
         icon: Users,
         change: "0%",
       },
@@ -103,11 +118,12 @@ export const Stats = () => {
         change: "0%",
       },
     ];
-  }, [metrics]);
+  }, [metrics, visitorCount]);
 
   useEffect(() => {
-    // Initial fetch
+    // Initial fetches
     fetchMetrics();
+    calculateVisitorCount();
 
     // Subscribe to analytics_events changes
     const channel = supabase.channel('analytics_changes')
@@ -119,15 +135,12 @@ export const Stats = () => {
           table: 'analytics_events'
         },
         () => {
-          // Refresh metrics when new events come in
+          // Refresh metrics and visitor count when new events come in
           fetchMetrics();
+          calculateVisitorCount();
         }
       )
       .subscribe();
-
-    // Ziyaretçi sayısını artır
-    const visitCount = parseInt(sessionStorage.getItem('visitCount') || "0") + 1;
-    sessionStorage.setItem('visitCount', visitCount.toString());
 
     // İlk hesaplama
     const perfMetrics = calculatePerformanceMetrics();
@@ -152,7 +165,7 @@ export const Stats = () => {
       observer.disconnect();
       channel.unsubscribe();
     };
-  }, [calculatePerformanceMetrics, generateStats, fetchMetrics]);
+  }, [calculatePerformanceMetrics, generateStats, fetchMetrics, calculateVisitorCount]);
 
   return (
     <>
