@@ -10,7 +10,6 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PostDialogContentProps {
   post: {
@@ -41,7 +40,7 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
   const currentIndex = posts.findIndex((p) => p.id === post.id);
 
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="flex flex-col items-center w-full max-w-[95vw] mx-auto">
       <DialogTitle className="sr-only">
         Paylaşım Detayları
       </DialogTitle>
@@ -49,11 +48,11 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
         Kullanıcıların sokak hayvanlarına yardım fotoğrafları
       </DialogDescription>
       
-      <Carousel className="w-full max-w-3xl mx-auto relative" opts={{ loop: true }}>
+      <Carousel className="w-full max-w-2xl mx-auto relative" opts={{ loop: true }}>
         <CarouselContent>
           {posts.map((post) => (
             <CarouselItem key={post.id} className="flex justify-center">
-              <div className="w-full max-w-2xl mx-auto">
+              <div className="w-full mx-auto">
                 <div className="space-y-6">
                   <div className="relative aspect-[4/3] w-full flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
                     <img
