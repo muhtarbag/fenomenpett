@@ -11,7 +11,7 @@ import { useStories } from "./stories/useStories";
 const Stories: React.FC = () => {
   const [api, setApi] = useState<CarouselApi>();
   const [autoPlay, setAutoPlay] = useState(true);
-  const { shuffledStories } = useStories();
+  const { stories } = useStories();
 
   useInterval(
     () => {
@@ -22,7 +22,7 @@ const Stories: React.FC = () => {
     autoPlay ? 5000 : null
   );
 
-  if (!shuffledStories.length) return null;
+  if (!stories.length) return null;
 
   return (
     <div className="w-full mb-8">
@@ -38,7 +38,7 @@ const Stories: React.FC = () => {
           onMouseLeave={() => setAutoPlay(true)}
         >
           <CarouselContent className="-ml-4">
-            {shuffledStories.map((story) => (
+            {stories.map((story) => (
               <StoryItem key={story.id} story={story} />
             ))}
           </CarouselContent>
