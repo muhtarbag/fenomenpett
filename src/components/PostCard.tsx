@@ -4,7 +4,7 @@ import SocialShare from "./SocialShare";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import PostDialogContent from "./PostDialogContent";
 
-interface Post {
+export interface Post {
   id: number;
   username: string;
   image_url: string;
