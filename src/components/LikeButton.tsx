@@ -49,6 +49,7 @@ const LikeButton = ({ postId, initialLikes, className = "", isPlaceholder = fals
   }, [postId, isPlaceholder]);
 
   const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     
     if (isPlaceholder) {
