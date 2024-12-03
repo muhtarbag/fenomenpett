@@ -34,15 +34,11 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
     },
   });
 
-  // If loading, show a loading state
   if (isLoading) {
     return <div className="text-center py-8">Yükleniyor...</div>;
   }
 
-  // If the post is a placeholder or there are no approved posts, show only the current post
   const displayPosts = post.isPlaceholder || fetchedPosts.length === 0 ? [post] : fetchedPosts;
-  
-  // Find the index of the current post
   const currentIndex = displayPosts.findIndex((p) => p.id === post.id);
 
   return (
@@ -55,23 +51,23 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
       </DialogDescription>
       
       <Carousel 
-        className="relative w-full max-w-3xl mx-auto"
+        className="w-full max-w-3xl mx-auto"
         opts={{ 
           startIndex: Math.max(0, currentIndex),
-          align: "start",
+          align: "center",
           loop: true,
           dragFree: false
         }}
       >
-        <CarouselContent className="-ml-1">
+        <CarouselContent>
           {displayPosts.map((post) => (
-            <CarouselItem key={post.id} className="pl-1 relative">
+            <CarouselItem key={post.id}>
               <div className="space-y-6">
-                <div className="relative">
+                <div className="relative w-full aspect-square">
                   <img
                     src={post.image_url}
                     alt={`${post.username} tarafından paylaşıldı`}
-                    className="w-full rounded-lg object-contain max-h-[60vh]"
+                    className="w-full h-full object-contain"
                     loading="lazy"
                     decoding="async"
                   />
