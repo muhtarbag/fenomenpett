@@ -18,7 +18,7 @@ interface PostCardProps {
   post: Post;
 }
 
-function PostCard({ post }: PostCardProps) {
+const PostCard = ({ post }: PostCardProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -62,6 +62,8 @@ function PostCard({ post }: PostCardProps) {
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+PostCard.displayName = 'PostCard';
 
 export default memo(PostCard);
