@@ -42,7 +42,7 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
 
   return (
     <div className="grid gap-6">
-      <Carousel className="relative" defaultSlide={currentIndex}>
+      <Carousel className="relative" opts={{ startIndex: currentIndex }}>
         <CarouselContent>
           {posts.map((post) => (
             <CarouselItem key={post.id}>
