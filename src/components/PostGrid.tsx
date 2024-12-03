@@ -41,7 +41,6 @@ const PostGrid = ({ posts }: PostGridProps) => {
     }
   ];
 
-  // Sabit bir dizi oluştur ve pozisyonları korumak için memo kullan
   const allPosts = [...posts, ...(posts.length === 0 ? placeholderPosts : [])];
 
   return (
