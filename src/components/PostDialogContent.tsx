@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/carousel";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { DialogTitle } from "@/components/ui/dialog";
+import { DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Post } from "./PostCard";
 
 interface PostDialogContentProps {
@@ -17,7 +17,7 @@ interface PostDialogContentProps {
 }
 
 const PostDialogContent = ({ post }: PostDialogContentProps) => {
-  const { data: fetchedPosts = [] } = useQuery({
+  const { data: fetchedPosts = [], isLoading } = useQuery({
     queryKey: ["approved-posts"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -34,6 +34,11 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
     },
   });
 
+  // If loading, show a loading state
+  if (isLoading) {
+    return <div className="text-center py-8">Yükleniyor...</div>;
+  }
+
   // If the post is a placeholder or there are no approved posts, show only the current post
   const displayPosts = post.isPlaceholder || fetchedPosts.length === 0 ? [post] : fetchedPosts;
   
@@ -45,8 +50,11 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
       <DialogTitle className="sr-only">
         Fotoğraf Detayları - @{post.username}
       </DialogTitle>
+      <DialogDescription className="sr-only">
+        {post.username} kullanıcısının paylaştığı fotoğraf ve detayları
+      </DialogDescription>
       
-      <Carousel className="relative" opts={{ startIndex: Math.max(0, currentIndex) }}>
+      <Carousel className="relative w-full" opts={{ startIndex: Math.max(0, currentIndex) }}>
         <CarouselContent>
           {displayPosts.map((post) => (
             <CarouselItem key={post.id}>
@@ -84,10 +92,10 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
           ))}
         </CarouselContent>
         {displayPosts.length > 1 && (
-          <div className="absolute -left-4 right-4 top-1/2 flex -translate-y-1/2 justify-between">
-            <CarouselPrevious className="relative translate-y-0 left-0" />
-            <CarouselNext className="relative translate-y-0 right-0" />
-          </div>
+          <>
+            <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2" />
+            <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
+          </>
         )}
       </Carousel>
     </div>
