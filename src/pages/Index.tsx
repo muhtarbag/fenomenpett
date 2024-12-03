@@ -1,5 +1,4 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
 import { PawPrint } from "lucide-react";
 import Banner from "@/components/Banner";
 import PostGrid from "@/components/PostGrid";
@@ -7,7 +6,6 @@ import Stories from "@/components/Stories";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
-import { toast } from "sonner";
 
 const POSTS_PER_PAGE = 55;
 const MAX_POSTS = 110;
@@ -15,12 +13,6 @@ const MAX_POSTS = 110;
 const Index = () => {
   const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
-  
-  const clearAllCache = () => {
-    queryClient.clear();
-    toast.success("Önbellek başarıyla temizlendi!");
-    window.location.reload();
-  };
 
   useEffect(() => {
     console.log('🔄 Setting up realtime subscription for approved posts');
@@ -62,7 +54,7 @@ const Index = () => {
           .from('submissions')
           .select('id, username, image_url, comment, likes')
           .eq('status', 'approved')
-          .order('updated_at', { ascending: false }) // Changed to sort by updated_at
+          .order('updated_at', { ascending: false })
           .range(from, to);
         
         if (error) {
@@ -117,20 +109,10 @@ const Index = () => {
         <Banner />
         
         <div className="bg-primary text-white py-3 px-4 text-center">
-          <div className="flex items-center justify-center gap-4">
-            <p className="text-sm md:text-base animate-fade-in text-secondary flex items-center gap-2">
-              Fark yaratmamıza yardım edin! Sokak hayvanlarına yardım hikayelerinizi paylaşın. 
-              <PawPrint size={24} color="#ffc700" className="inline-block" />
-            </p>
-            <Button 
-              variant="secondary" 
-              size="sm"
-              onClick={clearAllCache}
-              className="whitespace-nowrap"
-            >
-              Önbelleği Temizle
-            </Button>
-          </div>
+          <p className="text-sm md:text-base animate-fade-in text-secondary flex items-center justify-center gap-2">
+            Fark yaratmamıza yardım edin! Sokak hayvanlarına yardım hikayelerinizi paylaşın. 
+            <PawPrint size={24} color="#ffc700" className="inline-block" />
+          </p>
         </div>
         
         <div className="py-8">
