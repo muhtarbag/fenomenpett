@@ -7,6 +7,7 @@ import Stories from "@/components/Stories";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
+import { toast } from "sonner";
 
 const POSTS_PER_PAGE = 55;
 const MAX_POSTS = 110;
@@ -15,6 +16,14 @@ const Index = () => {
   const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
   
+  // Clear all cache function
+  const clearAllCache = () => {
+    queryClient.clear();
+    toast.success("Önbellek başarıyla temizlendi!");
+    // Reload the page to fetch fresh data
+    window.location.reload();
+  };
+
   // Set up realtime subscription
   useEffect(() => {
     console.log('🔄 Setting up realtime subscription for approved posts');
@@ -111,10 +120,20 @@ const Index = () => {
         <Banner />
         
         <div className="bg-primary text-white py-3 px-4 text-center">
-          <p className="text-sm md:text-base animate-fade-in text-secondary flex items-center justify-center gap-2">
-            Fark yaratmamıza yardım edin! Sokak hayvanlarına yardım hikayelerinizi paylaşın. 
-            <PawPrint size={24} color="#ffc700" className="inline-block" />
-          </p>
+          <div className="flex items-center justify-center gap-4">
+            <p className="text-sm md:text-base animate-fade-in text-secondary flex items-center gap-2">
+              Fark yaratmamıza yardım edin! Sokak hayvanlarına yardım hikayelerinizi paylaşın. 
+              <PawPrint size={24} color="#ffc700" className="inline-block" />
+            </p>
+            <Button 
+              variant="secondary" 
+              size="sm"
+              onClick={clearAllCache}
+              className="whitespace-nowrap"
+            >
+              Önbelleği Temizle
+            </Button>
+          </div>
         </div>
         
         <div className="py-8">
