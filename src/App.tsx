@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,7 +27,9 @@ const App = () => {
               <Toaster />
               <Sonner />
               <Layout>
-                <AppRoutes />
+                <Suspense fallback={<div>Yükleniyor...</div>}>
+                  <AppRoutes />
+                </Suspense>
               </Layout>
             </AuthProvider>
           </BrowserRouter>

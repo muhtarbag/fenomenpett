@@ -3,6 +3,7 @@ import LikeButton from "./LikeButton";
 import SocialShare from "./SocialShare";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import PostDialogContent from "./PostDialogContent";
+import { Suspense } from "react";
 
 export interface Post {
   id: number;
@@ -55,7 +56,9 @@ const PostCard = ({ post }: PostCardProps) => {
         </Card>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
-        <PostDialogContent post={post} />
+        <Suspense fallback={<div>Yükleniyor...</div>}>
+          <PostDialogContent post={post} />
+        </Suspense>
       </DialogContent>
     </Dialog>
   );
