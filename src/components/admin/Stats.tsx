@@ -8,7 +8,7 @@ import { useDailyUploads } from "./hooks/useDailyUploads";
 import { usePerformanceMetrics } from "./hooks/usePerformanceMetrics";
 
 export const Stats = () => {
-  const { metrics, fetchMetrics } = useAnalyticsMetrics();
+  const { metrics, error: metricsError, fetchMetrics } = useAnalyticsMetrics();
   const { visitorCount, calculateVisitorCount } = useVisitorCount();
   const { dailyUploads, calculateDailyUploads } = useDailyUploads();
   const calculatePerformanceMetrics = usePerformanceMetrics();
@@ -37,19 +37,19 @@ export const Stats = () => {
       },
       {
         title: "Hemen Çıkma Oranı",
-        value: metrics ? `${metrics.bounce_rate.toFixed(1)}%` : "0%",
+        value: metricsError ? "Yüklenemedi" : (metrics ? `${metrics.bounce_rate.toFixed(1)}%` : "0%"),
         icon: Globe,
         change: "0%",
       },
       {
         title: "Tıklama Oranı",
-        value: metrics ? `${metrics.click_through_rate.toFixed(1)}%` : "0%",
+        value: metricsError ? "Yüklenemedi" : (metrics ? `${metrics.click_through_rate.toFixed(1)}%` : "0%"),
         icon: MousePointerClick,
         change: "0%",
       },
       {
         title: "Dönüşüm Oranı",
-        value: metrics ? `${metrics.conversion_rate.toFixed(1)}%` : "0%",
+        value: metricsError ? "Yüklenemedi" : (metrics ? `${metrics.conversion_rate.toFixed(1)}%` : "0%"),
         icon: ArrowUpRight,
         change: "0%",
       },
@@ -61,14 +61,16 @@ export const Stats = () => {
       },
       {
         title: "Kullanıcı Etkileşimi",
-        value: metrics ? metrics.user_interactions.toString() : "0",
+        value: metricsError ? "Yüklenemedi" : (metrics ? metrics.user_interactions.toString() : "0"),
         icon: Brain,
         change: "0%",
       },
     ];
-  }, [metrics, visitorCount, dailyUploads, calculatePerformanceMetrics]);
+  }, [metrics, metricsError, visitorCount, dailyUploads, calculatePerformanceMetrics]);
 
   useEffect(() => {
+    console.log('🔄 Setting up Stats component...');
+    
     // Initial fetches
     fetchMetrics();
     calculateVisitorCount();
@@ -84,6 +86,7 @@ export const Stats = () => {
           table: 'analytics_events'
         },
         () => {
+          console.log('📊 Analytics event detected, refreshing metrics...');
           fetchMetrics();
           calculateVisitorCount();
         }
@@ -100,6 +103,7 @@ export const Stats = () => {
           table: 'submissions'
         },
         () => {
+          console.log('📝 Submission change detected, refreshing uploads...');
           calculateDailyUploads();
         }
       )
@@ -118,6 +122,7 @@ export const Stats = () => {
     }, 10000);
 
     return () => {
+      console.log('🧹 Cleaning up Stats component...');
       clearInterval(interval);
       observer.disconnect();
       channel.unsubscribe();
