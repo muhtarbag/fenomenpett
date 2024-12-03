@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/carousel";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { DialogTitle } from "@/components/ui/dialog";
 
 interface Post {
   id: number;
@@ -16,6 +17,7 @@ interface Post {
   image_url: string;
   comment: string;
   likes: number;
+  isPlaceholder?: boolean;
 }
 
 interface PostDialogContentProps {
@@ -37,14 +39,21 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
     },
   });
 
+  // If the post is a placeholder or there are no approved posts, show only the current post
+  const displayPosts = post.isPlaceholder || posts.length === 0 ? [post] : posts;
+  
   // Find the index of the current post
-  const currentIndex = posts.findIndex((p) => p.id === post.id);
+  const currentIndex = displayPosts.findIndex((p) => p.id === post.id);
 
   return (
     <div className="grid gap-6">
-      <Carousel className="relative" opts={{ startIndex: currentIndex }}>
+      <DialogTitle className="sr-only">
+        Fotoğraf Detayları - @{post.username}
+      </DialogTitle>
+      
+      <Carousel className="relative" opts={{ startIndex: Math.max(0, currentIndex) }}>
         <CarouselContent>
-          {posts.map((post) => (
+          {displayPosts.map((post) => (
             <CarouselItem key={post.id}>
               <div className="space-y-6">
                 <div className="relative">
@@ -67,7 +76,11 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
                   <h3 className="font-semibold text-lg mb-4">@{post.username}</h3>
                   <p className="text-gray-600">{post.comment}</p>
                   <div className="mt-6 flex items-center justify-center gap-4">
-                    <LikeButton postId={post.id} initialLikes={post.likes} />
+                    <LikeButton 
+                      postId={post.id} 
+                      initialLikes={post.likes} 
+                      isPlaceholder={post.isPlaceholder}
+                    />
                     <SocialShare url={window.location.href} />
                   </div>
                 </div>
@@ -75,10 +88,12 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="absolute -left-4 right-4 top-1/2 flex -translate-y-1/2 justify-between">
-          <CarouselPrevious className="relative translate-y-0 left-0" />
-          <CarouselNext className="relative translate-y-0 right-0" />
-        </div>
+        {displayPosts.length > 1 && (
+          <div className="absolute -left-4 right-4 top-1/2 flex -translate-y-1/2 justify-between">
+            <CarouselPrevious className="relative translate-y-0 left-0" />
+            <CarouselNext className="relative translate-y-0 right-0" />
+          </div>
+        )}
       </Carousel>
     </div>
   );
