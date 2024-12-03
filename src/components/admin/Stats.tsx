@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Globe, Clock, Activity, MousePointerClick, ArrowUpRight, Timer, Brain } from "lucide-react";
+import { Users, Globe, Clock, Activity, MousePointerClick, ArrowUpRight, Timer, Brain, Upload } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +22,7 @@ export const Stats = () => {
   const [stats, setStats] = useState<StatItem[]>([]);
   const [metrics, setMetrics] = useState<AnalyticsMetrics | null>(null);
   const [visitorCount, setVisitorCount] = useState(0);
+  const [dailyUploads, setDailyUploads] = useState(0);
 
   // Fetch analytics metrics
   const fetchMetrics = useCallback(async () => {
@@ -47,6 +48,24 @@ export const Stats = () => {
       setVisitorCount(count || 0);
     } catch (error) {
       console.error('Error calculating visitor count:', error);
+    }
+  }, []);
+
+  // Günlük yüklenen içerik sayısını hesapla
+  const calculateDailyUploads = useCallback(async () => {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const { count, error } = await supabase
+        .from('submissions')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', today.toISOString());
+
+      if (error) throw error;
+      setDailyUploads(count || 0);
+    } catch (error) {
+      console.error('Error calculating daily uploads:', error);
     }
   }, []);
 
@@ -76,9 +95,9 @@ export const Stats = () => {
         change: "0%",
       },
       {
-        title: "Aktif Kullanıcı",
-        value: "1",
-        icon: Activity,
+        title: "Günlük İçerik",
+        value: dailyUploads.toString(),
+        icon: Upload,
         change: "0%",
       },
       {
@@ -118,12 +137,13 @@ export const Stats = () => {
         change: "0%",
       },
     ];
-  }, [metrics, visitorCount]);
+  }, [metrics, visitorCount, dailyUploads]);
 
   useEffect(() => {
     // Initial fetches
     fetchMetrics();
     calculateVisitorCount();
+    calculateDailyUploads();
 
     // Subscribe to analytics_events changes
     const channel = supabase.channel('analytics_changes')
@@ -138,6 +158,21 @@ export const Stats = () => {
           // Refresh metrics and visitor count when new events come in
           fetchMetrics();
           calculateVisitorCount();
+        }
+      )
+      .subscribe();
+
+    // Submissions değişikliklerini dinle
+    const submissionsChannel = supabase.channel('submissions_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'submissions'
+        },
+        () => {
+          calculateDailyUploads();
         }
       )
       .subscribe();
@@ -164,8 +199,9 @@ export const Stats = () => {
       clearInterval(interval);
       observer.disconnect();
       channel.unsubscribe();
+      submissionsChannel.unsubscribe();
     };
-  }, [calculatePerformanceMetrics, generateStats, fetchMetrics, calculateVisitorCount]);
+  }, [calculatePerformanceMetrics, generateStats, fetchMetrics, calculateVisitorCount, calculateDailyUploads]);
 
   return (
     <>
