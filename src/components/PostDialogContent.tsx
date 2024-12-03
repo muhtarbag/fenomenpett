@@ -25,7 +25,7 @@ interface PostDialogContentProps {
 }
 
 const PostDialogContent = ({ post }: PostDialogContentProps) => {
-  const { data: posts = [] } = useQuery({
+  const { data: fetchedPosts = [] } = useQuery({
     queryKey: ["approved-posts"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -35,12 +35,15 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map(post => ({
+        ...post,
+        isPlaceholder: false
+      }));
     },
   });
 
   // If the post is a placeholder or there are no approved posts, show only the current post
-  const displayPosts = post.isPlaceholder || posts.length === 0 ? [post] : posts;
+  const displayPosts = post.isPlaceholder || fetchedPosts.length === 0 ? [post] : fetchedPosts;
   
   // Find the index of the current post
   const currentIndex = displayPosts.findIndex((p) => p.id === post.id);
