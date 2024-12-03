@@ -16,15 +16,12 @@ const Index = () => {
   const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
   
-  // Clear all cache function
   const clearAllCache = () => {
     queryClient.clear();
     toast.success("Önbellek başarıyla temizlendi!");
-    // Reload the page to fetch fresh data
     window.location.reload();
   };
 
-  // Set up realtime subscription
   useEffect(() => {
     console.log('🔄 Setting up realtime subscription for approved posts');
     
@@ -65,7 +62,7 @@ const Index = () => {
           .from('submissions')
           .select('id, username, image_url, comment, likes')
           .eq('status', 'approved')
-          .order('created_at', { ascending: false })
+          .order('updated_at', { ascending: false }) // Changed to sort by updated_at
           .range(from, to);
         
         if (error) {
@@ -80,7 +77,7 @@ const Index = () => {
         throw err;
       }
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: true,
   });
 

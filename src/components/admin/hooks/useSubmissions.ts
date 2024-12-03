@@ -35,7 +35,6 @@ export const useSubmissions = () => {
         },
         (payload) => {
           console.log('📡 Realtime update received:', payload);
-          // Immediately invalidate and refetch
           queryClient.invalidateQueries({ queryKey: ['submissions'] });
           queryClient.refetchQueries({ queryKey: ['submissions'] });
         }
@@ -58,7 +57,7 @@ export const useSubmissions = () => {
       const { data, error } = await supabase
         .from('submissions')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: true }); // Changed to ascending order
       
       if (error) {
         console.error('❌ Error fetching submissions:', error);
@@ -74,9 +73,9 @@ export const useSubmissions = () => {
       
       return (data || []) as Submission[];
     },
-    staleTime: 0, // Always fetch fresh data
+    staleTime: 0,
     refetchOnWindowFocus: true,
-    refetchInterval: 5000, // Refetch every 5 seconds
+    refetchInterval: 5000,
   });
 
   if (isError) {
@@ -84,9 +83,20 @@ export const useSubmissions = () => {
     toast.error("Gönderiler yüklenirken bir hata oluştu");
   }
 
-  const pendingSubmissions = submissions.filter(s => s.status === 'pending' || !s.status);
-  const approvedSubmissions = submissions.filter(s => s.status === 'approved');
-  const rejectedSubmissions = submissions.filter(s => s.status === 'rejected');
+  // Sort pending submissions by creation date (oldest first)
+  const pendingSubmissions = submissions
+    .filter(s => s.status === 'pending' || !s.status)
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
+  // Sort approved submissions by approval date (newest first)
+  const approvedSubmissions = submissions
+    .filter(s => s.status === 'approved')
+    .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+
+  // Sort rejected submissions by rejection date (newest first)
+  const rejectedSubmissions = submissions
+    .filter(s => s.status === 'rejected')
+    .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
 
   console.log('📊 Submissions by status:', {
     pending: pendingSubmissions.length,
