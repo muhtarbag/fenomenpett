@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { Story } from "./types";
 import { PLACEHOLDER_STORIES } from "./types";
 
@@ -28,14 +28,14 @@ export const useStories = () => {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  useEffect(() => {
-    const shuffleStories = () => {
-      const shuffled = [...stories].sort(() => Math.random() - 0.5);
-      setShuffledStories(shuffled);
-    };
-
-    shuffleStories();
+  const shuffleStories = useCallback(() => {
+    const shuffled = [...stories].sort(() => Math.random() - 0.5);
+    setShuffledStories(shuffled);
   }, [stories]);
+
+  useEffect(() => {
+    shuffleStories();
+  }, [shuffleStories]);
 
   return { shuffledStories };
 };

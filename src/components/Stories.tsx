@@ -19,7 +19,7 @@ const Stories: React.FC = () => {
         api.scrollNext();
       }
     },
-    5000
+    autoPlay ? 5000 : null
   );
 
   if (!shuffledStories.length) return null;
