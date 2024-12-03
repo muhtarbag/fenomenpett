@@ -190,7 +190,12 @@ export type Database = {
         Args: {
           p_username: string
         }
-        Returns: boolean
+        Returns: {
+          has_cooldown: boolean
+          last_submission_date: string
+          next_submission_date: string
+          days_remaining: number
+        }[]
       }
     }
     Enums: {

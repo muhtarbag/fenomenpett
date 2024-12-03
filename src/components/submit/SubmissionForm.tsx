@@ -4,6 +4,7 @@ import { validateSubmission } from "./utils/submissionValidation";
 import { handleSubmission } from "./utils/submissionHandler";
 import { SubmissionSuccess } from "./SubmissionSuccess";
 import { SubmissionFormFields } from "./SubmissionFormFields";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SubmissionFormProps {
   onSubmitSuccess?: () => void;
@@ -15,6 +16,20 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
   const [image, setImage] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const checkCooldown = async (username: string) => {
+    const { data, error } = await supabase
+      .rpc('check_submission_cooldown', {
+        p_username: username
+      });
+
+    if (error) {
+      console.error('Cooldown check error:', error);
+      return null;
+    }
+
+    return data;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +52,41 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
     try {
       setIsSubmitting(true);
       console.log('Fotoğraf optimizasyonu başlatılıyor...');
+
+      // Check cooldown before proceeding
+      const cooldownInfo = await checkCooldown(username);
+      if (cooldownInfo?.has_cooldown) {
+        const lastSubmissionDate = new Date(cooldownInfo.last_submission_date)
+          .toLocaleDateString('tr-TR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+
+        const nextSubmissionDate = new Date(cooldownInfo.next_submission_date)
+          .toLocaleDateString('tr-TR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+
+        toast.error(
+          <div className="space-y-2">
+            <p className="font-semibold">Gönderim süresi kısıtlaması</p>
+            <p>Son gönderiniz: {lastSubmissionDate}</p>
+            <p>Yeni gönderim yapabileceğiniz tarih: {nextSubmissionDate}</p>
+            <p>Kalan süre: {cooldownInfo.days_remaining} gün</p>
+          </div>,
+          {
+            duration: 6000
+          }
+        );
+        return;
+      }
 
       const validationResult = await validateSubmission(username);
       if (!validationResult.isValid) {
