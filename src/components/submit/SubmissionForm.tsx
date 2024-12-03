@@ -28,7 +28,7 @@ export const SubmissionForm = ({ onSubmitSuccess }: SubmissionFormProps) => {
       return null;
     }
 
-    return data;
+    return data?.[0] || null; // Return the first element of the array or null
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

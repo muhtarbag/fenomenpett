@@ -12,7 +12,7 @@ export const checkSubmissionCooldown = async (username: string): Promise<boolean
       throw error;
     }
 
-    return data || false;
+    return data?.[0]?.has_cooldown || false;
   } catch (error) {
     console.error('Error in checkSubmissionCooldown:', error);
     throw error;
