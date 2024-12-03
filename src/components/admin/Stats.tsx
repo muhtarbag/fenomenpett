@@ -1,92 +1,21 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Globe, Clock, Activity, MousePointerClick, ArrowUpRight, Timer, Brain, Upload } from "lucide-react";
-import { LucideIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-
-interface StatItem {
-  title: string;
-  value: string;
-  icon: LucideIcon;
-  change: string;
-}
-
-interface AnalyticsMetrics {
-  click_through_rate: number;
-  conversion_rate: number;
-  user_interactions: number;
-  bounce_rate: number;
-}
+import { StatCard } from "./StatCard";
+import { useAnalyticsMetrics } from "./hooks/useAnalyticsMetrics";
+import { useVisitorCount } from "./hooks/useVisitorCount";
+import { useDailyUploads } from "./hooks/useDailyUploads";
+import { usePerformanceMetrics } from "./hooks/usePerformanceMetrics";
 
 export const Stats = () => {
-  const [stats, setStats] = useState<StatItem[]>([]);
-  const [metrics, setMetrics] = useState<AnalyticsMetrics | null>(null);
-  const [visitorCount, setVisitorCount] = useState(0);
-  const [dailyUploads, setDailyUploads] = useState(0);
+  const { metrics, fetchMetrics } = useAnalyticsMetrics();
+  const { visitorCount, calculateVisitorCount } = useVisitorCount();
+  const { dailyUploads, calculateDailyUploads } = useDailyUploads();
+  const calculatePerformanceMetrics = usePerformanceMetrics();
 
-  // Fetch analytics metrics
-  const fetchMetrics = useCallback(async () => {
-    try {
-      const { data, error } = await supabase.rpc('get_analytics_metrics');
-      if (error) throw error;
-      setMetrics(data[0]);
-    } catch (error) {
-      console.error('Error fetching metrics:', error);
-    }
-  }, []);
-
-  // Ziyaretçi sayısını hesapla
-  const calculateVisitorCount = useCallback(async () => {
-    try {
-      const { count, error } = await supabase
-        .from('analytics_events')
-        .select('session_id', { count: 'exact', head: true })
-        .eq('event_type', 'pageview')
-        .filter('created_at', 'gte', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
-      
-      if (error) throw error;
-      setVisitorCount(count || 0);
-    } catch (error) {
-      console.error('Error calculating visitor count:', error);
-    }
-  }, []);
-
-  // Günlük yüklenen içerik sayısını hesapla
-  const calculateDailyUploads = useCallback(async () => {
-    try {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      const { count, error } = await supabase
-        .from('submissions')
-        .select('*', { count: 'exact', head: true })
-        .gte('created_at', today.toISOString());
-
-      if (error) throw error;
-      setDailyUploads(count || 0);
-    } catch (error) {
-      console.error('Error calculating daily uploads:', error);
-    }
-  }, []);
-
-  // Performans metriklerini hesaplama fonksiyonunu memoize edelim
-  const calculatePerformanceMetrics = useCallback(() => {
-    const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
-    const pageLoadTime = (navigation.loadEventEnd - navigation.startTime).toFixed(2);
-    const interactions = performance.getEntriesByType("event").length;
-    const interactionRate = interactions > 0 ? ((interactions / performance.now()) * 100).toFixed(1) : "0";
-    const sessionDuration = (performance.now() / 1000).toFixed(0);
-
-    return {
-      pageLoadTime,
-      interactions,
-      interactionRate,
-      sessionDuration
-    };
-  }, []);
-
-  // Stats array'ini memoize edelim
-  const generateStats = useCallback((perfMetrics: ReturnType<typeof calculatePerformanceMetrics>) => {
+  const generateStats = useCallback(() => {
+    const perfMetrics = calculatePerformanceMetrics();
+    
     return [
       {
         title: "Toplam Ziyaretçi",
@@ -137,7 +66,7 @@ export const Stats = () => {
         change: "0%",
       },
     ];
-  }, [metrics, visitorCount, dailyUploads]);
+  }, [metrics, visitorCount, dailyUploads, calculatePerformanceMetrics]);
 
   useEffect(() => {
     // Initial fetches
@@ -155,7 +84,6 @@ export const Stats = () => {
           table: 'analytics_events'
         },
         () => {
-          // Refresh metrics and visitor count when new events come in
           fetchMetrics();
           calculateVisitorCount();
         }
@@ -177,23 +105,17 @@ export const Stats = () => {
       )
       .subscribe();
 
-    // İlk hesaplama
-    const perfMetrics = calculatePerformanceMetrics();
-    setStats(generateStats(perfMetrics));
-
     // Performans gözlemcisi
     const observer = new PerformanceObserver(() => {
-      const updatedMetrics = calculatePerformanceMetrics();
-      setStats(generateStats(updatedMetrics));
+      generateStats();
     });
     
     observer.observe({ entryTypes: ["event"] });
 
-    // Periyodik güncelleme için daha uzun bir interval kullanalım
+    // Periyodik güncelleme
     const interval = setInterval(() => {
-      const updatedMetrics = calculatePerformanceMetrics();
-      setStats(generateStats(updatedMetrics));
-    }, 10000); // 10 saniyede bir güncelle
+      generateStats();
+    }, 10000);
 
     return () => {
       clearInterval(interval);
@@ -201,28 +123,15 @@ export const Stats = () => {
       channel.unsubscribe();
       submissionsChannel.unsubscribe();
     };
-  }, [calculatePerformanceMetrics, generateStats, fetchMetrics, calculateVisitorCount, calculateDailyUploads]);
+  }, [fetchMetrics, calculateVisitorCount, calculateDailyUploads, generateStats]);
 
   return (
     <>
       {useMemo(() => 
-        stats.map((stat) => (
-          <Card key={stat.title} className="animate-fade-up">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
-                {stat.change} geçen aya göre
-              </p>
-            </CardContent>
-          </Card>
+        generateStats().map((stat) => (
+          <StatCard key={stat.title} {...stat} />
         )),
-        [stats]
+        [generateStats]
       )}
     </>
   );
