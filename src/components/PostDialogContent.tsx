@@ -40,7 +40,7 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
   const currentIndex = posts.findIndex((p) => p.id === post.id);
 
   return (
-    <div className="w-full max-w-[90vw] sm:max-w-[85vw] md:max-w-[80vw] lg:max-w-[70vw] xl:max-w-[60vw] mx-auto">
+    <div className="flex flex-col items-center justify-center w-full h-full max-h-[90vh]">
       <DialogTitle className="sr-only">
         Paylaşım Detayları
       </DialogTitle>
@@ -48,13 +48,13 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
         Kullanıcıların sokak hayvanlarına yardım fotoğrafları
       </DialogDescription>
       
-      <Carousel className="w-full relative" opts={{ loop: true }}>
-        <CarouselContent>
-          {posts.map((post) => (
-            <CarouselItem key={post.id}>
-              <div className="w-full">
-                <div className="space-y-4">
-                  <div className="relative aspect-[4/3] w-full flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
+      <div className="w-full max-w-3xl mx-auto px-4">
+        <Carousel className="w-full relative" opts={{ loop: true }}>
+          <CarouselContent>
+            {posts.map((post) => (
+              <CarouselItem key={post.id}>
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="relative w-full aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden">
                     <img
                       src={post.image_url}
                       alt={`${post.username} tarafından paylaşıldı`}
@@ -70,7 +70,7 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
                       decoding="async"
                     />
                   </div>
-                  <div className="px-4">
+                  <div className="w-full px-4">
                     <h3 className="font-semibold text-lg">@{post.username}</h3>
                     <p className="text-gray-600 mt-2">{post.comment}</p>
                     <div className="mt-4 flex items-center justify-between">
@@ -79,17 +79,17 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
                     </div>
                   </div>
                 </div>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
-          <CarouselPrevious className="h-8 w-8 rounded-full bg-white/80 hover:bg-white" />
-        </div>
-        <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
-          <CarouselNext className="h-8 w-8 rounded-full bg-white/80 hover:bg-white" />
-        </div>
-      </Carousel>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
+            <CarouselPrevious className="h-8 w-8 rounded-full bg-white/80 hover:bg-white" />
+          </div>
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
+            <CarouselNext className="h-8 w-8 rounded-full bg-white/80 hover:bg-white" />
+          </div>
+        </Carousel>
+      </div>
     </div>
   );
 };
