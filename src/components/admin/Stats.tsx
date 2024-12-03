@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Globe, Clock, Activity, MousePointerClick, ArrowUpRight, Timer, Brain } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface StatItem {
   title: string;
@@ -10,8 +11,27 @@ interface StatItem {
   change: string;
 }
 
+interface AnalyticsMetrics {
+  click_through_rate: number;
+  conversion_rate: number;
+  user_interactions: number;
+  bounce_rate: number;
+}
+
 export const Stats = () => {
   const [stats, setStats] = useState<StatItem[]>([]);
+  const [metrics, setMetrics] = useState<AnalyticsMetrics | null>(null);
+
+  // Fetch analytics metrics
+  const fetchMetrics = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.rpc('get_analytics_metrics');
+      if (error) throw error;
+      setMetrics(data[0]);
+    } catch (error) {
+      console.error('Error fetching metrics:', error);
+    }
+  }, []);
 
   // Performans metriklerini hesaplama fonksiyonunu memoize edelim
   const calculatePerformanceMetrics = useCallback(() => {
@@ -30,7 +50,7 @@ export const Stats = () => {
   }, []);
 
   // Stats array'ini memoize edelim
-  const generateStats = useCallback((metrics: ReturnType<typeof calculatePerformanceMetrics>) => {
+  const generateStats = useCallback((perfMetrics: ReturnType<typeof calculatePerformanceMetrics>) => {
     const visitCount = parseInt(sessionStorage.getItem('visitCount') || "1");
     
     return [
@@ -48,51 +68,70 @@ export const Stats = () => {
       },
       {
         title: "Ort. Oturum Süresi",
-        value: `${metrics.sessionDuration}s`,
+        value: `${perfMetrics.sessionDuration}s`,
         icon: Clock,
         change: "0%",
       },
       {
         title: "Hemen Çıkma Oranı",
-        value: "0%",
+        value: metrics ? `${metrics.bounce_rate.toFixed(1)}%` : "0%",
         icon: Globe,
         change: "0%",
       },
       {
         title: "Tıklama Oranı",
-        value: `${metrics.interactionRate}%`,
+        value: metrics ? `${metrics.click_through_rate.toFixed(1)}%` : "0%",
         icon: MousePointerClick,
         change: "0%",
       },
       {
         title: "Dönüşüm Oranı",
-        value: "0%",
+        value: metrics ? `${metrics.conversion_rate.toFixed(1)}%` : "0%",
         icon: ArrowUpRight,
         change: "0%",
       },
       {
         title: "Sayfa Yüklenme Süresi",
-        value: `${metrics.pageLoadTime}ms`,
+        value: `${perfMetrics.pageLoadTime}ms`,
         icon: Timer,
         change: "0%",
       },
       {
         title: "Kullanıcı Etkileşimi",
-        value: `${metrics.interactions}`,
+        value: metrics ? metrics.user_interactions.toString() : "0",
         icon: Brain,
         change: "0%",
       },
     ];
-  }, []);
+  }, [metrics]);
 
   useEffect(() => {
+    // Initial fetch
+    fetchMetrics();
+
+    // Subscribe to analytics_events changes
+    const channel = supabase.channel('analytics_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'analytics_events'
+        },
+        () => {
+          // Refresh metrics when new events come in
+          fetchMetrics();
+        }
+      )
+      .subscribe();
+
     // Ziyaretçi sayısını artır
     const visitCount = parseInt(sessionStorage.getItem('visitCount') || "0") + 1;
     sessionStorage.setItem('visitCount', visitCount.toString());
 
     // İlk hesaplama
-    const metrics = calculatePerformanceMetrics();
-    setStats(generateStats(metrics));
+    const perfMetrics = calculatePerformanceMetrics();
+    setStats(generateStats(perfMetrics));
 
     // Performans gözlemcisi
     const observer = new PerformanceObserver(() => {
@@ -111,8 +150,9 @@ export const Stats = () => {
     return () => {
       clearInterval(interval);
       observer.disconnect();
+      channel.unsubscribe();
     };
-  }, [calculatePerformanceMetrics, generateStats]);
+  }, [calculatePerformanceMetrics, generateStats, fetchMetrics]);
 
   return (
     <>

@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: number
+          metadata: Json | null
+          page_path: string
+          session_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: number
+          metadata?: Json | null
+          page_path: string
+          session_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: number
+          metadata?: Json | null
+          page_path?: string
+          session_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           content: string
@@ -195,6 +225,17 @@ export type Database = {
           last_submission_date: string
           next_submission_date: string
           days_remaining: number
+        }[]
+      }
+      get_analytics_metrics: {
+        Args: {
+          time_window?: unknown
+        }
+        Returns: {
+          click_through_rate: number
+          conversion_rate: number
+          user_interactions: number
+          bounce_rate: number
         }[]
       }
     }
