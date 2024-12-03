@@ -40,7 +40,7 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
   const currentIndex = posts.findIndex((p) => p.id === post.id);
 
   return (
-    <div className="flex flex-col items-center w-full max-w-[95vw] mx-auto">
+    <div className="w-full max-w-[90vw] sm:max-w-[85vw] md:max-w-[80vw] lg:max-w-[70vw] xl:max-w-[60vw] mx-auto">
       <DialogTitle className="sr-only">
         Paylaşım Detayları
       </DialogTitle>
@@ -48,12 +48,12 @@ const PostDialogContent = ({ post }: PostDialogContentProps) => {
         Kullanıcıların sokak hayvanlarına yardım fotoğrafları
       </DialogDescription>
       
-      <Carousel className="w-full max-w-2xl mx-auto relative" opts={{ loop: true }}>
+      <Carousel className="w-full relative" opts={{ loop: true }}>
         <CarouselContent>
           {posts.map((post) => (
-            <CarouselItem key={post.id} className="flex justify-center">
-              <div className="w-full mx-auto">
-                <div className="space-y-6">
+            <CarouselItem key={post.id}>
+              <div className="w-full">
+                <div className="space-y-4">
                   <div className="relative aspect-[4/3] w-full flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
                     <img
                       src={post.image_url}
