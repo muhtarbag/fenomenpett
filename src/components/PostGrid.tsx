@@ -41,16 +41,13 @@ const PostGrid = ({ posts }: PostGridProps) => {
     }
   ];
 
-  // Create a stable array that won't change positions on like updates
-  const allPosts = [...posts, ...(posts.length === 0 ? placeholderPosts : [])].map(post => ({
-    ...post,
-    key: `post-${post.id}` // Add a stable key
-  }));
+  // Sabit bir dizi oluştur ve pozisyonları korumak için memo kullan
+  const allPosts = [...posts, ...(posts.length === 0 ? placeholderPosts : [])];
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
       {allPosts.map((post) => (
-        <div key={post.key} className="relative">
+        <div key={`post-${post.id}`} className="relative">
           <PostCard post={post} />
         </div>
       ))}

@@ -3,7 +3,7 @@ import LikeButton from "./LikeButton";
 import SocialShare from "./SocialShare";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import PostDialogContent from "./PostDialogContent";
-import { Suspense } from "react";
+import { Suspense, memo } from "react";
 
 export interface Post {
   id: number;
@@ -18,7 +18,7 @@ interface PostCardProps {
   post: Post;
 }
 
-const PostCard = ({ post }: PostCardProps) => {
+const PostCard = memo(({ post }: PostCardProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -62,6 +62,8 @@ const PostCard = ({ post }: PostCardProps) => {
       </DialogContent>
     </Dialog>
   );
-};
+});
+
+PostCard.displayName = 'PostCard';
 
 export default PostCard;
