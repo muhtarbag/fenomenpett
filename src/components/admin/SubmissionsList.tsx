@@ -19,7 +19,7 @@ export const SubmissionsList = () => {
     error 
   } = useSubmissions();
 
-  console.log('Submissions data:', {
+  console.log('📊 Submissions data:', {
     pending: pendingSubmissions?.length || 0,
     approved: approvedSubmissions?.length || 0,
     rejected: rejectedSubmissions?.length || 0,
@@ -40,8 +40,9 @@ export const SubmissionsList = () => {
 
   const filterSubmissionsByUsername = (submissions: any[] = []) => {
     if (!searchQuery) return submissions;
+    const lowercaseQuery = searchQuery.toLowerCase().trim();
     return submissions.filter(submission => 
-      submission.username.toLowerCase().includes(searchQuery.toLowerCase())
+      submission.username.toLowerCase().includes(lowercaseQuery)
     );
   };
 

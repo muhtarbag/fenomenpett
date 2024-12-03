@@ -10,7 +10,7 @@ export const BlogPostList = () => {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const queryClient = useQueryClient();
 
-  const { data: posts, refetch } = useQuery({
+  const { data: posts, isError, error, refetch } = useQuery({
     queryKey: ["blog-posts"],
     queryFn: async () => {
       console.log('🔄 Fetching blog posts...');
@@ -24,7 +24,7 @@ export const BlogPostList = () => {
         throw error;
       }
       
-      console.log('✅ Fetched blog posts:', data);
+      console.log('✅ Fetched blog posts:', data?.length || 0, 'posts');
       return data as BlogPost[];
     },
   });
@@ -61,8 +61,25 @@ export const BlogPostList = () => {
     }
   };
 
+  if (isError) {
+    console.error('❌ Error in BlogPostList:', error);
+    toast.error("Blog yazıları yüklenirken bir hata oluştu");
+    return (
+      <div className="text-center text-red-600 p-4">
+        <p>Blog yazıları yüklenirken bir hata oluştu.</p>
+        <p className="text-sm mt-2">Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {!posts?.length && (
+        <div className="text-center text-gray-500 p-4">
+          Henüz blog yazısı bulunmuyor.
+        </div>
+      )}
+      
       {posts?.map((post) => (
         <BlogPostItem
           key={post.id}

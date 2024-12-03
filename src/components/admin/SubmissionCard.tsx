@@ -20,7 +20,7 @@ export const SubmissionCard = memo(({
   onSelect
 }: SubmissionCardProps) => {
   if (!submission) {
-    console.error('No submission data provided');
+    console.error('❌ No submission data provided to SubmissionCard');
     return null;
   }
 
@@ -39,7 +39,7 @@ export const SubmissionCard = memo(({
   console.log('🎴 Rendering SubmissionCard:', {
     id,
     username,
-    currentStatus: status,
+    status,
     timestamp: new Date().toISOString()
   });
 
